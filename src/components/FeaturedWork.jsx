@@ -38,17 +38,17 @@ const features = [
   {
     id: 'pg-01',
     index: 'PG–01',
-    category: 'Pharmacy Website · Marketing System',
+    category: 'Pharmacy Website · Brand & Follow-Up System',
     accent: 'green',
     title: 'Summit Pharmacy — Website & Marketing System',
     description:
-      'A ground-up redesign of summitpharmacycolorado.com. I created the brand’s visual identity — logo, color palette, and typography — and carried it through specialty service pages, copy written side-by-side with the pharmacists, and the print and provider materials around the site.',
+      'A ground-up redesign of summitpharmacycolorado.com. I created the logo, colors, type, and visual style, then carried it through service pages, copy written side-by-side with the pharmacists, and the print pieces and provider handouts around the site.',
     built: [
-      'Brand identity: logo, color system & typography',
+      'Logo, color system & type',
       'Full site redesign with specialty pages: dermatology, ophthalmology, women’s health, general Rx',
       'Rx refill request form with secure, HIPAA-aware submission',
       'Compound Rx brochure used across 15+ pharmacies',
-      'Price sheets, delivery map & provider workflow tools',
+      'Price sheets, delivery map & provider handouts',
     ],
     media: 'dual',
     urlA: 'summitpharmacycolorado.com',
@@ -62,7 +62,7 @@ const features = [
     ],
     spec: {
       intro:
-        'The full system, front to back: I created Summit’s visual identity — logo, palette, typography, and illustration direction — then carried it through every page, form, and printed piece.',
+        'The full package, front to back: I created Summit’s logo, colors, type, and illustration direction, then carried it through every page, form, and printed piece.',
       brand: {
         logos: [
           {
@@ -137,7 +137,7 @@ const features = [
         },
       ],
       footnote:
-        'Ongoing: seasonal collateral, price sheets, and provider-facing tools carry the same system.',
+        'Ongoing: seasonal print pieces, price sheets, and provider handouts carry the same look and voice.',
     },
   },
   {
@@ -153,7 +153,7 @@ const features = [
       'Bold visual direction shaped around the owner’s vision',
       'Service, brand directory & quote pages',
       'Google Business & local search setup',
-      'Launch & social collateral planning',
+      'Launch plan & social post planning',
     ],
     media: 'single',
     url: 'ourco · live site',
@@ -319,15 +319,15 @@ const shopRows = [
   },
   {
     index: 'A3',
-    title: 'Menus, Flyers & Collateral',
+    title: 'Flyers, Handouts & Customer Materials',
     description:
-      'Print pieces designed to feel as good as what you serve or sell.',
+      'Printed pieces that explain what you do clearly and feel as good as what you serve or sell.',
   },
   {
     index: 'A4',
-    title: 'Social Content & Campaign Support',
+    title: 'Social Posts & Promotion Support',
     description:
-      'On-brand posts and simple campaigns that keep your business visible.',
+      'Posts, announcements, and simple promotions that keep your business visible.',
   },
   {
     index: 'A5',
@@ -397,7 +397,7 @@ export default function FeaturedWork() {
         <SectionHeader
           eyebrow="Featured Work"
           title="A few things I’ve helped build"
-          description={'Websites, tools, and marketing pieces — created for pharmacies, local businesses, and growing teams.'}
+          description={'Websites, tools, and customer-facing pieces — created for pharmacies, local businesses, and growing teams.'}
         />
       </div>
 

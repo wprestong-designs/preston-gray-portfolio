@@ -14,8 +14,8 @@ export default function Hero() {
             <span className="hero__headline-accent">the work they do.</span>
           </h1>
           <p className="hero__subhead">
-            Websites, menus, social content, collateral, brand foundations,
-            and simple marketing systems &mdash; practical pieces, built well,
+            Websites, customer handouts, social posts, brand basics, and
+            simple follow-up systems &mdash; practical pieces, built well,
             that make your business easier to find, easier to trust, and
             easier to&nbsp;choose.
           </p>

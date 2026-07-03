@@ -31,11 +31,11 @@ export default function About() {
           <ul className="about__facts">
             <li className="about__fact">
               <span className="about__fact-dot about__fact-dot--green" />
-              Marketing strategy &amp; growth
+              Plans that bring in customers
             </li>
             <li className="about__fact">
               <span className="about__fact-dot about__fact-dot--orange" />
-              Web design &amp; content creation
+              Websites &amp; clear customer copy
             </li>
             <li className="about__fact">
               <span className="about__fact-dot about__fact-dot--sage" />
@@ -43,7 +43,7 @@ export default function About() {
             </li>
             <li className="about__fact">
               <span className="about__fact-dot about__fact-dot--sky" />
-              Business development
+              Outreach &amp; follow-up support
             </li>
           </ul>
         </div>

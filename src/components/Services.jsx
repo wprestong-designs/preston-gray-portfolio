@@ -10,30 +10,30 @@ const services = [
   },
   {
     number: '02',
-    title: 'Menus, Flyers & Collateral',
+    title: 'Flyers, Handouts & Customer Materials',
     description:
-      'The pieces your customers actually hold — menus, flyers, and service sheets designed to feel as good as what you serve or sell.',
+      'The pieces your customers actually hold — flyers, service sheets, leave-behinds, and other materials that explain what you do clearly.',
     accent: 'orange',
   },
   {
     number: '03',
-    title: 'Social Content & Campaigns',
+    title: 'Social Posts & Promotions',
     description:
-      'On-brand posts and simple campaigns that keep your business visible — without scrambling for content every week.',
+      'Posts, announcements, and simple promotions that keep your business visible — without scrambling for content every week.',
     accent: 'sky',
   },
   {
     number: '04',
     title: 'Brand Starter Kits',
     description:
-      'A logo, colors, and simple brand foundations — so everything customers see looks like it belongs to the same business.',
+      'A logo, colors, and simple brand basics — so everything customers see looks like it belongs to the same business.',
     accent: 'green',
   },
   {
     number: '05',
-    title: 'Local Visibility & Marketing Systems',
+    title: 'Getting Found Locally',
     description:
-      'Google Business, reviews, local SEO, and simple marketing systems that keep you visible without daily effort.',
+      'Google Business, reviews, local search basics, and simple routines that help nearby customers find and trust you.',
     accent: 'green',
   },
   {
@@ -52,7 +52,7 @@ export default function Services() {
         <SectionHeader
           eyebrow="Services"
           title="What I can build for your business"
-          description="No big-agency process — just practical pieces you can pick from, built well and made to work together."
+          description="No big-agency process — just useful pieces you can pick from, built well and made to work together."
         />
         <ol className="service-index">
           {services.map((service) => (
