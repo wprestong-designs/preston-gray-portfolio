@@ -6,7 +6,7 @@ export default function ContactCTA() {
           <p className="contact__eyebrow">Let&rsquo;s work together</p>
           <h2 className="contact__title">
             Know your website, customer materials, or online presence could be better
-            &mdash; but not sure where to&nbsp;start?
+            &mdash; but not sure where to start?
           </h2>
           <p className="contact__subtitle">
             That&rsquo;s where I come in. Tell me what&rsquo;s not working

@@ -17,7 +17,7 @@ export default function Hero() {
             Websites, customer handouts, social posts, brand basics, and
             simple follow-up systems &mdash; practical pieces, built well,
             that make your business easier to find, easier to trust, and
-            easier to&nbsp;choose.
+            easier to choose.
           </p>
           <div className="hero__actions">
             <a href="#work" className="btn btn--primary">
