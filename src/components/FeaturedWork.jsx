@@ -189,7 +189,7 @@ const features = [
       'Bristol Pharmacy — localized adaptation for the OKC market',
       'Pinnacle Rx — its own UI direction and branded homepage',
       'Prosource Pharmacy — in progress (Coming Soon)',
-      'Shared patient & provider service framework, adapted per market',
+      'Shared patient & provider pages, tailored to each location',
     ],
     media: 'dual',
     urlA: 'rxbristolokc.com',
