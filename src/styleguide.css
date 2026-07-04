@@ -160,6 +160,37 @@
   display: block;
 }
 
+/* Triangle-morph prototype (Phase 2.5b) */
+.proto {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  margin-top: 24px;
+  align-items: flex-start;
+}
+.proto-cell {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.proto-shape {
+  width: 160px;
+  height: 160px;
+  background: var(--lead);
+  border: 0;
+}
+.proto-shape--ref {
+  background: var(--support);
+}
+.proto-cell figcaption {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  max-width: 160px;
+}
+
 /* Pinned proof tokens — governance doc */
 .sg-proof {
   background: var(--paper);

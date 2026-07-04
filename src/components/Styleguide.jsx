@@ -16,6 +16,7 @@ import {
 } from './shapes/shape-kit.js'
 import PatternField from './shapes/PatternField.jsx'
 import Specimens from './Specimens.jsx'
+import TriMorphProto from './TriMorphProto.jsx'
 
 const THEME_LABEL = {
   memphis: 'Memphis Playroom',
@@ -179,6 +180,17 @@ export default function Styleguide() {
           the variable.
         </p>
       </header>
+      <section className="sg-proof" data-theme="memphis">
+        <header className="sg-theme__head">
+          <h2 className="sg-theme__name">Phase 2.5b — triangle morph prototype</h2>
+          <p className="sg-theme__meta">
+            Rounded-rect ↔ triangle via equal-vertex clip-path interpolation, same node, same
+            MORPH spring — no cover, no visibility gap. The right swatch is the border-radius
+            at-rest target (no-pop check).
+          </p>
+        </header>
+        <TriMorphProto />
+      </section>
       <ProofTokens />
       {THEMES.map((t) => (
         <ThemeSection key={t} theme={t} />
