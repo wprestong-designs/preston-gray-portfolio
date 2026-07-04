@@ -72,4 +72,56 @@ Every judgment call, its reasoning, and how to reverse it. Reviewed once at end.
   (recommended); burst → corner accent; arch → quiet backdrop. vortex intentionally
   omitted (most dominant, needs caution). Reverse: delete the S2 styleguide section.
 
-## Decisions (appended as I go)
+## Section 5 — Triangle morph: DECISIONS logged; BUILD deferred (see close-out)
+**Build deferred** — the clip-morph across all states + validator changes are
+animation-critical and I have no browser to verify morph quality/perf this run;
+committing them blind risks shipping a broken cycle. Approach is recorded in
+`motion-choreography-spec.md`; the decisions it needs are made here.
+
+**State classification (dominant fine-family + arrangement):**
+| State | fine-family | arrangement | round-dominant? |
+|---|---|---|---|
+| swatches | blob (organic rounded) | scatter | yes |
+| registration | mixed (arches+circle+rects) | grid | — |
+| columns | sharp-rect | vertical stack | no |
+| circles | circle | scatter | yes |
+| tiles | rounded-rect | grid | no |
+| quarters | quarter-round | radial | no |
+| pinwheel | quarter-ellipse | radial | no |
+| pillrhythm | pill | horizontal rows | no |
+| triangle | triangle | grid | no |
+
+**Finding:** with only the coarse families (rect/round/triangle/mixed), 5 states
+are "rect" — in a 9-cycle you CANNOT keep all 5 non-adjacent (4 non-rects → only
+4 gaps). So novelty-A must be judged on the **fine** family (sharp-rect vs
+rounded-rect vs pill vs quarter-round vs quarter-ellipse are distinct), which is
+also what the morph-adjacency rule already uses. Round-dominant pair (swatches,
+circles) kept non-adjacent per the spec's explicit example.
+
+**Proposed cycle order** (fine-family differs every adjacency; triangle only
+touches rect-family; the known low-motion tiles↔quarters pair is NOT adjacent):
+`registration → circles → columns → triangle → quarters → swatches → pillrhythm → pinwheel → tiles →` (wrap)
+- reg(mixed)→circles(circle): mixed→round, big change ✓
+- circles(circle)→columns(sharp-rect): round→hard rect ✓
+- columns(sharp-rect)→triangle: cleanest morph (near-sharp collapse) ✓ rect neighbor
+- triangle→quarters(quarter-round): rect neighbor; shared sharp-corner language ✓
+- quarters(quarter-round)→swatches(blob): angular→organic ✓
+- swatches(blob)→pillrhythm(pill): scatter→rows ✓
+- pillrhythm(pill)→pinwheel(quarter-ellipse): rows→radial ✓
+- pinwheel(quarter-ellipse)→tiles(rounded-rect): radial→grid ✓
+- tiles→registration (wrap): family differs (rounded-rect vs mixed); both grid — the
+  one arrangement repeat, acceptable under "ideally" (soft). Swap candidate if disliked.
+
+**Min-motion threshold (novelty-B), my numbers to enforce in the validator:** a
+transition PASSES iff **≥4 of the 6 project shapes** each change beyond a meaningful
+delta, where meaningful = centre shift ≥8% of the stage's short side, OR area (scale)
+change ≥25%, OR rotation ≥15°. A pair failing this is recomposed or made non-adjacent
+(tiles↔quarters is the known failure — already routed non-adjacent here).
+
+## Section 4 — M1–M4 media: DECISIONS done; BUILD deferred (see close-out)
+Assets generated (§2/§3), per-proof mobile sets decided (§2), mp4-first ordering
+shipped (§1). The responsive-select component + pinch-zoom lightbox + spread wiring
+are **deferred** — pinch-zoom gesture ownership and the mobile spreads need device
+testing I can't do headlessly; the M1–M4 spec is intact in the brief. Reverse: n/a.
+
+## Other decisions
