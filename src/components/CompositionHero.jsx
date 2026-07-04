@@ -47,14 +47,17 @@ import {
   STAGGER_MS,
   STAGGER_ORDER,
   STATE_ORDER,
-  XFADE_STATES,
+  TRIANGLE_NEIGHBORS,
   Z,
   buildFidelityLayout,
   isOneMass,
+  nextCycleState,
+  shapeClipPolygon,
   stageTransform,
   touchEdges,
   useOrientation,
   useStageFit,
+  validateCycleMotion,
   validateGrammar,
 } from './composition-geometry.js'
 
@@ -153,10 +156,11 @@ const ECHO = {
    fidelity spec (moved from the retired strip). Per-state flag so it can
    be reassigned or multiplied without touching render code. */
 const HATCH_STATES = ['columns']
-/* F1: the triangle crossfade — fade out, snap geometry while invisible,
-   fade/scale back in with the standard stagger. D0: 300ms per side,
-   scaled with the 1s morph pacing. */
-const TRIANGLE_XFADE_MS = 300
+/* run-2 §5: the triangle clip-morph window arms/disarms this long after the
+   pre/post-triangle neighbour settles — past the ≈1s MORPH settle, before the
+   next 3s tick, so the border-radius↔polygon swap always happens at rest
+   (imperceptible; the polygon is generated from the shape's own radius). */
+const CLIP_ARM_MS = 1400
 /* F1 spec: baked fragments stay OFF the small triangles */
 const TRIANGLE_NO_TYPE = ['pinnacle', 'prosource']
 /* --------------------------------------------------------------------- */
@@ -472,14 +476,14 @@ export default function CompositionHero({ poster = false }) {
   const orientation = useOrientation()
   const stage = STAGES[orientation]
   const [wrapRef, fit] = useStageFit(stage)
-  const [stateName, setStateName] = useState('swatches')
-  // F1: crossfade phase for XFADE_STATES (triangle) — 'out' fades the
-  // comp, geometry snaps while invisible, 'in' fades/scales back.
-  // stateRef mirrors stateName for the interval's pick logic (no side
-  // effects inside setState updaters).
-  const stateRef = useRef('swatches')
-  const [xfadePhase, setXfadePhase] = useState('idle')
-  const xfadeTimers = useRef([])
+  const [stateName, setStateName] = useState('registration')
+  // stateRef mirrors stateName for the interval's fixed-cycle successor
+  // (no side effects inside setState updaters).
+  const stateRef = useRef('registration')
+  // Triangle clip-morph window (run-2 §5): clipArmed is the timed flag (set
+  // at the neighbours' REST by the effect below); clipActive derives it off
+  // the static/reduced case, so shapes only ever clip while the cycle is live.
+  const [clipArmed, setClipArmed] = useState(false)
   // U1: the colorway axis. First paint is CANONICAL (brand-stable); the
   // cycle then moves through the eight named colorways, shuffled without
   // repeat and COUPLED to the geometry morph — a shape re-inks only as it
@@ -516,6 +520,8 @@ export default function CompositionHero({ poster = false }) {
   }
 
   const displayState = staticLayout ? 'registration' : stateName
+  // Clip only while the cycle is live (never static/reduced).
+  const clipActive = clipArmed && !staticLayout
   const layout = LAYOUTS[displayState][orientation]
   // U1: resolved colorway — reduced-motion statics wear canonical UNLESS
   // a ?colorway= pin is present (a static pin adds zero motion — P6
@@ -544,57 +550,56 @@ export default function CompositionHero({ poster = false }) {
   useEffect(() => {
     if (composer || staticLayout || paused || overlayOpen) return undefined
     const t = setInterval(() => {
-      // F1: pick via the ref mirror (shuffle-no-repeat over the 9-state
-      // pool). Crossing a triangle boundary runs the crossfade: fade out
-      // first, THEN commit the new state while invisible.
-      const current = stateRef.current
-      const others = STATE_ORDER.filter((s) => s !== current)
-      const next = others[Math.floor(Math.random() * others.length)]
-      // U1 (revised): the colorway is COUPLED to the geometry morph — a
-      // shape only re-inks as it changes silhouette, never while at rest.
-      // This supersedes the P6 half-cycle offset, which recolored the
-      // static composition mid-dwell and read as a color-only glitch
-      // (a shape "just changing color for no reason"). Same no-repeat
-      // shuffle over the 8 named ways; the re-ink now fires INSIDE the
-      // same morph event (under the crossfade cover for triangle states),
-      // so the repaint and the shape change are one gesture.
-      const advanceColorway = () =>
-        setColorwayName((c) => {
-          const pool = COLORWAY_ORDER.filter((x) => x !== c)
-          return pool[Math.floor(Math.random() * pool.length)]
-        })
-      if (XFADE_STATES.includes(next) || XFADE_STATES.includes(current)) {
-        setXfadePhase('out')
-        xfadeTimers.current.push(
-          setTimeout(() => {
-            stateRef.current = next
-            setStateName(next)
-            advanceColorway() // re-ink under the opacity cover, with the snap
-            setXfadePhase('in')
-            xfadeTimers.current.push(
-              setTimeout(
-                () => setXfadePhase('idle'),
-                TRIANGLE_XFADE_MS + STAGGER_MS * STAGGER_ORDER.length,
-              ),
-            )
-          }, TRIANGLE_XFADE_MS),
-        )
-      } else {
-        stateRef.current = next
-        setStateName(next)
-        advanceColorway() // re-ink rides the morph
-      }
+      // Fixed cycle (run-2 §5): advance in STATE_ORDER — no shuffle. The
+      // choreography is a designed, watched sequence (arrangement differs
+      // every step; triangle only touches rect-family neighbours). The
+      // colorway re-ink stays COUPLED to the geometry morph — a shape
+      // re-inks only as it changes silhouette, one gesture. The triangle
+      // boundary is a true clip-path morph now (no blackout, no wipe).
+      const next = nextCycleState(stateRef.current)
+      stateRef.current = next
+      setStateName(next)
+      setColorwayName((c) => {
+        const pool = COLORWAY_ORDER.filter((x) => x !== c)
+        return pool[Math.floor(Math.random() * pool.length)]
+      })
     }, CYCLE_MS)
-    return () => {
-      clearInterval(t)
-      xfadeTimers.current.forEach(clearTimeout)
-      xfadeTimers.current = []
-    }
+    return () => clearInterval(t)
   }, [composer, staticLayout, paused, overlayOpen])
 
-  // Grammar check while art-directing
+  // Triangle clip-morph arm/disarm (run-2 §5). ARM at the pre-triangle
+  // neighbour's REST (border-radius → matching polygon, imperceptible because
+  // the polygon is generated FROM that radius and the shape isn't moving),
+  // DISARM at the post-triangle neighbour's REST. Keyed off stateName (not
+  // free timers), so hover-pause and reduced motion can never misfire the
+  // window. CLIP_ARM_MS sits after the morph settles, before the next tick.
+  useEffect(() => {
+    if (staticLayout) return undefined // derived clipActive is already false
+    const [pre, post] = TRIANGLE_NEIGHBORS
+    if (stateName === pre) {
+      const t = setTimeout(() => setClipArmed(true), CLIP_ARM_MS)
+      return () => clearTimeout(t)
+    }
+    if (stateName === post) {
+      const t = setTimeout(() => setClipArmed(false), CLIP_ARM_MS)
+      return () => clearTimeout(t)
+    }
+    return undefined
+  }, [stateName, staticLayout])
+
+  // Grammar check while art-directing + cycle-motion validator (dev warn if
+  // any adjacent pair fails the §5 minimum-motion threshold).
   useEffect(() => {
     if (composer) validateGrammar()
+    if (import.meta.env.DEV) {
+      const fails = [
+        ...validateCycleMotion('landscape'),
+        ...validateCycleMotion('portrait'),
+      ]
+      if (fails.length) {
+        console.warn('[composition] cycle min-motion FAIL:', fails)
+      }
+    }
   }, [composer])
 
   // U0b settle timer — the async callback flips the flag back once the
@@ -801,10 +806,6 @@ export default function CompositionHero({ poster = false }) {
                   : `background-color 0.5s var(--ease) ${staggerDelay}s`,
                 border: shape.outline ?? undefined,
                 '--shape-color': shape.outline ? 'var(--ink)' : fill,
-                // F1: triangle state clips to its polygon (children —
-                // letterforms, echoes — clip with it). Snaps under the
-                // crossfade's opacity cover.
-                clipPath: l.clip ?? 'none',
               }}
               initial={false}
               animate={{
@@ -817,55 +818,27 @@ export default function CompositionHero({ poster = false }) {
                 // color-only under reduced motion.
                 borderRadius:
                   isHovered && !reducedMotion ? HOVER_R[shape.id] : l.r,
-                // F1 crossfade: out = shrink to .96 invisible; in = settle
-                // back to 1 (or the hover scale).
-                scale:
-                  xfadePhase === 'out'
-                    ? 0.96
-                    : isHovered && !reducedMotion
-                      ? 1.04
-                      : 1,
-                // F4 sibling dim A/B + F1 crossfade opacity cover
-                opacity:
-                  xfadePhase === 'out'
-                    ? 0
-                    : isDimmed && dimMode === 'opacity'
-                      ? DIM_OPACITY
-                      : 1,
+                // run-2 §5: across the triangle window the silhouette is a
+                // matched-vertex clip polygon (columns→triangle→pillrhythm
+                // interpolate continuously); elsewhere clip is off and
+                // border-radius governs. The none↔polygon flips happen only
+                // at the armed/disarmed REST edges (imperceptible). clip-path
+                // clips the shape AND its children (letterform, echo).
+                clipPath: clipActive ? shapeClipPolygon(l) : 'none',
+                scale: isHovered && !reducedMotion ? 1.04 : 1,
+                opacity: isDimmed && dimMode === 'opacity' ? DIM_OPACITY : 1,
                 filter: isDimmed && dimMode === 'filter' ? DIM_FILTER : 'saturate(1) brightness(1)',
               }}
               transition={{
                 ...MORPH,
                 delay: staggerDelay,
-                // F1: while 'in', geometry SNAPS (it moved under the
-                // opacity cover); opacity/scale carry the crossfade.
-                ...(xfadePhase === 'in'
-                  ? {
-                      x: { duration: 0 },
-                      y: { duration: 0 },
-                      width: { duration: 0 },
-                      height: { duration: 0 },
-                      rotate: { duration: 0 },
-                      borderRadius: { duration: 0 },
-                    }
-                  : {}),
-                ...(xfadePhase !== 'in' && isHovered
-                  ? { borderRadius: { ...HOVER_MORPH, delay: 0 } }
-                  : {}),
-                scale:
-                  xfadePhase === 'idle'
-                    ? { ...HOVER_MORPH, delay: 0 }
-                    : {
-                        duration: TRIANGLE_XFADE_MS / 1000,
-                        delay: xfadePhase === 'in' ? staggerDelay : 0,
-                      },
-                opacity:
-                  xfadePhase === 'idle'
-                    ? { duration: 0.25, delay: 0 }
-                    : {
-                        duration: TRIANGLE_XFADE_MS / 1000,
-                        delay: xfadePhase === 'in' ? staggerDelay : 0,
-                      },
+                // clip morph rides the same spring + ripple as geometry; the
+                // none↔polygon arm/disarm flips are non-interpolable so framer
+                // snaps them, but only ever at rest, so they read as nothing.
+                clipPath: { ...MORPH, delay: staggerDelay },
+                ...(isHovered ? { borderRadius: { ...HOVER_MORPH, delay: 0 } } : {}),
+                scale: { ...HOVER_MORPH, delay: 0 },
+                opacity: { duration: 0.25, delay: 0 },
                 filter: { duration: 0.25, delay: 0 },
               }}
               // Pointer events with an explicit type check (R3): iOS tap
@@ -988,33 +961,24 @@ export default function CompositionHero({ poster = false }) {
                 <motion.div
                   className={`comp-ornament${o.fill === 'paper' ? ' comp-ornament--paper' : ''}`}
                   aria-hidden="true"
-                  style={{ zIndex: Z[oid], clipPath: o.clip ?? 'none' }}
+                  style={{ zIndex: Z[oid] }}
                   initial={{ opacity: 0 }}
                   exit={{ opacity: 0, transition: { duration: 0.2 } }}
                   animate={{
-                    opacity: xfadePhase === 'out' ? 0 : 1,
+                    opacity: 1,
                     x: o.x,
                     y: o.y,
                     width: o.w,
                     height: o.h,
                     borderRadius: o.r,
+                    // §5: ornaments clip-morph with the shapes across the window
+                    clipPath: clipActive ? shapeClipPolygon(o) : 'none',
                   }}
                   transition={{
                     ...MORPH,
                     delay: staggerDelay,
-                    ...(xfadePhase === 'in'
-                      ? {
-                          x: { duration: 0 },
-                          y: { duration: 0 },
-                          width: { duration: 0 },
-                          height: { duration: 0 },
-                          borderRadius: { duration: 0 },
-                        }
-                      : {}),
-                    opacity: {
-                      duration: xfadePhase === 'idle' ? 0.2 : TRIANGLE_XFADE_MS / 1000,
-                      delay: xfadePhase === 'in' ? staggerDelay : 0,
-                    },
+                    clipPath: { ...MORPH, delay: staggerDelay },
+                    opacity: { duration: 0.2, delay: 0 },
                   }}
                 >
                   {/* Ornaments carry the columns hatching too */}

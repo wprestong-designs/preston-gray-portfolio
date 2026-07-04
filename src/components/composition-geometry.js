@@ -18,17 +18,39 @@ export const STAGES = {
 export const ORIENTATION_QUERY = '(min-aspect-ratio: 4/3)'
 /* F1: strip → columns (renamed/replaced per svg-fidelity-spec.md);
    pillrhythm and triangle join the cycle. Nine states. */
+/* Fixed CYCLE order (run-2 §1 — amended novelty rule). Every adjacency differs
+   in arrangement; triangle only neighbors rect-family (columns, quarters); the
+   known low-motion tiles↔quarters pair is non-adjacent. The cycle advances in
+   this order (no more random shuffle) so the choreography is a watched sequence.
+   Classification table + reasoning: docs/decision-log-20260704-run2.md §1. */
 export const STATE_ORDER = [
-  'swatches',
   'registration',
-  'columns',
   'circles',
-  'tiles',
-  'quarters',
-  'pinwheel',
-  'pillrhythm',
+  'columns',
   'triangle',
+  'pillrhythm',
+  'quarters',
+  'swatches',
+  'tiles',
+  'pinwheel',
 ]
+
+/* Successor in the fixed cycle (wraps). The poster advances with this. */
+export function nextCycleState(current) {
+  const i = STATE_ORDER.indexOf(current)
+  return STATE_ORDER[(i + 1) % STATE_ORDER.length]
+}
+
+/* The two states flanking `triangle` in the cycle — the clip-morph endpoints. */
+export const TRIANGLE_NEIGHBORS = (() => {
+  const i = STATE_ORDER.indexOf('triangle')
+  const n = STATE_ORDER.length
+  return [STATE_ORDER[(i - 1 + n) % n], STATE_ORDER[(i + 1) % n]]
+})()
+
+/* States that participate in the clip-path morph window (triangle + its two
+   rect-family neighbors). Outside this set, shapes render true border-radius. */
+export const CLIP_STATES = new Set(['triangle', ...TRIANGLE_NEIGHBORS])
 
 /* F1 — fidelity states render Preston's four SVG designs LITERALLY
    (svg-fidelity-spec.md is authoritative; geometry is numerically
@@ -205,6 +227,69 @@ const CORNER_R_PCT = {
   bl: '0% 0% 0% 100%',
 }
 
+/* ── Triangle true-morph (run-2 §5) ──────────────────────────────
+   Every silhouette becomes a matched-vertex clip-path polygon (K points per
+   corner → 4K total) so a triangle interpolates continuously with its
+   rect-family neighbour. Used ONLY across the triangle boundary; elsewhere
+   shapes render true border-radius (the currently-perfect transitions stay). */
+export const CLIP_K = 6
+
+// Triangle variant → the 4 corner groups' targets (clockwise tl,tr,br,bl).
+const TRI_CORNERS = {
+  'tl-tr-br': { tl: [0, 0], tr: [100, 0], br: [100, 100], bl: [100, 100] },
+  'tl-tr-bl': { tl: [0, 0], tr: [100, 0], br: [100, 0], bl: [0, 100] },
+  'tr-br-bl': { tl: [100, 0], tr: [100, 0], br: [100, 100], bl: [0, 100] },
+  'tl-br-bl': { tl: [0, 0], tr: [100, 100], br: [100, 100], bl: [0, 100] },
+}
+
+const clampN = (n, lo, hi) => Math.max(lo, Math.min(hi, n))
+const fmtPoly = (pts) =>
+  `polygon(${pts.map(([x, y]) => `${Math.round(x * 100) / 100}% ${Math.round(y * 100) / 100}%`).join(', ')})`
+
+// One corner arc: k points from a0° sweeping +90°, ellipse centre (cx,cy) radii (fx,fy).
+function cornerArc(cx, cy, fx, fy, a0, k) {
+  const out = []
+  for (let i = 0; i < k; i += 1) {
+    const a = ((a0 + (90 * i) / (k - 1)) * Math.PI) / 180
+    out.push([cx + fx * Math.cos(a), cy + fy * Math.sin(a)])
+  }
+  return out
+}
+
+// One border-radius token → fraction of the box dim (px caps at 50%, % up to 100).
+function radiusFrac(token, dim) {
+  const n = parseFloat(token) || 0
+  return /px$/.test(token) ? clampN((n / dim) * 100, 0, 50) : clampN(n, 0, 100)
+}
+
+// Rounded-rect (any 4 corner radii, px or %) → 4K-point polygon, clockwise tl,tr,br,bl.
+export function radiiToClip(rStr, w, h, k = CLIP_K) {
+  const p = String(rStr || '0px 0px 0px 0px').trim().split(/\s+/)
+  const [tlx, tly] = [radiusFrac(p[0] ?? '0px', w), radiusFrac(p[0] ?? '0px', h)]
+  const [trx, try_] = [radiusFrac(p[1] ?? '0px', w), radiusFrac(p[1] ?? '0px', h)]
+  const [brx, bry] = [radiusFrac(p[2] ?? '0px', w), radiusFrac(p[2] ?? '0px', h)]
+  const [blx, bly] = [radiusFrac(p[3] ?? '0px', w), radiusFrac(p[3] ?? '0px', h)]
+  return fmtPoly([
+    ...cornerArc(tlx, tly, tlx, tly, 180, k), // (0,tly)→(tlx,0)
+    ...cornerArc(100 - trx, try_, trx, try_, 270, k), // (100-trx,0)→(100,try)
+    ...cornerArc(100 - brx, 100 - bry, brx, bry, 0, k), // (100,100-bry)→(100-brx,100)
+    ...cornerArc(blx, 100 - bly, blx, bly, 90, k), // (blx,100)→(0,100-bly)
+  ])
+}
+
+// Triangle variant → 4K-point polygon (each corner group = k coincident points).
+export function triClip(variant, k = CLIP_K) {
+  const c = TRI_CORNERS[variant] || TRI_CORNERS['tl-tr-br']
+  const rep = (pt) => Array.from({ length: k }, () => pt)
+  return fmtPoly([...rep(c.tl), ...rep(c.tr), ...rep(c.br), ...rep(c.bl)])
+}
+
+// A layout entry → its matched-vertex clip polygon (triangle, or rounded-rect).
+export function shapeClipPolygon(entry, k = CLIP_K) {
+  if (!entry) return null
+  return entry.triVariant ? triClip(entry.triVariant, k) : radiiToClip(entry.r, entry.w, entry.h, k)
+}
+
 export function buildFidelityLayout(stateName, stage, fit = 'stretch') {
   const rows = NORM[stateName]
   const side = Math.min(stage.w, stage.h)
@@ -237,7 +322,10 @@ export function buildFidelityLayout(stateName, stage, fit = 'stretch') {
     if (stateName === 'columns') {
       entry.r = '10px 10px 10px 10px' // --radius-md scale, per spec
     }
-    if (row.tri) entry.clip = TRI_POLY[row.tri]
+    if (row.tri) {
+      entry.clip = TRI_POLY[row.tri]
+      entry.triVariant = row.tri
+    }
     if (row.kind) {
       entry.kind = row.kind
       entry.fill = row.fill
@@ -469,6 +557,40 @@ export function isOneMass(layout) {
     })
   }
   return seen.size === ids.length
+}
+
+/* Min-motion validator (run-2 §5 rule B). A cycle transition passes iff at
+   least MOTION_MIN of the 6 project shapes each move beyond a meaningful delta
+   (centre shift ≥8% of the stage short side, OR area change ≥25%, OR rotation
+   ≥15°). Returns the failing adjacent pairs (empty = the whole cycle passes).
+   Enforced at mount by CompositionHero (dev warn). */
+export const MOTION_MIN = 4
+const MOTION_PROOF_IDS = ['summit', 'ourco', 'bristol', 'pinnacle', 'prosource', 'fieldintel']
+
+function shapeMoves(a, b, shortSide) {
+  if (!a || !b) return false
+  const dist = Math.hypot(b.x + b.w / 2 - (a.x + a.w / 2), b.y + b.h / 2 - (a.y + a.h / 2))
+  const areaA = a.w * a.h
+  const areaB = b.w * b.h
+  const areaRatio = areaA && areaB ? Math.abs(areaB - areaA) / Math.max(areaA, areaB) : 0
+  const rot = Math.abs((b.rot || 0) - (a.rot || 0))
+  return dist >= 0.08 * shortSide || areaRatio >= 0.25 || rot >= 15
+}
+
+export function validateCycleMotion(orientation = 'landscape') {
+  const stage = STAGES[orientation]
+  const shortSide = Math.min(stage.w, stage.h)
+  const fails = []
+  for (let i = 0; i < STATE_ORDER.length; i += 1) {
+    const from = STATE_ORDER[i]
+    const to = STATE_ORDER[(i + 1) % STATE_ORDER.length]
+    const la = LAYOUTS[from]?.[orientation]
+    const lb = LAYOUTS[to]?.[orientation]
+    if (!la || !lb) continue
+    const moved = MOTION_PROOF_IDS.filter((id) => shapeMoves(la[id], lb[id], shortSide)).length
+    if (moved < MOTION_MIN) fails.push({ from, to, moved })
+  }
+  return fails
 }
 
 export function validateGrammar() {
