@@ -1,0 +1,248 @@
+/* ==================================================================
+   /small-business/ — the owner-facing page (P7). Same tokens, same
+   hairlines and press shadows as the rest of the shop; the register
+   is plainspoken and the type is the new all-sans system. Reuses
+   wk-header/wk-footer/wk-section/wk-proofs from work.css.
+================================================================== */
+
+.sb-main {
+  width: min(880px, 100% - 48px);
+  margin-inline: auto;
+}
+
+/* ------------------------------------------------------------------
+   Hero
+------------------------------------------------------------------- */
+.sb-hero {
+  padding-block: clamp(48px, 7vw, 88px) clamp(32px, 5vw, 56px);
+}
+
+.sb-hero h1 {
+  font-size: clamp(36px, 5.6vw, 60px);
+  max-width: 18ch;
+}
+
+/* The three promises get the project-color highlighter — the site's
+   playful color moments doing argumentative work */
+.sb-hero__word {
+  display: inline-block;
+  padding: 0 0.12em;
+  border-radius: 4px;
+}
+
+.sb-hero__word--find {
+  background: var(--summit-surface-1);
+}
+
+.sb-hero__word--trust {
+  background: var(--pinnacle-surface-1);
+}
+
+.sb-hero__word--choose {
+  background: var(--ramp-purple-tint);
+}
+
+.sb-lede {
+  margin-top: 20px;
+  font-size: clamp(17px, 2vw, 19.5px);
+  color: var(--ink-soft);
+  max-width: 58ch;
+}
+
+.sb-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 32px;
+}
+
+/* ------------------------------------------------------------------
+   Section ledes + who-this-is-for
+------------------------------------------------------------------- */
+.sb-section-lede {
+  font-size: 16.5px;
+  color: var(--ink-soft);
+  max-width: 62ch;
+  margin-bottom: clamp(18px, 3vw, 28px);
+}
+
+.sb-who {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px 28px;
+}
+
+.sb-who li {
+  position: relative;
+  padding: 12px 0 12px 26px;
+  border-bottom: 1px solid var(--line-ink-faint);
+  font-size: 15.5px;
+  font-weight: 550;
+}
+
+.sb-who li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 19px;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  background: var(--accent);
+}
+
+/* A little of the poster's color system, in order */
+.sb-who li:nth-child(2)::before { background: var(--bristol-flood); }
+.sb-who li:nth-child(3)::before { background: var(--ourco-flood); }
+.sb-who li:nth-child(4)::before { background: var(--pinnacle-flood); }
+.sb-who li:nth-child(5)::before { background: var(--fieldintel-flood); }
+.sb-who li:nth-child(6)::before { background: var(--prosource-flood); }
+
+/* ------------------------------------------------------------------
+   Services — numbered editorial rows
+------------------------------------------------------------------- */
+.sb-services {
+  border-top: 2px solid var(--ink);
+}
+
+.sb-service {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 8px 24px;
+  padding: 26px 0;
+  border-bottom: 1.5px solid var(--line-ink-soft);
+}
+
+.sb-service__index {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  /* soft ink, not faint — 7.63 AA on the paper base (P7 review) */
+  color: var(--ink-soft);
+  padding-top: 6px;
+}
+
+.sb-service h3 {
+  font-size: clamp(20px, 2.4vw, 25px);
+}
+
+.sb-service p {
+  grid-column: 2;
+  font-size: 15.5px;
+  line-height: 1.65;
+  color: var(--ink-soft);
+  max-width: 64ch;
+}
+
+/* ------------------------------------------------------------------
+   Why different — two-up cards on the paper base
+------------------------------------------------------------------- */
+.sb-why {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+.sb-why li {
+  padding: 20px 22px;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius-md);
+  background: var(--bg-off);
+  box-shadow: var(--press-xs);
+}
+
+.sb-why h3 {
+  font-size: 18.5px;
+  margin-bottom: 8px;
+}
+
+.sb-why p {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+.sb-more-link {
+  margin-top: 20px;
+  font-size: 15.5px;
+}
+
+/* ------------------------------------------------------------------
+   How it starts — three numbered steps
+------------------------------------------------------------------- */
+.sb-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  counter-reset: sb-step;
+}
+
+.sb-steps li {
+  counter-increment: sb-step;
+  padding: 18px 18px 20px;
+  border: 1.5px solid var(--line-ink-soft);
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+}
+
+.sb-steps li::before {
+  content: counter(sb-step, decimal-leading-zero);
+  display: inline-block;
+  margin-bottom: 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  border: 1.5px solid var(--accent);
+  border-radius: 4px;
+  padding: 3px 8px;
+}
+
+.sb-steps h3 {
+  font-size: 17px;
+  margin-bottom: 8px;
+}
+
+.sb-steps p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+/* ------------------------------------------------------------------
+   CTA
+------------------------------------------------------------------- */
+.sb-cta {
+  border-top: 2px solid var(--ink);
+}
+
+.sb-cta h2 {
+  font-size: clamp(28px, 4vw, 42px);
+  max-width: 22ch;
+}
+
+/* ------------------------------------------------------------------
+   Responsive
+------------------------------------------------------------------- */
+@media (max-width: 680px) {
+  .sb-who,
+  .sb-why,
+  .sb-steps {
+    grid-template-columns: 1fr;
+  }
+
+  .sb-service {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .sb-service p {
+    grid-column: 1;
+  }
+
+  .sb-hero__actions .btn {
+    flex: 1 1 auto;
+  }
+}

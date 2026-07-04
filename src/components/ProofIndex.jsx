@@ -120,13 +120,18 @@ export default function ProofIndex() {
                   open(proof.id, `row:${proof.id}`, e.currentTarget)
                 }}
               >
+                {/* P7 fix: the morph source is PAINT-FREE like the shape
+                    sources (comp-morph-source) — it used to carry the
+                    flood color, and a stale projection transform/opacity
+                    from motion could paint it over the row text (the
+                    solid-color-bars index bug). The overlay backdrop owns
+                    every visible pixel of the morph. */}
                 <motion.span
                   className="proof-row__field"
                   aria-hidden="true"
                   // V1b: static id (see CompositionHero) — distinct from
                   // the shape's so both origins can stay mounted
                   layoutId={`proof-row-${proof.id}`}
-                  style={{ background: proof.color }}
                 />
                 <span className="proof-row__index">{proof.index}</span>
                 <span className="proof-row__name">{proof.name}</span>

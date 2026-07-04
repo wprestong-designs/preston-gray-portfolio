@@ -76,6 +76,46 @@ import pinnacleAboutPoster from '../assets/media/pinnacle-about-desktop-poster.j
  * ============================================================
  */
 
+/*
+ * ============================================================
+ * LIVE SITE LINKS (P7) — the ONE place to add or update real URLs.
+ * Everything React-rendered (overlay statement meta, overlay end
+ * panels) reads from here via each proof's `liveUrl`. The two static
+ * pages (/work/ and /small-business/) mirror these hrefs by hand —
+ * update them together when a URL changes.
+ *
+ * `.example` hosts are placeholders — TODO(Preston): swap in the real
+ * domains. `null` = no link renders ANYWHERE (Prosource stays null
+ * until launch per the standing never-a-live-link constraint;
+ * Field Intel is an internal tool with no public URL).
+ * ============================================================
+ */
+export const LIVE_URLS = {
+  summit: 'https://www.summitpharmacy.example', // TODO(Preston): real URL
+  ourco: null, // build in progress — flip when the site ships
+  bristol: 'https://www.bristolpharmacy.example', // TODO(Preston): real URL
+  pinnacle: 'https://www.pinnaclerx.example', // TODO(Preston): real URL
+  prosource: null, // standing constraint: never a live link until launch
+  fieldintel: null, // internal tool — no public URL
+}
+
+/**
+ * @typedef {Object} ProofPalette
+ * P7 — the project's REAL brand palette, expressed as CSS var
+ * references into the per-project token blocks in index.css (the one
+ * place hex values live; all pairings AA-verified there). Cards and
+ * proof overlays consume this; the poster composition keeps its own
+ * display/colorway system.
+ * @property {string} flood     overlay backdrop / card flood
+ * @property {string} floodFg   AA body text on `flood`
+ * @property {string} accent    brand accent for rules/hovers on the flood
+ * @property {string} accentInk accent that passes AA on the site base
+ * @property {string} ghost     misregistration ghost tone behind monuments
+ * @property {{bg: string, fg: string}[]} surfaces overlay panel surfaces,
+ *   cycled in order past the statement panel. LAW: keep one fg polarity
+ *   per list — adjacent surfaces sweep under each other's text mid-wipe.
+ */
+
 /**
  * @typedef {Object} Proof
  * @property {string} id        one of the six cast ids
@@ -88,6 +128,9 @@ import pinnacleAboutPoster from '../assets/media/pinnacle-about-desktop-poster.j
  * @property {string} colorDisplay poster-register fill (display tier token)
  * @property {string} colorHover ink-in fill — display → flood register
  * @property {string} displayFg  T1 letterform color (display-tier fg token)
+ * @property {string|null} liveUrl public URL (LIVE_URLS entry) — null hides
+ *                               every live-site affordance for the proof
+ * @property {ProofPalette} [palette] real brand palette (P7)
  * @property {string|string[]} monument overlay monument word(s); an array
  *                               renders staggered lines (P1.1)
  * @property {string} slug      legacy spread id (dormant FeaturedWork)
@@ -136,6 +179,21 @@ export const projects = [
     colorDisplay: 'var(--display-green)',
     colorHover: 'var(--accent)',
     displayFg: 'var(--display-green-fg)',
+    liveUrl: LIVE_URLS.summit,
+    /* P7 — deep spruce anchor, panels ride a sunny sunset ramp
+       (yellow tint → sunny yellow → orange) */
+    palette: {
+      flood: 'var(--summit-flood)',
+      floodFg: 'var(--summit-flood-fg)',
+      accent: 'var(--summit-accent)',
+      accentInk: 'var(--summit-accent-ink)',
+      ghost: 'var(--summit-ghost)',
+      surfaces: [
+        { bg: 'var(--summit-surface-1)', fg: 'var(--summit-surface-1-fg)' },
+        { bg: 'var(--summit-surface-2)', fg: 'var(--summit-surface-2-fg)' },
+        { bg: 'var(--summit-surface-3)', fg: 'var(--summit-surface-3-fg)' },
+      ],
+    },
     // P1.1 (oneshot): full-name monument, two staggered lines. Reversible:
     // a plain string renders single-line (renderer supports both).
     monument: ['Summit', 'Pharmacy'],
@@ -231,6 +289,8 @@ export const projects = [
       },
       {
         type: 'media',
+        body: 'Trust is a pharmacy’s real product, so the site treats it that way: patient reviews pulled forward, the ethics statement in plain language, and the fine print rewritten until a person in a hurry can actually read it.',
+        bodyDraft: true,
         items: [
           {
             kind: 'image',
@@ -265,6 +325,20 @@ export const projects = [
     colorDisplay: 'var(--display-orange)',
     colorHover: 'var(--flood-orange)',
     displayFg: 'var(--display-orange-fg)',
+    liveUrl: LIVE_URLS.ourco,
+    /* P7 — burnt-orange flood; panels keep the measured orange ramp */
+    palette: {
+      flood: 'var(--ourco-flood)',
+      floodFg: 'var(--ourco-flood-fg)',
+      accent: 'var(--ourco-accent)',
+      accentInk: 'var(--ourco-accent-ink)',
+      ghost: 'var(--ourco-ghost)',
+      surfaces: [
+        { bg: 'var(--ourco-surface-1)', fg: 'var(--ourco-surface-1-fg)' },
+        { bg: 'var(--ourco-surface-2)', fg: 'var(--ourco-surface-2-fg)' },
+        { bg: 'var(--ourco-surface-3)', fg: 'var(--ourco-surface-3-fg)' },
+      ],
+    },
     monument: 'Ourco',
     slug: 'pg-02',
     preview: ourcoPreview,
@@ -300,6 +374,8 @@ export const projects = [
       },
       {
         type: 'media',
+        body: 'The build runs brand-first: identity system, then pages — so every page that ships already knows how it should look and sound. More proofs land here as the site comes off the press.',
+        bodyDraft: true,
         items: [
           {
             kind: 'video',
@@ -330,15 +406,31 @@ export const projects = [
     // "Oklahoma City" is Preston-era copy (approved network points);
     // blended with the draft file's characterization.
     tag: 'Community pharmacy · Oklahoma City',
-    /* P1.2 (oneshot): bristol reassigned sky -> SAGE per the run spec.
-       Prior family preserved for reversal: sky (flood #075985 / display
-       #0ea5e9). */
-    color: 'var(--flood-sage)',
-    colorFg: 'var(--flood-sage-fg)',
-    colorInk: 'var(--sage-deep)',
+    /* P7: bristol moves to its REAL brand palette — warm brick red on
+       light tan (red/white/black/tan, healthcare-friendly register).
+       The poster shape keeps the sage display family (colorDisplay
+       below) — the studio's own colorway art — but arming ink-in and
+       the overlay land on the brand red. Prior tier preserved for
+       reversal: flood-sage / sage-deep. */
+    color: 'var(--bristol-flood)',
+    colorFg: 'var(--bristol-flood-fg)',
+    colorInk: 'var(--bristol-accent-ink)',
     colorDisplay: 'var(--display-sage)',
-    colorHover: 'var(--flood-sage)',
+    colorHover: 'var(--bristol-flood)',
     displayFg: 'var(--display-sage-fg)',
+    liveUrl: LIVE_URLS.bristol,
+    palette: {
+      flood: 'var(--bristol-flood)',
+      floodFg: 'var(--bristol-flood-fg)',
+      accent: 'var(--bristol-accent)',
+      accentInk: 'var(--bristol-accent-ink)',
+      ghost: 'var(--bristol-ghost)',
+      surfaces: [
+        { bg: 'var(--bristol-surface-1)', fg: 'var(--bristol-surface-1-fg)' },
+        { bg: 'var(--bristol-surface-2)', fg: 'var(--bristol-surface-2-fg)' },
+        { bg: 'var(--bristol-surface-3)', fg: 'var(--bristol-surface-3-fg)' },
+      ],
+    },
     monument: 'Bristol',
     slug: 'pg-03',
     preview: bristolPreview,
@@ -374,6 +466,8 @@ export const projects = [
       },
       {
         type: 'media',
+        body: 'The about page carries the real pitch: the pharmacists, the techs, and the years behind the counter. On a phone — where most patients will meet it — the team shows up before the second scroll.',
+        bodyDraft: true,
         items: [
           {
             kind: 'video',
@@ -399,17 +493,31 @@ export const projects = [
     name: 'Pinnacle Rx',
     // "Little Rock" is Preston-era copy; blended with the draft file's tag.
     tag: 'Team-first · Little Rock',
-    /* P1.2 (oneshot): pinnacle takes the TEAL-ADJACENT family (existing
-       sky tier, display #0ea5e9 reads cyan) — chosen over coral, which
-       fails flood AA with white (3.09 best candidate) and sits in the
-       warm band between ourco's orange and prosource's red. Prior
-       assignment preserved for reversal: sage. */
-    color: 'var(--flood-sky)',
-    colorFg: 'var(--flood-sky-fg)',
-    colorInk: 'var(--sky-deep)',
+    /* P7: pinnacle moves to its REAL brand palette — Razorback Red
+       #9D2235 with Apple Blossom white and Neutral Black #222222,
+       restrained. The poster shape keeps the sky display family (the
+       studio colorway art); arming ink-in and the overlay land on
+       Razorback. Prior tier preserved for reversal: flood-sky /
+       sky-deep. */
+    color: 'var(--pinnacle-flood)',
+    colorFg: 'var(--pinnacle-flood-fg)',
+    colorInk: 'var(--pinnacle-accent-ink)',
     colorDisplay: 'var(--display-sky)',
-    colorHover: 'var(--flood-sky)',
+    colorHover: 'var(--pinnacle-flood)',
     displayFg: 'var(--display-sky-fg)',
+    liveUrl: LIVE_URLS.pinnacle,
+    palette: {
+      flood: 'var(--pinnacle-flood)',
+      floodFg: 'var(--pinnacle-flood-fg)',
+      accent: 'var(--pinnacle-accent)',
+      accentInk: 'var(--pinnacle-accent-ink)',
+      ghost: 'var(--pinnacle-ghost)',
+      surfaces: [
+        { bg: 'var(--pinnacle-surface-1)', fg: 'var(--pinnacle-surface-1-fg)' },
+        { bg: 'var(--pinnacle-surface-2)', fg: 'var(--pinnacle-surface-2-fg)' },
+        { bg: 'var(--pinnacle-surface-3)', fg: 'var(--pinnacle-surface-3-fg)' },
+      ],
+    },
     monument: 'Pinnacle',
     slug: 'pg-04',
     preview: pinnacleHome,
@@ -438,6 +546,8 @@ export const projects = [
       },
       {
         type: 'media',
+        body: 'The about page does the selling a homepage can’t: names, faces, and plain answers about transfers, refills, and delivery — written so a first-time patient knows exactly what happens next.',
+        bodyDraft: true,
         items: [
           {
             kind: 'video',
@@ -477,6 +587,21 @@ export const projects = [
     colorDisplay: 'var(--display-red)',
     colorHover: 'var(--flood-red)',
     displayFg: 'var(--display-red-fg)',
+    liveUrl: LIVE_URLS.prosource,
+    /* P7 — white/black/red, bolder and more industrial: panels alternate
+       vivid red and near-black, both white-fg (single polarity holds:
+       white passes on BOTH members, so mid-wipe overlaps stay legible) */
+    palette: {
+      flood: 'var(--prosource-flood)',
+      floodFg: 'var(--prosource-flood-fg)',
+      accent: 'var(--prosource-accent)',
+      accentInk: 'var(--prosource-accent-ink)',
+      ghost: 'var(--prosource-ghost)',
+      surfaces: [
+        { bg: 'var(--prosource-surface-1)', fg: 'var(--prosource-surface-1-fg)' },
+        { bg: 'var(--prosource-surface-2)', fg: 'var(--prosource-surface-2-fg)' },
+      ],
+    },
     monument: 'Prosource',
     slug: 'pg-05',
     preview: prosourceHome,
@@ -502,6 +627,8 @@ export const projects = [
       },
       {
         type: 'media',
+        body: 'Behind the form: Google Apps Script routes each request straight into the pharmacy’s queue, and reCAPTCHA v3 keeps the bots out without ever asking a patient to click a crosswalk.',
+        bodyDraft: true,
         items: [
           {
             kind: 'video',
@@ -535,6 +662,20 @@ export const projects = [
     colorDisplay: 'var(--display-purple)',
     colorHover: 'var(--flood-purple)',
     displayFg: 'var(--display-purple-fg)',
+    liveUrl: LIVE_URLS.fieldintel,
+    /* P7 — Field Intel keeps its plum system (ink · orange · tan lives
+       in the product; the portfolio treatment stays plum) */
+    palette: {
+      flood: 'var(--fieldintel-flood)',
+      floodFg: 'var(--fieldintel-flood-fg)',
+      accent: 'var(--fieldintel-accent)',
+      accentInk: 'var(--fieldintel-accent-ink)',
+      ghost: 'var(--fieldintel-ghost)',
+      surfaces: [
+        { bg: 'var(--fieldintel-surface-1)', fg: 'var(--fieldintel-surface-1-fg)' },
+        { bg: 'var(--fieldintel-surface-2)', fg: 'var(--fieldintel-surface-2-fg)' },
+      ],
+    },
     monument: 'Field Intel',
     slug: 'pg-06',
     preview: fieldIntelPreview,
@@ -663,7 +804,7 @@ export const aboutOverlay = {
     {
       type: 'statement',
       statement:
-        'I’m Preston Gray — a designer and builder in Denver. Days, I grow a pharmacy’s business face to face; nights and weekends, I design and build the websites, brands, and tools that make small businesses easier to find, easier to trust, and easier to choose.',
+        'I’m Preston Gray — a designer and builder in Denver. Days, I grow a pharmacy’s business face to face: provider visits, reporting, follow-up. Nights and weekends, I design and build the websites, brands, and tools that make small businesses easier to find, easier to trust, and easier to choose.',
       bodyDraft: true,
     },
     {
@@ -672,9 +813,22 @@ export const aboutOverlay = {
       points: [
         'Websites that do the front-counter job',
         'Customer materials — flyers, handouts, service sheets',
-        'Getting found locally',
-        'Simple follow-up systems',
+        'Getting found locally — maps, profiles, the basics done right',
+        'Simple follow-up systems, sized for small teams',
+        'Rewrites of confusing sites people already have',
       ],
+    },
+    {
+      // G2/P7: the background panel — why the work reads the way it does.
+      type: 'points',
+      label: 'Where this comes from',
+      points: [
+        'I write the copy myself — words first, layout second',
+        'Business development for a pharmacy — outreach, reporting, growth',
+        'Marketing for real storefronts, not case studies',
+        'I use the tools I build — including my own CRM, daily',
+      ],
+      bodyDraft: true,
     },
     {
       type: 'points',
@@ -689,7 +843,7 @@ export const aboutOverlay = {
     {
       type: 'contact',
       statement:
-        'Have a business that deserves better materials? Let’s talk.',
+        'Have a business that deserves better materials? Tell me what you’re trying to fix — a plain description in your own words is the perfect starting point.',
       bodyDraft: true,
     },
   ],

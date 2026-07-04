@@ -7,11 +7,15 @@ export default defineConfig({
   plugins: [react()],
   build: {
     rollupOptions: {
-      // Two static entries, no router (Phase-1 decision stands):
-      // the poster at / and the business subpage at /work/
+      // Three static entries, no router (Phase-1 decision stands):
+      // the poster at /, the work index at /work/, and the
+      // owner-facing services page at /small-business/ (P7)
       input: {
         main: fileURLToPath(new URL('./index.html', import.meta.url)),
         work: fileURLToPath(new URL('./work/index.html', import.meta.url)),
+        smallBusiness: fileURLToPath(
+          new URL('./small-business/index.html', import.meta.url),
+        ),
       },
     },
   },

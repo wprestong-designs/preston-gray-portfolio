@@ -33,6 +33,12 @@
   align-self: center;
 }
 
+.wk-nav {
+  display: flex;
+  align-items: center;
+  gap: clamp(14px, 3vw, 28px);
+}
+
 .wk-nav-link {
   font-family: var(--font-mono);
   font-size: 12px;
@@ -68,6 +74,15 @@
   top: 0;
   left: 0;
   transform-origin: top left;
+}
+
+/* P7 fix (pre-existing): the ambient module's wrapper had NO box — its
+   only child is absolutely positioned, so useStageFit measured height 0
+   and the whole banner rendered at scale(0), i.e. invisible. Pin the
+   wrapper to the wk-art frame so the fit math gets the real 2:1 box. */
+.wk-art .ambient {
+  position: absolute;
+  inset: 0;
 }
 
 .wk-art .comp-marks {
@@ -226,7 +241,10 @@
   color: var(--ink-soft);
 }
 
-/* Proof cards — quiet ink frames, deep-linking to the poster overlays */
+/* Proof cards — quiet ink frames wearing each project's REAL brand
+   accent (P7): a colored top rule + accent-colored index and links.
+   Accents resolve through --card-accent, set per project below from
+   the palette tokens in index.css. */
 .wk-proofs {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -237,6 +255,7 @@
   display: block;
   padding: 20px 22px 18px;
   border: 1.5px solid var(--ink);
+  border-top: 5px solid var(--card-accent, var(--ink));
   border-radius: var(--radius-md);
   background: var(--bg-card);
   box-shadow: var(--press-sm);
@@ -246,19 +265,25 @@
 }
 
 .wk-proof:hover,
-.wk-proof:focus-visible {
+.wk-proof:focus-within {
   translate: -2px -2px;
   box-shadow: var(--press-md);
 }
+
+/* P7 — the brand accents (AA-verified accent-ink tokens, index.css) */
+.wk-proof--summit { --card-accent: var(--summit-accent-ink); }
+.wk-proof--ourco { --card-accent: var(--ourco-accent-ink); }
+.wk-proof--bristol { --card-accent: var(--bristol-accent-ink); }
+.wk-proof--pinnacle { --card-accent: var(--pinnacle-accent-ink); }
+.wk-proof--prosource { --card-accent: var(--prosource-accent-ink); }
+.wk-proof--fieldintel { --card-accent: var(--fieldintel-accent-ink); }
 
 .wk-proof__index {
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.08em;
-  /* P6 a11y: ink-faint measured 2.89 on white — reading text takes the
-     AA-passing soft ink (7.63) */
-  color: var(--ink-soft);
+  color: var(--card-accent, var(--ink-soft));
 }
 
 .wk-proof h3 {
@@ -271,21 +296,53 @@
   color: var(--ink-soft);
 }
 
+.wk-proof__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin-top: 14px;
+}
+
 .wk-proof__cta {
   display: inline-block;
-  margin-top: 12px;
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--card-accent, var(--accent));
+}
+
+a.wk-proof__cta {
+  border-bottom: 1.5px solid transparent;
+  padding-bottom: 2px;
+}
+
+a.wk-proof__cta:hover {
+  border-bottom-color: var(--card-accent, var(--accent));
+}
+
+.wk-proof__cta--muted {
+  /* P7 review: ink-faint measured 2.89 on the white card — the muted
+     register comes from soft ink (7.63 AA) at normal weight instead */
+  color: var(--ink-soft);
+  font-weight: 600;
 }
 
 .wk-contact p {
   max-width: 56ch;
   color: var(--ink-soft);
   margin-bottom: 24px;
+}
+
+.wk-inline-link {
+  color: var(--accent);
+  font-weight: 600;
+  border-bottom: 1.5px solid var(--accent-soft);
+}
+
+.wk-inline-link:hover {
+  border-bottom-color: var(--accent);
 }
 
 .wk-footer {

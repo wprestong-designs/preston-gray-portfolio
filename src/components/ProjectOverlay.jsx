@@ -26,12 +26,6 @@ import {
   useTransform,
 } from 'motion/react'
 import { aboutOverlay, getProof } from '../data/projects.js'
-import {
-  PROJECT_FAMILY,
-  TEXT_SAFE_STEPS,
-  memberBodyFg,
-  memberToken,
-} from '../data/colorways.js'
 import { useProofOverlay } from '../context/overlay-context.js'
 import ProofMedia from './ProofMedia.jsx'
 
@@ -64,22 +58,21 @@ const WIPE_ROTATION = ['diagonal', 'half-circle', 'quarter-round']
 /* How far (in vw) a wipe front sweeps back over the outgoing panel */
 const WIPE_BLEED_VW = 40
 
-/* Per-panel surface: which ramp member paints the panel background and
-   which fgBody colors its text — statement keeps the DEEP FLOOD (the
-   brand anchor), later panels step through the family's TEXT-SAFE ramp
-   members (matrix law: art-only members never sit behind text). About
-   has no family → stays cream end to end. */
+/* Per-panel surface (P7): the statement keeps the DEEP FLOOD (the brand
+   anchor); later panels cycle the project's REAL brand surfaces from
+   projects.js palette (each an AA-verified bg/fg pair — see the palette
+   block in index.css, incl. the single-fg-polarity wipe law). About has
+   no palette → stays cream end to end. */
 function computeSurfaces(proof) {
-  const family = PROJECT_FAMILY[proof.id]
-  if (!family) return proof.panels.map(() => null)
-  const safe = TEXT_SAFE_STEPS[family]
+  const steps = proof.palette?.surfaces
+  if (!steps?.length) return proof.panels.map(() => null)
   let k = 0
   return proof.panels.map((panel, i) => {
     if (i === 0 || panel.type === 'statement') return null
-    const step = safe[k % safe.length]
+    const step = steps[k % steps.length]
     const surface = {
-      bg: memberToken(family, step),
-      fg: memberBodyFg(family, step),
+      bg: step.bg,
+      fg: step.fg,
       wipe: panel.wipe ?? WIPE_ROTATION[k % WIPE_ROTATION.length],
     }
     k += 1
@@ -165,7 +158,15 @@ export default function ProjectOverlay() {
     () => window.matchMedia('(pointer: fine)').matches,
     [],
   )
-  const horizontal = finePointer && !reducedMotion
+  // P7 fix: pointer type alone chose the layout — a NARROW desktop
+  // window got the horizontal track with meta text clipping off-screen.
+  // Width gates it now; the overlay remounts per open, so a one-shot
+  // read is enough.
+  const wideViewport = useMemo(
+    () => window.matchMedia('(min-width: 900px)').matches,
+    [],
+  )
+  const horizontal = finePointer && !reducedMotion && wideViewport
   const morph = !reducedMotion && !!originKey
   // V1b: origin identities are static and distinct — "shape:summit" →
   // the shape's permanent layoutId "proof-shape-summit", "row:summit" →
@@ -261,11 +262,10 @@ export default function ProjectOverlay() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // X1: panels now have differing widths (the monument statement cell is
-  // content-sized, ~1.5–2.5 viewports; everything else is 100vw), so the
-  // runway/progress math is MEASURED, not unit-counted: travel = track
-  // scrollWidth − viewport, runway height scales with total width, and
-  // the active panel is whichever cell sits under the viewport center.
+  // X1/P7: every cell is one viewport wide now, but the runway/progress
+  // math stays MEASURED, not unit-counted (travel = track scrollWidth −
+  // viewport; the active panel is whichever cell sits under the viewport
+  // center) — so any future cell-width change keeps working.
   const trackRef = useRef(null)
   const [travel, setTravel] = useState(0)
   const cellOffsets = useRef([])
@@ -369,11 +369,11 @@ export default function ProjectOverlay() {
       case 'statement':
         return (
           <section className="ov-panel ov-panel--statement" key={`s-${i}`}>
-            {/* X1: monument title — cropped letterforms at viewport scale;
-                the cell is content-sized so the word defines the travel.
-                Transform rides motion values (jumped to the fragment's
-                delta pre-paint, then animated to identity — see the FLIP
-                block above for why props can't do this here). */}
+            {/* X1/P7: monument title — poster-scale letterforms FITTED to
+                the frame (--mon-chars fit math in App.css). Transform
+                rides motion values (jumped to the fragment's delta
+                pre-paint, then animated to identity — see the FLIP block
+                above for why props can't do this here). */}
             <motion.h2
               ref={monumentRef}
               className={`ov-monument misregister${Array.isArray(proof.monument) ? ' ov-monument--multi' : ''}`}
@@ -415,8 +415,8 @@ export default function ProjectOverlay() {
             {MONUMENT_DECO === 'triangle' && (
               <span className="ov-tri" aria-hidden="true" />
             )}
-            {/* The whisper meta — monument vs. small mono IS the
-                composition; reveals once the expansion lands (W1b) */}
+            {/* The whisper meta — now in flow BELOW the monument (P7);
+                reveals once the expansion lands (W1b) */}
             <motion.div
               className="ov-meta"
               initial={{ opacity: 0 }}
@@ -428,12 +428,27 @@ export default function ProjectOverlay() {
                 {isAbout ? proof.tag : `Proof ${proof.index} · ${proof.tag}`}
               </p>
               <p className="ov-lede">{panel.statement}</p>
+              {/* P7: the live-site door, right where the story starts */}
+              {proof.liveUrl && (
+                <a
+                  className="ov-live"
+                  href={proof.liveUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  View live site <span aria-hidden="true">&#8599;</span>
+                </a>
+              )}
             </motion.div>
           </section>
         )
       case 'media':
         return (
-          <section className="ov-panel ov-panel--media" key={`m-${i}`}>
+          <section
+            className="ov-panel ov-panel--media"
+            data-count={panel.items.length}
+            key={`m-${i}`}
+          >
             {panel.items.map((item, j) => (
               <ProofMedia
                 key={item.src ?? item.poster ?? j}
@@ -467,6 +482,11 @@ export default function ProjectOverlay() {
             <a className="ov-next" href="mailto:hello@preston-gray.com">
               hello@preston-gray.com <span aria-hidden="true">&rarr;</span>
             </a>
+            {/* P7: the small-business page is the fuller pitch */}
+            <a className="ov-about-link" href="/small-business/">
+              What I can do for your business{' '}
+              <span aria-hidden="true">&rarr;</span>
+            </a>
             {/* X2: same quiet return as the end panel */}
             <button type="button" className="ov-return misregister" onClick={close}>
               <span aria-hidden="true">&larr;&nbsp;</span>Return to the catalog
@@ -475,9 +495,20 @@ export default function ProjectOverlay() {
         )
       case 'end':
         // X2: quiet return panel — the ring is retired. Same close-morph
-        // as the X, same focus/scroll restoration.
+        // as the X, same focus/scroll restoration. P7: the live site
+        // gets the display-size door here too.
         return (
           <section className="ov-panel ov-panel--end" key={`e-${i}`}>
+            {proof.liveUrl && (
+              <a
+                className="ov-next ov-next--live"
+                href={proof.liveUrl}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Visit the live site <span aria-hidden="true">&#8599;</span>
+              </a>
+            )}
             <button type="button" className="ov-return misregister" onClick={close}>
               <span aria-hidden="true">&larr;&nbsp;</span>Return to the catalog
             </button>
@@ -493,6 +524,12 @@ export default function ProjectOverlay() {
     }
   }
 
+  // P7: the fit math sizes the monument off its longest line
+  const monLines = Array.isArray(proof.monument)
+    ? proof.monument
+    : [proof.monument ?? proof.name]
+  const monChars = Math.max(...monLines.map((l) => l.length))
+
   return (
     <div
       className="overlay"
@@ -502,10 +539,11 @@ export default function ProjectOverlay() {
       style={{
         '--ov': proof.color,
         '--ov-fg': proof.colorFg,
-        // P3.4: misregistration ghost = the project's display tone on its
-        // flood (measured 1.54–2.73, decorative). About has no display
-        // tone → no ghost, by design.
-        '--ghost-color': proof.colorDisplay ?? 'transparent',
+        '--mon-chars': monChars,
+        // P3.4/P7: misregistration ghost = the project's PALETTE ghost
+        // tone (brand-tuned), falling back to the poster display tone.
+        // About has neither → no ghost, by design.
+        '--ghost-color': proof.palette?.ghost ?? proof.colorDisplay ?? 'transparent',
       }}
     >
       {morph ? (
@@ -609,9 +647,7 @@ export default function ProjectOverlay() {
                     >
                       {proof.panels.map((panel, i) => (
                         <div
-                          className={`overlay__cell${
-                            panel.type === 'statement' ? ' overlay__cell--statement' : ''
-                          }`}
+                          className="overlay__cell"
                           key={`${panel.type}-${i}`}
                           // P6 review fix: surfaced cells paint their own
                           // BASE background — the wipe layer only shapes

@@ -509,19 +509,19 @@
 /* Z1a — THE MONUMENTAL TYPE CONTRACT. One spec for the baked letterform
    layer AND the overlay monument, so a shape fragment and its monument
    title read as the same word at two zooms (the entire T3 continuity
-   contract). Fraunces is a variable font (opsz 9..144): optical sizing is
-   pinned OFF and the display cut (144) is forced, so neither layer can
-   render a softer optical cut than the other. Uppercase, one weight, one
-   tracking, one line-height — change them HERE only, never per-layer. */
+   contract). P7 all-sans: Archivo variable, run HEAVY (wght 800) and
+   slightly condensed (wdth via font-stretch) — the poster register now
+   comes from weight + scale, not a serif's contrast. Uppercase, one
+   weight, one width, one tracking, one line-height — change them HERE
+   only, never per-layer. */
 .comp-type,
 .ov-monument {
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: 800;
+  font-stretch: 88%;
   text-transform: uppercase;
-  letter-spacing: -0.02em;
-  line-height: 0.8;
-  font-optical-sizing: none;
-  font-variation-settings: 'opsz' 144;
+  letter-spacing: -0.015em;
+  line-height: 0.84;
   white-space: nowrap;
 }
 
@@ -1045,8 +1045,11 @@
   will-change: transform;
 }
 
-/* X1: media/points/end cells are one viewport wide; the statement cell is
-   content-sized — the monument word defines the travel distance */
+/* P7: every cell — including the statement — is exactly one viewport
+   wide. The old content-sized statement cell (monument cropped at the
+   frame, meta absolutely positioned over the letterforms) is retired:
+   it cropped the title awkwardly on scroll (the Bristol report) and
+   clipped the meta text off-screen in narrow windows. */
 .overlay__cell {
   position: relative; /* U2: hosts the wipe layer */
   flex: 0 0 100vw;
@@ -1068,11 +1071,6 @@
 .overlay__cell .ov-panel {
   position: relative;
   z-index: 1;
-}
-
-.overlay__cell--statement {
-  flex: 0 0 auto;
-  min-width: 150vw; /* even short words (OURCO) earn some travel */
 }
 
 .overlay__cell .ov-panel {
@@ -1107,14 +1105,15 @@
      and tracking only. */
 }
 
-/* X1 — monument statement panel: the title at viewport scale, cropped by
-   the frame like the shape's baked fragment; the word's tail hands off
-   into the first media panel. Meta whispers lower-left of the FIRST
-   viewport (absolute against the wide cell). */
+/* P7 — monument statement panel, refit: the title still runs at poster
+   scale but now FITS the frame — font-size solves for the longest
+   monument line via --mon-chars (set per proof by the overlay), capped
+   by viewport height. Meta flows BELOW the monument in normal flow, so
+   the intro text never overlaps the letterforms and never clips. */
 .ov-panel--statement {
   position: relative;
   justify-content: center;
-  padding-right: clamp(60px, 8vw, 140px);
+  gap: clamp(18px, 4vh, 36px);
 }
 
 /* U1/P3.4 — the OFF-REGISTER print theme. Registered ghost offsets so the
@@ -1133,14 +1132,12 @@
 }
 
 /* Applies ONLY to monuments, statement eyebrows, and the return line —
-   never reading text, never corner wayfinding. WONK 1 selects Fraunces'
-   wonky alternates (axis added to the font load); the ghost is an
+   never reading text, never corner wayfinding. The ghost is an
    accent-colored misregistration BEHIND the fill (text-shadow), purely
-   decorative — measured ratios 1.54–2.73 on the floods, none vanishing.
-   Ghost color arrives via --ghost-color (set per overlay from the
-   project's display tone); no color set = no ghost. */
+   decorative. Ghost color arrives via --ghost-color (set per overlay
+   from the project's palette ghost tone); no color set = no ghost.
+   (P7: the Fraunces WONK/opsz settings retired with the serif.) */
 .misregister {
-  font-variation-settings: 'opsz' 144, 'WONK' 1;
   text-shadow: var(--ghost-dx, 0px) var(--ghost-dy, 0px) 0 var(--ghost-color, transparent);
   transition:
     --ghost-dx 0.3s var(--ease),
@@ -1162,16 +1159,23 @@
   }
 }
 
-/* Type spec lives in the Z1a shared contract above — only size/color here */
+/* Type spec lives in the Z1a shared contract above — only size/color
+   here. FIT MATH: --mon-chars = the longest monument line's character
+   count (set inline by ProjectOverlay). Archivo 800 @ 88% stretch runs
+   0.50–0.68em average advance in caps (measured across all eight
+   monument words) — 124vw/chars keeps the widest word (OURCO, 0.68em)
+   inside the ~88vw content budget, capped by height so short words
+   stay monumental without towering. */
 .ov-monument {
-  font-size: min(76vh, 58vw); /* 70–90% viewport-height letterforms */
+  font-size: min(36vh, calc(124vw / var(--mon-chars, 8)));
   color: var(--ov-fg);
 }
 
-/* P1.1 — two-line monument (SUMMIT / PHARMACY): halved size so the pair
-   still lands in the 70–90vh band; second line staggers right */
+/* P1.1 — two-line monument (SUMMIT / PHARMACY): the fit math sizes off
+   the LONGEST line (via --mon-chars), discounted so the staggered
+   second line (its 0.4em indent counts against the width budget) fits */
 .ov-monument--multi {
-  font-size: min(38vh, 30vw);
+  font-size: min(26vh, calc(112vw / var(--mon-chars, 8)));
 }
 
 .ov-monument__line {
@@ -1179,7 +1183,7 @@
 }
 
 .ov-monument__line--stagger {
-  margin-left: 0.6em;
+  margin-left: 0.4em;
 }
 
 /* P1.4 — triangle deco (the triangle vocabulary as accent, not a state).
@@ -1195,14 +1199,12 @@
   /* P6 review fix: full opacity — the 0.85 blend was an off-token fill */
 }
 
+/* P7: meta rides in flow under the monument — no more absolute overlap */
 .ov-meta {
-  position: absolute;
-  left: clamp(24px, 6vw, 110px);
-  bottom: clamp(44px, 9vh, 96px);
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  max-width: 44ch;
+  gap: 12px;
+  max-width: min(58ch, 100%);
 }
 
 .ov-lede {
@@ -1211,19 +1213,50 @@
   color: var(--ov-fg);
 }
 
-/* Vertical stack: no travel — the monument reads as the cropped fragment
-   (leading letters, frame-cropped right), meta flows beneath */
+/* P7 — the live-site link: overlay register (mono, ov-fg), real link */
+.ov-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  align-self: flex-start;
+  margin-top: 6px;
+  padding: 9px 14px;
+  border: 1.5px solid var(--ov-fg);
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ov-fg);
+  transition: background-color 0.2s var(--ease);
+}
+
+.ov-live:hover {
+  background: color-mix(in srgb, var(--ov-fg) 16%, transparent);
+}
+
+.ov-live:focus-visible {
+  outline: 2px solid var(--ov-fg);
+  outline-offset: 3px;
+}
+
+/* Vertical stack: same fit math at phone scale — the full word reads,
+   meta flows beneath (P7: no more frame-cropped fragment) */
 .overlay__stack .ov-panel--statement {
   overflow: hidden;
 }
 
 .overlay__stack .ov-monument {
-  font-size: min(30vh, 42vw);
+  font-size: min(22vh, calc(124vw / var(--mon-chars, 8)));
+}
+
+.overlay__stack .ov-monument--multi {
+  font-size: min(22vh, calc(112vw / var(--mon-chars, 8)));
 }
 
 .overlay__stack .ov-meta {
-  position: static;
-  margin-top: 6vh;
+  margin-top: 4vh;
 }
 
 .ov-statement {
@@ -1294,12 +1327,28 @@
   overflow: hidden;
 }
 
-.pm--browser {
-  max-width: min(560px, 42vw);
+/* P7 MEDIA SCALE PASS — screenshots must be READABLE, not decorative.
+   Frames grow with the room they have: sizing is count-aware via
+   data-count on .ov-panel--media (set from panel.items.length), so a
+   lone Pinnacle phone clip runs half again larger while a 3-up Summit
+   row still fits one line.
+
+   BUDGET LAW (P7 review): a horizontal cell is a HARD 100vh/100vw box
+   with no vertical scroll, so every rule below must keep
+   row-of-frames + captions + the .ov-body placard inside it:
+   · widths: N×frame + (N−1)×3vw gap + 12vw panel padding ≤ 100vw
+   · heights: media ≤ min(64vh, 100vh − 360px) — the 360px reserves
+     vertical padding (~20vh), chrome/caption, and a placard row
+   · phones: height = width × 19.5/9, so width also carries a
+     calc((100vh − Kpx) × 0.46) term to honor the same budget */
+.pm {
+  flex: 0 1 auto;
 }
 
+.pm--browser,
 .pm--plain {
-  max-width: min(520px, 40vw);
+  width: 100%;
+  max-width: min(720px, 40vw);
 }
 
 .pm--plain .pm__frame {
@@ -1318,7 +1367,8 @@
 }
 
 .pm--phone {
-  max-width: min(220px, 24vw);
+  width: 100%;
+  max-width: min(300px, 24vw, calc((100vh - 430px) * 0.46));
 }
 
 .pm--phone img,
@@ -1326,13 +1376,88 @@
   border-radius: 14px;
 }
 
+/* Phone clips normalize to a phone-shaped window: letterboxed captures
+   (pinnacle-homepage-mobile is 1920×1080 with the phone strip centered)
+   crop to the strip; true-portrait clips (~9:19.5 already) lose ≤2%.
+   Applies to videos and their posters — never to plain screenshots. */
+.pm--phone video,
+.pm--phone .pm__pending-wrap img {
+  aspect-ratio: 9 / 19.5;
+  width: 100%;
+  object-fit: cover;
+}
+
+/* Solo item: give it the stage (Pinnacle's homepage clip, Summit's
+   full-scroll) */
+.overlay__cell .ov-panel--media[data-count='1'] .pm--browser,
+.overlay__cell .ov-panel--media[data-count='1'] .pm--plain {
+  max-width: min(1080px, 74vw);
+}
+
+/* …but when a solo frame shares the panel with a placard, the placard
+   moves BESIDE it (see .ov-body rule below) — the frame yields enough
+   width for the text column */
+.overlay__cell .ov-panel--media[data-count='1']:has(.ov-body) .pm--browser,
+.overlay__cell .ov-panel--media[data-count='1']:has(.ov-body) .pm--plain {
+  max-width: min(920px, 56vw);
+}
+
+.overlay__cell .ov-panel--media[data-count='1'] .pm--phone {
+  max-width: min(390px, 30vw, calc((100vh - 400px) * 0.46));
+}
+
+/* Three-up rows shrink just enough to hold one line */
+.overlay__cell .ov-panel--media[data-count='3'] .pm--browser,
+.overlay__cell .ov-panel--media[data-count='3'] .pm--plain {
+  max-width: min(440px, 26vw);
+}
+
+.overlay__cell .ov-panel--media[data-count='3'] .pm--phone {
+  max-width: min(250px, 19vw, calc((100vh - 440px) * 0.46));
+}
+
+/* Solo panels read like a spread: placard beside the frame, not under
+   it — the phone/browser keeps its full height budget */
+.overlay__cell .ov-panel--media[data-count='1'] .ov-body {
+  flex-basis: auto;
+  align-self: center;
+  max-width: 36ch;
+}
+
+/* Tall captures crop from the top instead of overflowing the panel;
+   the calc term keeps laptop-height windows (900px and under) safe */
+.overlay__cell .pm--browser .pm__frame img,
+.overlay__cell .pm--browser .pm__frame video,
+.overlay__cell .pm--plain .pm__frame img,
+.overlay__cell .pm--plain .pm__frame video {
+  max-height: min(64vh, calc(100vh - 360px));
+  object-fit: cover;
+  object-position: top;
+}
+
+/* Stack panels can grow vertically — a simple generous cap is enough */
+.overlay__stack .pm--browser .pm__frame img,
+.overlay__stack .pm--browser .pm__frame video,
+.overlay__stack .pm--plain .pm__frame img,
+.overlay__stack .pm--plain .pm__frame video {
+  max-height: 76vh;
+  object-fit: cover;
+  object-position: top;
+}
+
+/* Vertical stack (touch / reduced motion / narrow windows): frames run
+   nearly full width — this is the whole mobile readability fix */
+.overlay__stack .ov-panel--media {
+  padding-inline: clamp(16px, 4vw, 48px);
+}
+
 .overlay__stack .pm--browser,
 .overlay__stack .pm--plain {
-  max-width: min(560px, 88vw);
+  max-width: min(720px, 94vw);
 }
 
 .overlay__stack .pm--phone {
-  max-width: min(220px, 44vw);
+  max-width: min(340px, 76vw);
 }
 
 .pm__chrome {
@@ -1442,7 +1567,8 @@
 .ov-next {
   font-family: var(--font-display);
   font-size: clamp(30px, 4.6vw, 60px);
-  font-weight: 560;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   text-align: left;
   background: none;
   border: none;
@@ -1450,6 +1576,21 @@
   padding: 0 0 6px;
   color: var(--ov-fg);
   cursor: pointer;
+}
+
+/* End-panel live-site link — display-size sibling of .ov-live */
+.ov-next--live {
+  display: inline-block;
+  margin-bottom: 18px;
+}
+
+.ov-next--live:hover {
+  opacity: 0.85;
+}
+
+.ov-next--live:focus-visible {
+  outline: 2px solid var(--ov-fg);
+  outline-offset: 4px;
 }
 
 .ov-next:hover {

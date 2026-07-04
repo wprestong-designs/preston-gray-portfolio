@@ -60,6 +60,11 @@ export default function Poster() {
         >
           Index
         </button>
+        {/* P7: the owner-facing services page gets a front-door util —
+            same label as the IndexLayer row and /work/ nav on purpose */}
+        <a className="poster__util" href="/small-business/">
+          For business owners
+        </a>
         <a className="poster__util" href="mailto:hello@preston-gray.com">
           Contact
         </a>

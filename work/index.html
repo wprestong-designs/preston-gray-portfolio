@@ -25,8 +25,9 @@
     <meta property="og:image:alt" content="Six-shape print-registration composition — the Preston Gray proof catalog" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- P7 all-sans system: Archivo (display), Inter (body), Plex Mono -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,WONK@0,9..144,400..700,0..1;1,9..144,400..700,0..1&family=IBM+Plex+Mono:wght@500;600;700&family=Inter:wght@400..700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@500;600;700&family=Inter:wght@400..700&display=swap"
       rel="stylesheet"
     />
     <script type="module" src="/src/work.js"></script>
@@ -40,7 +41,8 @@
       <a class="wk-brand" href="/work/">
         Preston<span class="wk-brand__dot" aria-hidden="true"></span>Gray
       </a>
-      <nav aria-label="Site">
+      <nav aria-label="Site" class="wk-nav">
+        <a class="wk-nav-link" href="/small-business/">For business owners</a>
         <a class="wk-nav-link" href="/">The full portfolio &rarr;</a>
       </nav>
     </header>
@@ -92,55 +94,76 @@
 
       <section class="wk-section" aria-labelledby="wk-proof-h">
         <h2 id="wk-proof-h">A few things I&rsquo;ve built</h2>
+        <!-- P7: cards carry each project's REAL brand accent (tokens in
+             index.css) and now link OUT to the live sites. Live hrefs
+             mirror LIVE_URLS in src/data/projects.js — update both when
+             a real URL lands. `.example` = placeholder, TODO(Preston). -->
         <ul class="wk-proofs">
           <li>
-            <a class="wk-proof" href="/#proof-summit">
+            <div class="wk-proof wk-proof--summit">
               <span class="wk-proof__index">01</span>
               <h3>Summit Pharmacy</h3>
               <p>A full website and marketing system for a Colorado pharmacy &mdash; brand, site, print pieces, and provider tools.</p>
-              <span class="wk-proof__cta">See the proof &rarr;</span>
-            </a>
-          </li>
-          <li>
-            <a class="wk-proof" href="/#proof-ourco">
-              <span class="wk-proof__index">02</span>
-              <h3>Ourco &mdash; Houston Welding &amp; Industrial</h3>
-              <p>Industrial brand and build, Houston (in progress).</p>
-              <span class="wk-proof__cta">See the proof &rarr;</span>
-            </a>
-          </li>
-          <li>
-            <a class="wk-proof" href="/#proof-bristol">
-              <span class="wk-proof__index">03</span>
-              <h3>Bristol Pharmacy</h3>
-              <p>The pharmacy framework&rsquo;s first expansion &mdash; a full site for an Oklahoma City pharmacy with its own local personality.</p>
-              <span class="wk-proof__cta">See the proof &rarr;</span>
-            </a>
-          </li>
-          <li>
-            <a class="wk-proof" href="/#proof-pinnacle">
-              <span class="wk-proof__index">04</span>
-              <h3>Pinnacle Rx</h3>
-              <p>The same proven framework tuned to a Little Rock brand &mdash; refill flows, provider tools, local search.</p>
-              <span class="wk-proof__cta">See the proof &rarr;</span>
-            </a>
-          </li>
-          <li>
-            <!-- Standing constraint: Prosource is in progress — never a live link -->
-            <div class="wk-proof wk-proof--pending">
-              <span class="wk-proof__index">05</span>
-              <h3>Prosource Pharmacy</h3>
-              <p>Las Vegas &mdash; the third brand on the framework, on the press now.</p>
-              <span class="wk-proof__cta">In progress &mdash; coming soon</span>
+              <div class="wk-proof__links">
+                <a class="wk-proof__cta" href="/#proof-summit">See the proof &rarr;</a>
+                <a class="wk-proof__cta wk-proof__cta--live" href="https://www.summitpharmacy.example" target="_blank" rel="noreferrer">View live site &#8599;</a>
+              </div>
             </div>
           </li>
           <li>
-            <a class="wk-proof" href="/#proof-fieldintel">
+            <div class="wk-proof wk-proof--ourco">
+              <span class="wk-proof__index">02</span>
+              <h3>Ourco &mdash; Houston Welding &amp; Industrial</h3>
+              <p>Industrial brand and build for Houston&rsquo;s welders and fabricators &mdash; identity first, site on the press now.</p>
+              <div class="wk-proof__links">
+                <a class="wk-proof__cta" href="/#proof-ourco">See the proof &rarr;</a>
+              </div>
+            </div>
+          </li>
+          <li>
+            <div class="wk-proof wk-proof--bristol">
+              <span class="wk-proof__index">03</span>
+              <h3>Bristol Pharmacy</h3>
+              <p>The pharmacy framework&rsquo;s first expansion &mdash; a full site for an Oklahoma City pharmacy with its own local personality.</p>
+              <div class="wk-proof__links">
+                <a class="wk-proof__cta" href="/#proof-bristol">See the proof &rarr;</a>
+                <a class="wk-proof__cta wk-proof__cta--live" href="https://www.bristolpharmacy.example" target="_blank" rel="noreferrer">View live site &#8599;</a>
+              </div>
+            </div>
+          </li>
+          <li>
+            <div class="wk-proof wk-proof--pinnacle">
+              <span class="wk-proof__index">04</span>
+              <h3>Pinnacle Rx</h3>
+              <p>A copy and messaging overhaul for a Little Rock pharmacy &mdash; the story rebuilt around the team patients actually know.</p>
+              <div class="wk-proof__links">
+                <a class="wk-proof__cta" href="/#proof-pinnacle">See the proof &rarr;</a>
+                <a class="wk-proof__cta wk-proof__cta--live" href="https://www.pinnaclerx.example" target="_blank" rel="noreferrer">View live site &#8599;</a>
+              </div>
+            </div>
+          </li>
+          <li>
+            <!-- Standing constraint: Prosource is in progress — never a live link -->
+            <div class="wk-proof wk-proof--prosource wk-proof--pending">
+              <span class="wk-proof__index">05</span>
+              <h3>Prosource Pharmacy</h3>
+              <p>Las Vegas &mdash; the third brand on the framework, on the press now.</p>
+              <div class="wk-proof__links">
+                <a class="wk-proof__cta" href="/#proof-prosource">See the proof &rarr;</a>
+                <span class="wk-proof__cta wk-proof__cta--muted">Live site coming soon</span>
+              </div>
+            </div>
+          </li>
+          <li>
+            <div class="wk-proof wk-proof--fieldintel">
               <span class="wk-proof__index">06</span>
               <h3>Summit Field Intel</h3>
               <p>A custom CRM I designed, built, and use every day for pharmacy field sales &mdash; planning, notes, and follow-up.</p>
-              <span class="wk-proof__cta">See the proof &rarr;</span>
-            </a>
+              <div class="wk-proof__links">
+                <a class="wk-proof__cta" href="/#proof-fieldintel">See the proof &rarr;</a>
+                <span class="wk-proof__cta wk-proof__cta--muted">Internal tool</span>
+              </div>
+            </div>
           </li>
         </ul>
       </section>
@@ -150,6 +173,9 @@
         <p>
           If your business needs pieces you can actually use &mdash; a site, a
           handout, a way to get found &mdash; I&rsquo;d like to hear about it.
+          If you want the plain-English version of what I do and who I help
+          first, start with
+          <a class="wk-inline-link" href="/small-business/">the page for business owners</a>.
         </p>
         <a class="btn btn--primary btn--lg" href="mailto:hello@preston-gray.com">
           Tell Me What You Need

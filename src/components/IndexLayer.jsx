@@ -97,6 +97,12 @@ export default function IndexLayer({ open, onClose }) {
             {aboutOverlay.name}
             <span className="index-extra__tag">{aboutOverlay.tag}</span>
           </a>
+          {/* P7: the owner-facing services page — a real page link */}
+          <a className="index-extra__row" href="/small-business/">
+            <span className="index-extra__index">S</span>
+            For business owners
+            <span className="index-extra__tag">What I can do for yours</span>
+          </a>
           <a className="index-extra__row" href="mailto:hello@preston-gray.com">
             <span className="index-extra__index">C</span>
             Contact
