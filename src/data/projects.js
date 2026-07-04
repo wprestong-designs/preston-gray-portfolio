@@ -494,8 +494,10 @@ export const projects = [
     // "Little Rock" is Preston-era copy; blended with the draft file's tag.
     tag: 'Team-first · Little Rock',
     /* P7: pinnacle moves to its REAL brand palette — Razorback Red
-       #9D2235 with Apple Blossom white and Neutral Black #222222,
-       restrained. The poster shape keeps the sky display family (the
+       with Apple Blossom white and Neutral Black, restrained. Under the
+       90s Geometric system its role is Support (Pool Blue); the actual
+       brand hexes are documented as content in the SpecPanel swatches.
+       The poster shape keeps the sky display family (the
        studio colorway art); arming ink-in and the overlay land on
        Razorback. Prior tier preserved for reversal: flood-sky /
        sky-deep. */

@@ -296,7 +296,7 @@ function ComposerStage({ stateName, cast, orientation, typeMode, scrim, hatch, c
               )}
               <span
                 className="composer__id"
-                style={{ color: shape.outline ? 'var(--ink)' : '#fff' }}
+                style={{ color: shape.outline ? 'var(--ink)' : 'var(--paper)' }}
               >
                 {shape.id}
               </span>

@@ -1,0 +1,194 @@
+/* ==================================================================
+   tokens.css — 90s Geometric Design System
+   THE ONLY FILE IN src/ THAT MAY CONTAIN HEX VALUES.
+
+   Architecture: primitives (64 raw hexes, namespaced by palette) →
+   role tokens (semantic slots) → themes (each palette = one role map,
+   swapped via [data-theme]). Components consume ROLE tokens only.
+   Full law: 90s-geometric-color-system-strategy.md (Appendix A + B).
+   ================================================================== */
+
+:root {
+  /* ---- constants — never themed (Rule 4 ink law, Rule 10) ---- */
+  --ink: #171717;            /* all reading text on light grounds */
+  --paper: #FFFFFF;          /* default ground */
+  --anchor-fg: #FFFFFF;      /* text on any dark anchor field */
+  --gray-utility: #8D99AE;   /* Floppy Disk Gray — decorative hairlines (2.9:1 on white) */
+  --gray-functional: #6C7A93;/* AA-grade border step of the utility gray */
+  --signal-text: #E71D36;    /* Cherry Slush — system text-grade red (4.5:1 on white) */
+
+  /* ==== 64 PRIMITIVES, namespaced by palette ==== */
+
+  /* Memphis Playroom — Tier 1 Core */
+  --memphis-bubblegum: #F85CA2;
+  --memphis-pool:      #37C6F4;
+  --memphis-banana:    #FFE156;
+  --memphis-spearmint: #63D471;
+  --memphis-tangerine: #FF9F1C;
+  --memphis-grape:     #7B2CBF;
+  --memphis-tomato:    #F94144;
+  --memphis-ink:       #171717;
+
+  /* Saturday Morning Cartoon — Tier 2 product/UI */
+  --cartoon-blue:      #118AB2;
+  --cartoon-mint:      #06D6A0;   /* renamed from "Slime Green" (2.9) */
+  --cartoon-pop-yellow:#FFD166;
+  --cartoon-cotton:    #FF70A6;
+  --cartoon-orange:    #F77F00;
+  --cartoon-purple:    #7209B7;   /* Bubble Purple */
+  --cartoon-hero-red:  #EF233C;
+  --cartoon-midnight:  #073B4C;   /* Midnight Outline — the second ink */
+
+  /* 90s Windbreaker — Tier 2 editorial */
+  --wind-aqua:         #00A6A6;
+  --wind-sport-blue:   #2E86DE;
+  --wind-sunburst:     #F9DC5C;
+  --wind-lime:         #C7F464;
+  --wind-track-orange: #F46036;
+  --wind-magenta:      #D90368;
+  --wind-royal:        #541388;   /* Royal Purple */
+  --wind-charcoal:     #1E1E24;
+
+  /* Retro Tech Lab — Tier 2 dark/technical */
+  --tech-terminal:     #00B2FF;
+  --tech-crt:          #39FF14;
+  --tech-cyber:        #9D4EDD;
+  --tech-floppy:       #8D99AE;
+  --tech-alert:        #FF006E;
+  --tech-pixel-orange: #FF9F1C;   /* intentional alias of Memphis Tangerine (2.9.3) */
+  --tech-screen-yellow:#FFEA00;
+  --tech-navy:         #14213D;   /* Monitor Navy — site-wide dark ground */
+
+  /* Mall Food Court — Tier 3 campaign */
+  --food-cherry:       #E71D36;
+  --food-blueberry-pop:#2EC4FF;   /* Blue Raspberry */
+  --food-lime:         #A7F432;
+  --food-nacho:        #FFB703;
+  --food-punch:        #8338EC;
+  --food-teal:         #00B4A6;
+  --food-hotdog:       #FB5607;
+  --food-cola:         #4B2E2B;    /* Cola Brown — Food Court's dark only */
+
+  /* Lisa Frank Lightning — Tier 3 campaign (sole gradient license) */
+  --lisa-rainbow:      #FF1493;
+  --lisa-violet:       #A100F2;    /* Magic Violet */
+  --lisa-sky:          #00BBF9;
+  --lisa-mermaid:      #00F5D4;
+  --lisa-star:         #FEE440;
+  --lisa-sunset:       #F15BB5;    /* renamed Sunset Pink (2.9.1) */
+  --lisa-elime:        #9BFF00;
+  --lisa-cosmic:       #1B1B5E;    /* Cosmic Navy */
+
+  /* Neon Arcade — Tier 4 gated, dark-only */
+  --arcade-pink:       #FF2FA7;    /* Electric Pink */
+  --arcade-laser:      #8A2BEF;    /* Laser Purple */
+  --arcade-turbo:      #00AEEF;    /* Turbo Blue */
+  --arcade-acid:       #B6FF00;    /* Acid Green */
+  --arcade-highlighter:#FFF200;
+  --arcade-safety:     #FF6B00;    /* Safety Orange */
+  --arcade-coral:      #FF4F5E;    /* Hot Coral */
+  --arcade-indigo:     #24135F;    /* Deep Indigo ground */
+
+  /* Nickelodeon Splash — Tier 4 gated */
+  --splash-slime:      #76FF03;
+  --splash-orange:     #FF7A00;    /* Orange Splat */
+  --splash-goo:        #9B00FF;    /* Purple Goo */
+  --splash-aqua:       #00E5FF;
+  --splash-bubble:     #FF4ECD;    /* Bubble Pink */
+  --splash-lemon:      #FFF500;    /* Lemon Pop */
+  --splash-blueberry:  #3A0CA3;    /* Blueberry — deep surface, not a ground */
+  --splash-black:      #111111;    /* Deep Black ground */
+
+  /* ==== ROLE TOKENS — Memphis Playroom (default / core) ==== */
+  --anchor:   var(--memphis-ink);
+  --lead:     var(--memphis-bubblegum);
+  --support:  var(--memphis-pool);
+  --flash:    var(--memphis-banana);
+  --pop-1:    var(--memphis-spearmint);
+  --pop-2:    var(--memphis-tangerine);
+  --signal:   var(--memphis-tomato);
+  --wildcard: var(--memphis-grape);
+
+  /* --edge: keyline/stroke color. Anchor on light registers; flips to
+     white (--ink) in dark registers so outlines read on the dark ground. */
+  --edge: var(--anchor);
+
+  /* --ground-tint: 8% Lead over paper. Auto-derives per theme (refs the
+     cascaded --lead/--paper), so it recomputes for every palette. */
+  --ground-tint: color-mix(in srgb, var(--lead) 8%, var(--paper));
+}
+
+/* Explicit Memphis block so data-theme="memphis" is a real target too */
+[data-theme='memphis'] {
+  --anchor: var(--memphis-ink);   --lead: var(--memphis-bubblegum);
+  --support: var(--memphis-pool); --flash: var(--memphis-banana);
+  --pop-1: var(--memphis-spearmint); --pop-2: var(--memphis-tangerine);
+  --signal: var(--memphis-tomato); --wildcard: var(--memphis-grape);
+  --edge: var(--anchor);
+}
+
+/* Saturday Morning Cartoon — light, Midnight anchor */
+[data-theme='cartoon'] {
+  --anchor: var(--cartoon-midnight); --lead: var(--cartoon-blue);
+  --support: var(--cartoon-mint);    --flash: var(--cartoon-pop-yellow);
+  --pop-1: var(--cartoon-cotton);    --pop-2: var(--cartoon-orange);
+  --signal: var(--cartoon-hero-red); --wildcard: var(--cartoon-purple);
+  --edge: var(--anchor);
+}
+
+/* 90s Windbreaker — light, Charcoal anchor */
+[data-theme='windbreaker'] {
+  --anchor: var(--wind-charcoal);  --lead: var(--wind-aqua);
+  --support: var(--wind-sport-blue); --flash: var(--wind-sunburst);
+  --pop-1: var(--wind-lime);       --pop-2: var(--wind-track-orange);
+  --signal: var(--wind-magenta);   --wildcard: var(--wind-royal);
+  --edge: var(--anchor);
+}
+
+/* Retro Tech Lab — DARK register (paper/ink invert; defines dark mode) */
+[data-theme='techlab'] {
+  --paper: var(--tech-navy);   --ink: #FFFFFF;
+  --anchor: var(--tech-navy);  --edge: var(--ink);
+  --lead: var(--tech-terminal); --support: var(--tech-crt);
+  --flash: var(--tech-screen-yellow);
+  --pop-1: var(--tech-cyber);  --pop-2: var(--tech-pixel-orange);
+  --signal: var(--tech-alert); --wildcard: var(--tech-cyber);
+}
+
+/* Mall Food Court — light, Cola Brown anchor */
+[data-theme='foodcourt'] {
+  --anchor: var(--food-cola);   --lead: var(--food-nacho);
+  --support: var(--food-blueberry-pop); --flash: var(--food-lime);
+  --pop-1: var(--food-teal);    --pop-2: var(--food-hotdog);
+  --signal: var(--food-cherry); --wildcard: var(--food-punch);
+  --edge: var(--anchor);
+}
+
+/* Lisa Frank Lightning — light, Cosmic Navy anchor */
+[data-theme='lisafrank'] {
+  --anchor: var(--lisa-cosmic);  --lead: var(--lisa-rainbow);
+  --support: var(--lisa-sky);    --flash: var(--lisa-star);
+  --pop-1: var(--lisa-mermaid);  --pop-2: var(--lisa-elime);
+  --signal: var(--lisa-sunset);  --wildcard: var(--lisa-violet);
+  --edge: var(--anchor);
+}
+
+/* Neon Arcade — DARK register (Deep Indigo ground) */
+[data-theme='arcade'] {
+  --paper: var(--arcade-indigo); --ink: #FFFFFF;
+  --anchor: var(--arcade-indigo); --edge: var(--ink);
+  --lead: var(--arcade-pink);    --support: var(--arcade-turbo);
+  --flash: var(--arcade-highlighter);
+  --pop-1: var(--arcade-acid);   --pop-2: var(--arcade-safety);
+  --signal: var(--arcade-coral); --wildcard: var(--arcade-laser);
+}
+
+/* Nickelodeon Splash — DARK register (Deep Black ground) */
+[data-theme='splash'] {
+  --paper: var(--splash-black);  --ink: #FFFFFF;
+  --anchor: var(--splash-black); --edge: var(--ink);
+  --lead: var(--splash-slime);   --support: var(--splash-goo);
+  --flash: var(--splash-lemon);
+  --pop-1: var(--splash-aqua);   --pop-2: var(--splash-bubble);
+  --signal: var(--splash-orange); --wildcard: var(--splash-blueberry);
+}

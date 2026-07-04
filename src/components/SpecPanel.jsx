@@ -36,7 +36,16 @@ export default function SpecPanel({ id, open, spec }) {
               </div>
               {spec.brand.type && (
                 <div className="brand-tile brand-tile--type">
-                  <span className="brand-type-sample">{spec.brand.type.sample}</span>
+                  {/* Client-brand documentation: the type sample renders in the
+                      project's real primary brand hex (content, not a design
+                      token) — driven from the swatch data so App.css stays
+                      hex-free. */}
+                  <span
+                    className="brand-type-sample"
+                    style={{ color: spec.brand.swatches?.[0]?.hex }}
+                  >
+                    {spec.brand.type.sample}
+                  </span>
                   <span className="brand-tile__label">{spec.brand.type.label}</span>
                 </div>
               )}
