@@ -9,9 +9,11 @@
 
 :root {
   /* ---- structural (non-color) ---- */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
+  /* Corners: 0 or full pill only (§5.1). The old 6/10/14 timid radii are
+     retired to 0 sitewide; --radius-pill stays for genuine pill/circle. */
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
   --radius-pill: 999px;
   --ease: cubic-bezier(0.25, 0.6, 0.3, 1);
   --gutter: clamp(48px, 7vw, 104px);
@@ -270,15 +272,17 @@ svg {
   color: var(--ink);
 }
 
+/* Focus state (§3.3): a 2px gap (the ground shows through the offset) + a
+   3px ring in --edge — anchor on light, white on dark, visible on any
+   ground, in any theme. */
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 3px solid var(--edge);
   outline-offset: 2px;
-  border-radius: 4px;
+  border-radius: 0;
 }
 
 .btn:focus-visible {
-  outline-offset: 3px;
-  border-radius: var(--radius-md);
+  outline-offset: 2px;
 }
 
 section[id],
@@ -346,13 +350,43 @@ section[id],
   box-shadow: var(--press-xs);
 }
 
+/* Primary (§3.3): Anchor fill, white label, hard offset shadow in --lead —
+   the black-button-with-a-colored-shadow signature that survives every
+   theme swap. */
 .btn--primary {
-  background: var(--accent);
+  background: var(--anchor);
   color: var(--anchor-fg);
+  border-color: var(--anchor);
+  box-shadow: 4px 4px 0 var(--lead);
 }
 
 .btn--primary:hover {
-  background: var(--green-hover);
+  background: var(--anchor);
+  box-shadow: 6px 6px 0 var(--lead);
+}
+
+.btn--primary:active {
+  box-shadow: 2px 2px 0 var(--lead);
+}
+
+/* Secondary (§3.3): white fill, 2px anchor keyline, anchor label; hover
+   floods a 15% Lead tint. */
+.btn--secondary {
+  background: var(--paper);
+  color: var(--ink);
+  border-color: var(--edge);
+}
+
+.btn--secondary:hover {
+  background: color-mix(in srgb, var(--lead) 15%, var(--paper));
+}
+
+/* Loud CTA (§3.3): Flash fill, anchor label, anchor shadow. Marketing
+   surfaces only. */
+.btn--loud {
+  background: var(--flash);
+  color: var(--ink);
+  border-color: var(--edge);
 }
 
 .btn--ghost {
@@ -367,7 +401,7 @@ section[id],
 .btn--sm {
   padding: 9px 18px;
   font-size: 14.5px;
-  border-radius: 8px;
+  border-radius: 0;
   box-shadow: var(--press-xs);
 }
 
@@ -380,6 +414,14 @@ section[id],
   font-size: 17px;
 }
 
+.btn:disabled,
+.btn[aria-disabled='true'] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
 /* ------------------------------------------------------------------
    Stamp tags — square-cornered mono chips (no more pills)
 ------------------------------------------------------------------- */
@@ -388,7 +430,7 @@ section[id],
   align-items: center;
   padding: 3px 9px;
   border: 1px solid var(--line-ink-soft);
-  border-radius: 4px;
+  border-radius: 0;
   background: transparent;
   font-family: var(--font-mono);
   font-size: 10px;
@@ -397,6 +439,109 @@ section[id],
   text-transform: uppercase;
   color: var(--ink-soft);
   white-space: nowrap;
+}
+
+/* ------------------------------------------------------------------
+   Cards (§3.2) — white surface, 2px edge keyline, hard 4px anchor
+   shadow, exactly one accent element. Hover steps the shadow to 6px
+   (--card-hover=flood to flood the 8% tint instead).
+------------------------------------------------------------------- */
+.card {
+  position: relative;
+  background: var(--paper);
+  color: var(--ink);
+  border: 2px solid var(--edge);
+  border-radius: 0;
+  box-shadow: 4px 4px 0 var(--anchor);
+  padding: 24px;
+  transition:
+    box-shadow 0.15s var(--ease),
+    background-color 0.15s var(--ease),
+    transform 0.15s var(--ease);
+}
+
+.card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--anchor);
+}
+
+/* Alternate hover: flood the 8% Lead tint instead of stepping the shadow. */
+.card--flood:hover {
+  transform: none;
+  box-shadow: 4px 4px 0 var(--anchor);
+  background: var(--ground-tint);
+}
+
+/* The one accent element — an 8px Lead top bar (§3.2: exactly one). */
+.card__accent {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 8px;
+  background: var(--lead);
+}
+.card--accent {
+  padding-top: 32px;
+}
+
+/* Inverted card — dark palettes / heroes only: Anchor surface, white
+   text, one neon Pop element. */
+.card--inverted {
+  background: var(--anchor);
+  color: var(--anchor-fg);
+  border-color: var(--edge);
+}
+.card--inverted .card__accent {
+  background: var(--pop-1);
+}
+
+/* ------------------------------------------------------------------
+   Badges & stickers (§3.7)
+------------------------------------------------------------------- */
+/* Badge — Signal or Flash fill, Anchor text, white keyline. */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 11px;
+  background: var(--signal);
+  color: var(--anchor-fg);
+  border: 2px solid var(--paper);
+  outline: 2px solid var(--edge);
+  border-radius: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.badge--flash {
+  background: var(--flash);
+  color: var(--ink);
+}
+
+/* Sticker — any content + a 4px white keyline + a thin anchor outline
+   outside it, snapped to a sticker rotation (§3.7 / §5.1: −8°..+8°). */
+.sticker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  background: var(--lead);
+  color: var(--ink);
+  border: 4px solid var(--paper);
+  outline: 2px solid var(--edge);
+  border-radius: 0;
+  box-shadow: 4px 4px 0 var(--anchor);
+  font-family: var(--font-display);
+  font-weight: 800;
+  transform: rotate(-8deg);
+}
+.sticker--right {
+  transform: rotate(8deg);
+}
+.sticker--pill {
+  border-radius: var(--radius-pill);
 }
 
 /* ------------------------------------------------------------------

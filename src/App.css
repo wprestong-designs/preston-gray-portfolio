@@ -1,11 +1,13 @@
 /* ==================================================================
    Navbar — solid paper bar, ink rule
 ================================================================== */
+/* Nav is global chrome: anchor + white only, never themed (§3.11) — so
+   the bar is --paper, not the themeable --bg-off tint. */
 .navbar {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: var(--bg-off);
+  background: var(--paper);
   border-bottom: 2px solid var(--ink);
 }
 
@@ -31,7 +33,7 @@
   width: 8px;
   height: 8px;
   margin-inline: 4px;
-  border-radius: 2px;
+  border-radius: 0;
   background: var(--flood-current, var(--accent));
   transition: background-color 0.4s var(--ease);
   align-self: center;
@@ -115,7 +117,7 @@
   align-items: center;
   gap: 8px;
   padding: 8px 14px;
-  border-bottom: 1.5px solid var(--ink);
+  border-bottom: 2px solid var(--ink);
   background: var(--bg-off);
 }
 
@@ -144,7 +146,7 @@
 .shot-placeholder {
   padding: 5px 13px;
   border: 1px dashed var(--line-ink-soft);
-  border-radius: 4px;
+  border-radius: 0;
   font-family: var(--font-mono);
   font-size: 9.5px;
   font-weight: 600;
@@ -174,8 +176,8 @@
   align-items: center;
   gap: 8px;
   padding: 6px 12px;
-  border: 1.5px solid var(--ink);
-  border-radius: 4px;
+  border: 2px solid var(--ink);
+  border-radius: 0;
   background: var(--bg-off);
   font-family: var(--font-mono);
   font-size: 11px;
@@ -189,7 +191,7 @@
 .hero__eyebrow-dot {
   width: 7px;
   height: 7px;
-  border-radius: 2px;
+  border-radius: 0;
   background: var(--accent);
 }
 
@@ -278,7 +280,7 @@
   /* Corner legibility: paper chip so the wordmark reads over any shape
      fill beneath (token-derived via color-mix — no new hex) */
   padding: 6px 10px;
-  border-radius: 6px;
+  border-radius: 0;
   background: color-mix(in srgb, var(--bg) 88%, transparent);
 }
 
@@ -296,7 +298,7 @@
   width: 8px;
   height: 8px;
   margin-inline: 4px;
-  border-radius: 2px;
+  border-radius: 0;
   background: var(--flood-current, var(--accent));
   transition: background-color 0.4s var(--ease);
   align-self: center;
@@ -311,7 +313,7 @@
   gap: 22px;
   /* Corner legibility chip — matches the wordmark's */
   padding: 4px 12px;
-  border-radius: 6px;
+  border-radius: 0;
   background: color-mix(in srgb, var(--bg) 88%, transparent);
 }
 
@@ -327,7 +329,7 @@
   cursor: pointer;
   color: var(--flood-current, var(--ink-soft));
   transition: color 0.4s var(--ease);
-  border-bottom: 1.5px solid transparent;
+  border-bottom: 2px solid transparent;
 }
 
 .poster__util:hover:not(:disabled) {
@@ -378,7 +380,7 @@
   width: 40px;
   height: 40px;
   border: 2px solid var(--ink);
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--bg-card);
   box-shadow: var(--press-xs);
   color: var(--ink);
@@ -634,7 +636,7 @@
 
 .comp-label__rule {
   display: block;
-  height: 1.5px;
+  height: 2px;
   margin-top: 4px;
   background: var(--ink);
   transform-origin: left;
@@ -654,7 +656,7 @@
 }
 
 .composer__block {
-  border: 1.5px dashed var(--line-ink-soft);
+  border: 2px dashed var(--line-ink-soft);
   border-radius: var(--radius-md);
   padding: 16px;
 }
@@ -708,8 +710,8 @@
   letter-spacing: 0.1em;
   text-transform: uppercase;
   padding: 8px 14px;
-  border: 1.5px solid var(--ink);
-  border-radius: 6px;
+  border: 2px solid var(--ink);
+  border-radius: 0;
   background: var(--bg-card);
   color: var(--ink);
   cursor: pointer;
@@ -841,7 +843,7 @@
   align-items: baseline;
   gap: 24px;
   padding: 18px 0;
-  border-bottom: 1.5px solid var(--line-ink-soft);
+  border-bottom: 2px solid var(--line-ink-soft);
   transition: padding-left 0.25s var(--ease);
 }
 
@@ -899,8 +901,8 @@
 .proof-row__thumb {
   width: 64px;
   height: 44px;
-  border: 1.5px solid var(--ink);
-  border-radius: 4px;
+  border: 2px solid var(--ink);
+  border-radius: 0;
   align-self: center;
   overflow: hidden;
 }
@@ -995,7 +997,7 @@
   width: 44px;
   height: 44px;
   border: 2px solid var(--ov-fg);
-  border-radius: 8px;
+  border-radius: 0;
   background: transparent;
   color: var(--ov-fg);
   font-size: 24px;
@@ -1221,8 +1223,8 @@
   align-self: flex-start;
   margin-top: 6px;
   padding: 9px 14px;
-  border: 1.5px solid var(--ov-fg);
-  border-radius: 6px;
+  border: 2px solid var(--ov-fg);
+  border-radius: 0;
   font-family: var(--font-mono);
   font-size: 12px;
   font-weight: 700;
@@ -1322,7 +1324,7 @@
 .pm__frame {
   position: relative;
   background: var(--paper);
-  border: 1.5px solid var(--ink);
+  border: 2px solid var(--ink);
   box-shadow: var(--press-md);
   overflow: hidden;
 }
@@ -1361,7 +1363,7 @@
 }
 
 .pm--phone .pm__frame {
-  border-radius: 20px;
+  border-radius: 0;
   border-width: 2px;
   padding: 6px;
 }
@@ -1373,7 +1375,7 @@
 
 .pm--phone img,
 .pm--phone video {
-  border-radius: 14px;
+  border-radius: 0;
 }
 
 /* Phone clips normalize to a phone-shaped window: letterboxed captures
@@ -1465,7 +1467,7 @@
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  border-bottom: 1.5px solid var(--ink);
+  border-bottom: 2px solid var(--ink);
   background: var(--bg-off);
 }
 
@@ -1515,8 +1517,8 @@
   top: 10px;
   left: 10px;
   padding: 4px 10px;
-  border: 1.5px solid var(--ink);
-  border-radius: 4px;
+  border: 2px solid var(--ink);
+  border-radius: 0;
   background: var(--bg-card);
   box-shadow: var(--press-xs);
   font-family: var(--font-mono);
@@ -1613,7 +1615,7 @@
   text-transform: uppercase;
   background: none;
   border: none;
-  border-bottom: 1.5px solid var(--ov-fg);
+  border-bottom: 2px solid var(--ov-fg);
   padding: 0 0 3px;
   color: var(--ov-fg);
   cursor: pointer;
@@ -1636,8 +1638,8 @@
   letter-spacing: 0.12em;
   text-transform: uppercase;
   background: none;
-  border: 1.5px solid var(--ov-fg);
-  border-radius: 8px;
+  border: 2px solid var(--ov-fg);
+  border-radius: 0;
   color: var(--ov-fg);
   padding: 10px 18px;
   cursor: pointer;
@@ -1819,8 +1821,8 @@
   left: 14px;
   z-index: 2;
   padding: 4px 10px;
-  border: 1.5px solid var(--ink);
-  border-radius: 4px;
+  border: 2px solid var(--ink);
+  border-radius: 0;
   background: var(--bg-card);
   box-shadow: var(--press-xs);
   font-family: var(--font-mono);
@@ -1832,7 +1834,7 @@
 }
 
 .spread__frame {
-  border: 1.5px solid var(--ink);
+  border: 2px solid var(--ink);
   border-radius: var(--radius-md);
   background: var(--bg-card);
   box-shadow: var(--press-md);
@@ -1923,8 +1925,8 @@
 
 .spread__meta-index {
   padding: 3px 8px;
-  border: 1.5px solid var(--line-ink-soft);
-  border-radius: 4px;
+  border: 2px solid var(--line-ink-soft);
+  border-radius: 0;
   color: var(--ink);
 }
 
@@ -1998,7 +2000,7 @@
   content: '';
   width: 7px;
   height: 7px;
-  border-radius: 2px;
+  border-radius: 0;
   background: var(--field-deep);
   flex-shrink: 0;
 }
@@ -2024,8 +2026,8 @@
   display: inline-flex;
   align-items: center;
   padding: 6px 13px;
-  border: 1.5px solid var(--ink);
-  border-radius: 6px;
+  border: 2px solid var(--ink);
+  border-radius: 0;
   background: var(--bg-card);
   font-size: 13.5px;
   font-weight: 600;
@@ -2056,8 +2058,8 @@ a.link-pill:hover {
 .spec-toggle {
   margin-top: 22px;
   padding: 9px 15px;
-  border: 1.5px solid var(--ink);
-  border-radius: 6px;
+  border: 2px solid var(--ink);
+  border-radius: 0;
   background: var(--bg-card);
   box-shadow: var(--press-xs);
   font-family: var(--font-mono);
@@ -2157,8 +2159,8 @@ a.link-pill:hover {
   justify-content: space-between;
   gap: 12px;
   padding: 16px;
-  border: 1.5px solid var(--ink);
-  border-radius: 8px;
+  border: 2px solid var(--ink);
+  border-radius: 0;
   background: var(--bg-card);
   box-shadow: var(--press-xs);
 }
@@ -2193,7 +2195,7 @@ a.link-pill:hover {
 .brand-swatch i {
   display: block;
   height: 44px;
-  border-radius: 5px;
+  border-radius: 0;
   border: 1px solid var(--line-ink-soft);
 }
 
@@ -2242,8 +2244,8 @@ a.link-pill:hover {
 
 .spec-frame {
   position: relative;
-  border: 1.5px solid var(--ink);
-  border-radius: 8px;
+  border: 2px solid var(--ink);
+  border-radius: 0;
   background: var(--bg-card);
   box-shadow: var(--press-xs);
   overflow: hidden;
@@ -2265,14 +2267,14 @@ a.link-pill:hover {
 
 /* Simple CSS phone frame */
 .spec-frame--phone {
-  border-radius: 18px;
+  border-radius: 0;
   border-width: 2px;
   padding: 6px;
 }
 
 .spec-frame--phone img {
   aspect-ratio: 9 / 19.5;
-  border-radius: 12px;
+  border-radius: 0;
 }
 
 .spec-badge {
@@ -2280,8 +2282,8 @@ a.link-pill:hover {
   top: 12px;
   left: 12px;
   padding: 4px 10px;
-  border: 1.5px solid var(--ink);
-  border-radius: 4px;
+  border: 2px solid var(--ink);
+  border-radius: 0;
   background: var(--bg-card);
   box-shadow: var(--press-xs);
   font-family: var(--font-mono);
@@ -2367,7 +2369,7 @@ a.link-pill:hover {
   align-items: start;
   gap: 24px;
   padding: 26px 12px;
-  border-bottom: 1.5px solid var(--line-ink-soft);
+  border-bottom: 2px solid var(--line-ink-soft);
   transition: background-color 0.2s var(--ease);
 }
 
@@ -2395,7 +2397,7 @@ a.link-pill:hover {
 .service-row__chip {
   width: 16px;
   height: 16px;
-  border-radius: 4px;
+  border-radius: 0;
   border: 1px solid var(--line-ink-soft);
   margin-top: 10px;
 }
@@ -2462,7 +2464,7 @@ a.link-pill:hover {
 .about__fact-dot {
   width: 10px;
   height: 10px;
-  border-radius: 3px;
+  border-radius: 0;
   flex-shrink: 0;
 }
 
@@ -2506,7 +2508,7 @@ a.link-pill:hover {
   top: -11px;
   width: 64px;
   height: 20px;
-  border-radius: 2px;
+  border-radius: 0;
   background: color-mix(in srgb, var(--pop-1) 55%, transparent);
   z-index: 1;
 }
@@ -2526,7 +2528,7 @@ a.link-pill:hover {
   width: 100%;
   aspect-ratio: 4 / 5;
   object-fit: cover;
-  border-radius: 6px;
+  border-radius: 0;
   border: 1px solid var(--line-ink-faint);
 }
 
@@ -2544,7 +2546,7 @@ a.link-pill:hover {
   gap: 7px;
   padding: 5px 11px;
   border: 1px solid var(--line-ink-soft);
-  border-radius: 4px;
+  border-radius: 0;
   background: var(--bg-card);
   font-family: var(--font-mono);
   font-size: 10px;
@@ -2559,7 +2561,7 @@ a.link-pill:hover {
   content: '';
   width: 7px;
   height: 7px;
-  border-radius: 2px;
+  border-radius: 0;
 }
 
 .about-portrait__labels li:nth-child(1)::before { background: var(--accent); }
@@ -2654,7 +2656,7 @@ a.link-pill:hover {
   justify-content: space-between;
   align-items: center;
   gap: 16px;
-  border-top: 1.5px solid var(--line-ink-soft);
+  border-top: 2px solid var(--line-ink-soft);
   padding-top: 24px;
   font-family: var(--font-mono);
   font-size: 11px;

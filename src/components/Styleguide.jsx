@@ -15,6 +15,7 @@ import {
   ShapeThemeContext,
 } from './shapes/shape-kit.js'
 import PatternField from './shapes/PatternField.jsx'
+import Specimens from './Specimens.jsx'
 
 const THEME_LABEL = {
   memphis: 'Memphis Playroom',
@@ -114,6 +115,9 @@ function ThemeSection({ theme }) {
             </div>
           ))}
         </div>
+
+        <h3 className="sg-subhead">Components</h3>
+        <Specimens />
       </ShapeThemeContext.Provider>
     </section>
   )

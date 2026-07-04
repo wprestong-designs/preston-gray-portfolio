@@ -28,7 +28,7 @@
   width: 8px;
   height: 8px;
   margin-inline: 4px;
-  border-radius: 2px;
+  border-radius: 0;
   background: var(--accent);
   align-self: center;
 }
@@ -212,7 +212,7 @@
 
 .wk-section {
   padding-block: clamp(32px, 5vw, 56px);
-  border-top: 1.5px solid var(--line-ink-soft);
+  border-top: 2px solid var(--line-ink-soft);
 }
 
 .wk-section h2 {
@@ -254,7 +254,7 @@
 .wk-proof {
   display: block;
   padding: 20px 22px 18px;
-  border: 1.5px solid var(--ink);
+  border: 2px solid var(--ink);
   border-top: 5px solid var(--card-accent, var(--ink));
   border-radius: var(--radius-md);
   background: var(--bg-card);
@@ -314,7 +314,7 @@
 }
 
 a.wk-proof__cta {
-  border-bottom: 1.5px solid transparent;
+  border-bottom: 2px solid transparent;
   padding-bottom: 2px;
 }
 
@@ -338,7 +338,7 @@ a.wk-proof__cta:hover {
 .wk-inline-link {
   color: var(--accent);
   font-weight: 600;
-  border-bottom: 1.5px solid var(--accent-soft);
+  border-bottom: 2px solid var(--accent-soft);
 }
 
 .wk-inline-link:hover {
@@ -352,7 +352,7 @@ a.wk-proof__cta:hover {
   width: min(880px, 100% - 48px);
   margin: clamp(32px, 5vw, 56px) auto 0;
   padding: 20px 0 32px;
-  border-top: 1.5px solid var(--line-ink-soft);
+  border-top: 2px solid var(--line-ink-soft);
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 600;

@@ -159,3 +159,30 @@
 .sg-pattern .pattern-field {
   display: block;
 }
+
+/* Component specimens */
+.sg-specimens {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.sg-specimen-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+}
+.sg-card {
+  width: 230px;
+}
+.sg-card__label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.sg-card__body {
+  font-size: 14px;
+  line-height: 1.45;
+}
