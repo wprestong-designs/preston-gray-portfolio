@@ -13,13 +13,14 @@
  * - banner-scale landscape stage only
  */
 import { useEffect, useRef, useState } from 'react'
-import { motion, useReducedMotion } from 'motion/react'
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { projects } from '../data/projects.js'
 import { CALM_COLORWAYS, resolveFill } from '../data/colorways.js'
 import {
   CROP_MARKS,
   LAYOUTS,
   MORPH,
+  ORNAMENT_IDS,
   STAGES,
   STAGGER_MS,
   STAGGER_ORDER,
@@ -31,7 +32,13 @@ import {
 
 /* --- Ambient tuning knobs --------------------------------------------- */
 const AMBIENT_CYCLE_MS = 5500 // slower than the poster, on purpose
-const AMBIENT_SETTLE_CHANGES = 28 // ≈ 4 passes through the seven states
+const AMBIENT_SETTLE_CHANGES = 32 // ≈ 4 passes through the ambient pool
+/* F1 addendum: the ambient's state ALLOWLIST — everything except
+   triangle (its crossfade entry breaks the ambient's continuous-morph
+   calm). pillrhythm + columns included; hatching permitted. */
+const AMBIENT_STATES = STATE_ORDER.filter((s) => s !== 'triangle')
+/* Hatching parity with the poster (columns' signature accent) */
+const AMBIENT_HATCH_STATES = ['columns']
 /* ----------------------------------------------------------------------- */
 
 const STAGE = STAGES.landscape
@@ -86,7 +93,7 @@ export default function AmbientComposition() {
         return
       }
       setStateName((current) => {
-        const others = STATE_ORDER.filter((s) => s !== current)
+        const others = AMBIENT_STATES.filter((s) => s !== current)
         return others[Math.floor(Math.random() * others.length)]
       })
       setColorwayName((current) => {
@@ -117,6 +124,7 @@ export default function AmbientComposition() {
                 zIndex: Z[shape.id],
                 background: resolveFill(displayColorway, shape.id),
                 border: shape.outline ?? undefined,
+                clipPath: l.clip ?? 'none',
               }}
               initial={false}
               animate={{
@@ -131,7 +139,56 @@ export default function AmbientComposition() {
                 ...MORPH,
                 delay: (STAGGER_ORDER.indexOf(shape.id) * STAGGER_MS) / 1000,
               }}
-            />
+            >
+              {/* F1: columns hatching, ambient parity */}
+              <motion.span
+                className="comp-hatch"
+                aria-hidden="true"
+                initial={false}
+                animate={{ opacity: AMBIENT_HATCH_STATES.includes(displayState) ? 1 : 0 }}
+                transition={{ duration: 0.4 }}
+              />
+            </motion.div>
+          )
+        })}
+
+        {/* F1: ornaments in the ambient — same ink/paper fills, fading
+            at the edges of their existence */}
+        {ORNAMENT_IDS.map((oid) => {
+          const o = layout[oid]
+          return (
+            <AnimatePresence key={oid}>
+              {o && (
+                <motion.div
+                  className={`comp-ornament${o.fill === 'paper' ? ' comp-ornament--paper' : ''}`}
+                  aria-hidden="true"
+                  style={{ zIndex: Z[oid], clipPath: o.clip ?? 'none' }}
+                  initial={{ opacity: 0 }}
+                  exit={{ opacity: 0, transition: { duration: 0.25 } }}
+                  animate={{
+                    opacity: 1,
+                    x: o.x,
+                    y: o.y,
+                    width: o.w,
+                    height: o.h,
+                    borderRadius: o.r,
+                  }}
+                  transition={{
+                    ...MORPH,
+                    delay: (Math.max(0, STAGGER_ORDER.indexOf(oid)) * STAGGER_MS) / 1000,
+                    opacity: { duration: 0.25, delay: 0 },
+                  }}
+                >
+                  <motion.span
+                    className="comp-hatch"
+                    aria-hidden="true"
+                    initial={false}
+                    animate={{ opacity: AMBIENT_HATCH_STATES.includes(displayState) ? 1 : 0 }}
+                    transition={{ duration: 0.4 }}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
           )
         })}
 

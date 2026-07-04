@@ -481,6 +481,23 @@
   transition: background-color 0.25s var(--ease);
 }
 
+/* F1 — ornaments: composition elements that are not project doors.
+   Ink fill by default; the paper variant carries the ink outline. Opaque
+   always; clipped like shapes (overflow for the hatch child). */
+.comp-ornament {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: var(--ink);
+}
+
+.comp-ornament--paper {
+  background: var(--bg);
+  border: 2px solid var(--ink);
+}
+
 /* W1a — invisible morph source: carries the shape's layoutId so layout
    projection never touches the animated shape itself */
 .comp-morph-source {

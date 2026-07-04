@@ -37,15 +37,19 @@ import { useProofOverlay } from '../context/overlay-context.js'
 import {
   CONNECTED_STATES,
   CROP_MARKS,
+  FIDELITY_STATES,
   HOVER_R,
   LAYOUTS,
   MORPH,
   ORIENTATION_QUERY,
+  ORNAMENT_IDS,
   STAGES,
   STAGGER_MS,
   STAGGER_ORDER,
   STATE_ORDER,
+  XFADE_STATES,
   Z,
+  buildFidelityLayout,
   isOneMass,
   stageTransform,
   touchEdges,
@@ -140,10 +144,15 @@ const ECHO = {
   prosource: 'tri-bl',
   fieldintel: 'tri-tr',
 }
-/* P1.5 (oneshot): 39° hatching is the STRIP state's signature accent
-   (like crop marks belong to Registration). Per-state flag so it can be
-   reassigned or multiplied without touching render code. */
-const HATCH_STATES = ['strip']
+/* P1.5/F1: 39° hatching is the COLUMNS state's signature accent per the
+   fidelity spec (moved from the retired strip). Per-state flag so it can
+   be reassigned or multiplied without touching render code. */
+const HATCH_STATES = ['columns']
+/* F1: the triangle crossfade — fade out, snap geometry while invisible,
+   fade/scale back in with the standard stagger. */
+const TRIANGLE_XFADE_MS = 150
+/* F1 spec: baked fragments stay OFF the small triangles */
+const TRIANGLE_NO_TYPE = ['pinnacle', 'prosource']
 /* --------------------------------------------------------------------- */
 function useCast() {
   return useMemo(
@@ -193,10 +202,15 @@ function Stage({ wrapRef, fit, stage, aspect = true, children }) {
    ?compose=1 — static art-direction view of all six states, with an
    orientation toggle (also honors ?orient=portrait for deep links)
 ------------------------------------------------------------------- */
-function ComposerStage({ stateName, cast, orientation, typeMode, scrim, hatch, colorway }) {
+function ComposerStage({ stateName, cast, orientation, typeMode, scrim, hatch, colorway, fitMode }) {
   const stage = STAGES[orientation]
   const [wrapRef, fit] = useStageFit(stage)
-  const layout = LAYOUTS[stateName][orientation]
+  // F1: fidelity states honor the fit toggle — 'square' recomputes the
+  // spec tables in a centered square for true-circular comparison.
+  const layout =
+    FIDELITY_STATES.includes(stateName) && fitMode === 'square'
+      ? buildFidelityLayout(stateName, stage, 'square')
+      : LAYOUTS[stateName][orientation]
   const edges = touchEdges(layout)
   const center = (s) => [s.x + s.w / 2, s.y + s.h / 2]
   return (
@@ -212,6 +226,30 @@ function ComposerStage({ stateName, cast, orientation, typeMode, scrim, hatch, c
         </span>
       </p>
       <Stage wrapRef={wrapRef} fit={fit} stage={stage}>
+        {/* F1: ornaments render statically in the composer */}
+        {ORNAMENT_IDS.map((oid) => {
+          const o = layout[oid]
+          if (!o) return null
+          return (
+            <div
+              key={oid}
+              className={`comp-ornament${o.fill === 'paper' ? ' comp-ornament--paper' : ''}`}
+              aria-hidden="true"
+              style={{
+                zIndex: Z[oid],
+                transform: `translate(${o.x}px, ${o.y}px)`,
+                width: o.w,
+                height: o.h,
+                borderRadius: o.r,
+                clipPath: o.clip ?? 'none',
+              }}
+            >
+              {hatch && HATCH_STATES.includes(stateName) && (
+                <span className="comp-hatch" aria-hidden="true" />
+              )}
+            </div>
+          )
+        })}
         {cast.map((shape) => {
           const l = layout[shape.id]
           const lf = LETTERFORMS[shape.id]?.[orientation]
@@ -227,6 +265,7 @@ function ComposerStage({ stateName, cast, orientation, typeMode, scrim, hatch, c
                 width: l.w,
                 height: l.h,
                 borderRadius: l.r,
+                clipPath: l.clip ?? 'none',
               }}
             >
               {/* P1.5: hatching preview — governed by the same HATCH_STATES
@@ -307,6 +346,9 @@ function ComposerView({ cast }) {
     const forced = new URLSearchParams(window.location.search).get('colorway')
     return isValidColorway(forced) ? forced : 'canonical'
   })
+  // F1: fidelity fit — anisotropic 'stretch' ships; 'square' previews the
+  // spec tables true-circular in a centered square
+  const [fitMode, setFitMode] = useState('stretch')
   return (
     <div className="composer">
       <div className="composer__bar">
@@ -350,6 +392,18 @@ function ComposerView({ cast }) {
             hatch
           </button>
         </div>
+        <div className="composer__toggle" role="group" aria-label="Fidelity fit">
+          {['stretch', 'square'].map((f) => (
+            <button
+              key={f}
+              type="button"
+              className={f === fitMode ? 'is-active' : ''}
+              onClick={() => setFitMode(f)}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
         <div className="composer__toggle" role="group" aria-label="Colorway">
           {Object.entries(COLORWAYS).map(([key, cw]) => (
             <button
@@ -373,6 +427,7 @@ function ComposerView({ cast }) {
           scrim={scrim}
           hatch={hatch}
           colorway={colorway}
+          fitMode={fitMode}
         />
       ))}
     </div>
@@ -409,6 +464,13 @@ export default function CompositionHero({ poster = false }) {
   const stage = STAGES[orientation]
   const [wrapRef, fit] = useStageFit(stage)
   const [stateName, setStateName] = useState('swatches')
+  // F1: crossfade phase for XFADE_STATES (triangle) — 'out' fades the
+  // comp, geometry snaps while invisible, 'in' fades/scales back.
+  // stateRef mirrors stateName for the interval's pick logic (no side
+  // effects inside setState updaters).
+  const stateRef = useRef('swatches')
+  const [xfadePhase, setXfadePhase] = useState('idle')
+  const xfadeTimers = useRef([])
   // U1: the colorway axis. First paint is CANONICAL (brand-stable); the
   // cycle then moves through the eight named colorways, shuffled without
   // repeat INDEPENDENTLY of the geometry axis. Reduced motion pins
@@ -473,25 +535,48 @@ export default function CompositionHero({ poster = false }) {
     if (composer || staticLayout || paused || overlayOpen) return undefined
     let colorwayTimer
     const t = setInterval(() => {
-      setStateName((current) => {
-        const others = STATE_ORDER.filter((s) => s !== current)
-        return others[Math.floor(Math.random() * others.length)]
-      })
+      // F1: pick via the ref mirror (shuffle-no-repeat over the 9-state
+      // pool). Crossing a triangle boundary runs the crossfade: fade out
+      // first, THEN commit the new state while invisible.
+      const current = stateRef.current
+      const others = STATE_ORDER.filter((s) => s !== current)
+      const next = others[Math.floor(Math.random() * others.length)]
+      if (XFADE_STATES.includes(next) || XFADE_STATES.includes(current)) {
+        setXfadePhase('out')
+        xfadeTimers.current.push(
+          setTimeout(() => {
+            stateRef.current = next
+            setStateName(next)
+            setXfadePhase('in')
+            xfadeTimers.current.push(
+              setTimeout(
+                () => setXfadePhase('idle'),
+                TRIANGLE_XFADE_MS + STAGGER_MS * STAGGER_ORDER.length,
+              ),
+            )
+          }, TRIANGLE_XFADE_MS),
+        )
+      } else {
+        stateRef.current = next
+        setStateName(next)
+      }
       // U1: colorway advances each cycle with its own no-repeat shuffle —
       // OFFSET half a cycle (P6 review): the background-color transition
       // repaint no longer stacks onto the morph's heaviest frames, and
       // the between-morphs re-ink reads like a fresh press pass.
       clearTimeout(colorwayTimer)
       colorwayTimer = setTimeout(() => {
-        setColorwayName((current) => {
-          const others = COLORWAY_ORDER.filter((c) => c !== current)
-          return others[Math.floor(Math.random() * others.length)]
+        setColorwayName((current2) => {
+          const others2 = COLORWAY_ORDER.filter((c) => c !== current2)
+          return others2[Math.floor(Math.random() * others2.length)]
         })
       }, CYCLE_MS / 2)
     }, CYCLE_MS)
     return () => {
       clearInterval(t)
       clearTimeout(colorwayTimer)
+      xfadeTimers.current.forEach(clearTimeout)
+      xfadeTimers.current = []
     }
   }, [composer, staticLayout, paused, overlayOpen])
 
@@ -668,8 +753,11 @@ export default function CompositionHero({ poster = false }) {
           // V1a: the settle gate now covers REVEALED type too — with
           // at-rest letterforms off, hover/arm early in a state morph was
           // the remaining smear path; the reveal simply waits out the tween.
+          // F1: fragments stay OFF the small triangles (spec note).
           const typeVisible =
-            (isActive || showsTypeAtRest(shape.id, typeMode)) && typeSettled
+            (isActive || showsTypeAtRest(shape.id, typeMode)) &&
+            typeSettled &&
+            !(displayState === 'triangle' && TRIANGLE_NO_TYPE.includes(shape.id))
           const staggerDelay = staticLayout
             ? 0
             : (STAGGER_ORDER.indexOf(shape.id) * STAGGER_MS) / 1000
@@ -691,6 +779,10 @@ export default function CompositionHero({ poster = false }) {
                 background: isActive ? shape.colorHover ?? fill : fill,
                 border: shape.outline ?? undefined,
                 '--shape-color': shape.outline ? 'var(--ink)' : fill,
+                // F1: triangle state clips to its polygon (children —
+                // letterforms, echoes — clip with it). Snaps under the
+                // crossfade's opacity cover.
+                clipPath: l.clip ?? 'none',
               }}
               initial={false}
               animate={{
@@ -703,19 +795,55 @@ export default function CompositionHero({ poster = false }) {
                 // color-only under reduced motion.
                 borderRadius:
                   isHovered && !reducedMotion ? HOVER_R[shape.id] : l.r,
-                scale: isHovered && !reducedMotion ? 1.04 : 1,
-                // F4 sibling dim A/B: opacity fade vs full-opacity desaturate
-                opacity: isDimmed && dimMode === 'opacity' ? DIM_OPACITY : 1,
+                // F1 crossfade: out = shrink to .96 invisible; in = settle
+                // back to 1 (or the hover scale).
+                scale:
+                  xfadePhase === 'out'
+                    ? 0.96
+                    : isHovered && !reducedMotion
+                      ? 1.04
+                      : 1,
+                // F4 sibling dim A/B + F1 crossfade opacity cover
+                opacity:
+                  xfadePhase === 'out'
+                    ? 0
+                    : isDimmed && dimMode === 'opacity'
+                      ? DIM_OPACITY
+                      : 1,
                 filter: isDimmed && dimMode === 'filter' ? DIM_FILTER : 'saturate(1) brightness(1)',
               }}
               transition={{
                 ...MORPH,
                 delay: staggerDelay,
-                borderRadius: isHovered
-                  ? { ...HOVER_MORPH, delay: 0 }
-                  : undefined,
-                scale: { ...HOVER_MORPH, delay: 0 },
-                opacity: { duration: 0.25, delay: 0 },
+                // F1: while 'in', geometry SNAPS (it moved under the
+                // opacity cover); opacity/scale carry the crossfade.
+                ...(xfadePhase === 'in'
+                  ? {
+                      x: { duration: 0 },
+                      y: { duration: 0 },
+                      width: { duration: 0 },
+                      height: { duration: 0 },
+                      rotate: { duration: 0 },
+                      borderRadius: { duration: 0 },
+                    }
+                  : {}),
+                ...(xfadePhase !== 'in' && isHovered
+                  ? { borderRadius: { ...HOVER_MORPH, delay: 0 } }
+                  : {}),
+                scale:
+                  xfadePhase === 'idle'
+                    ? { ...HOVER_MORPH, delay: 0 }
+                    : {
+                        duration: TRIANGLE_XFADE_MS / 1000,
+                        delay: xfadePhase === 'in' ? staggerDelay : 0,
+                      },
+                opacity:
+                  xfadePhase === 'idle'
+                    ? { duration: 0.25, delay: 0 }
+                    : {
+                        duration: TRIANGLE_XFADE_MS / 1000,
+                        delay: xfadePhase === 'in' ? staggerDelay : 0,
+                      },
                 filter: { duration: 0.25, delay: 0 },
               }}
               // Pointer events with an explicit type check (R3): iOS tap
@@ -819,6 +947,65 @@ export default function CompositionHero({ poster = false }) {
                 )}
               </AnimatePresence>
             </Shape>
+          )
+        })}
+
+        {/* F1 — ORNAMENTS: composition elements that are not project
+            doors (aria-hidden, non-interactive). They tween between
+            fidelity states that share them and fade at the edges of
+            their existence; fills are ink or paper(+ink outline), never
+            colorway-driven. */}
+        {ORNAMENT_IDS.map((oid) => {
+          const o = layout[oid]
+          const staggerDelay = staticLayout
+            ? 0
+            : (Math.max(0, STAGGER_ORDER.indexOf(oid)) * STAGGER_MS) / 1000
+          return (
+            <AnimatePresence key={oid}>
+              {o && (
+                <motion.div
+                  className={`comp-ornament${o.fill === 'paper' ? ' comp-ornament--paper' : ''}`}
+                  aria-hidden="true"
+                  style={{ zIndex: Z[oid], clipPath: o.clip ?? 'none' }}
+                  initial={{ opacity: 0 }}
+                  exit={{ opacity: 0, transition: { duration: 0.2 } }}
+                  animate={{
+                    opacity: xfadePhase === 'out' ? 0 : 1,
+                    x: o.x,
+                    y: o.y,
+                    width: o.w,
+                    height: o.h,
+                    borderRadius: o.r,
+                  }}
+                  transition={{
+                    ...MORPH,
+                    delay: staggerDelay,
+                    ...(xfadePhase === 'in'
+                      ? {
+                          x: { duration: 0 },
+                          y: { duration: 0 },
+                          width: { duration: 0 },
+                          height: { duration: 0 },
+                          borderRadius: { duration: 0 },
+                        }
+                      : {}),
+                    opacity: {
+                      duration: xfadePhase === 'idle' ? 0.2 : TRIANGLE_XFADE_MS / 1000,
+                      delay: xfadePhase === 'in' ? staggerDelay : 0,
+                    },
+                  }}
+                >
+                  {/* Ornaments carry the columns hatching too */}
+                  <motion.span
+                    className="comp-hatch"
+                    aria-hidden="true"
+                    initial={false}
+                    animate={{ opacity: HATCH_STATES.includes(displayState) ? 1 : 0 }}
+                    transition={{ duration: reducedMotion ? 0 : 0.4 }}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
           )
         })}
 
