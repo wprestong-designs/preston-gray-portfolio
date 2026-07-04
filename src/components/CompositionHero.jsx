@@ -817,11 +817,21 @@ export default function CompositionHero({ poster = false }) {
                 // color-only under reduced motion.
                 borderRadius:
                   isHovered && !reducedMotion ? HOVER_R[shape.id] : l.r,
-                // F1b: no opacity/scale blackout — the anchor-bar wipe
-                // (§3.9) covers the triangle snap, so every shape stays
-                // fully visible through the transition. Only hover scales.
-                scale: isHovered && !reducedMotion ? 1.04 : 1,
-                opacity: isDimmed && dimMode === 'opacity' ? DIM_OPACITY : 1,
+                // F1 crossfade: out = shrink to .96 invisible; in = settle
+                // back to 1 (or the hover scale).
+                scale:
+                  xfadePhase === 'out'
+                    ? 0.96
+                    : isHovered && !reducedMotion
+                      ? 1.04
+                      : 1,
+                // F4 sibling dim A/B + F1 crossfade opacity cover
+                opacity:
+                  xfadePhase === 'out'
+                    ? 0
+                    : isDimmed && dimMode === 'opacity'
+                      ? DIM_OPACITY
+                      : 1,
                 filter: isDimmed && dimMode === 'filter' ? DIM_FILTER : 'saturate(1) brightness(1)',
               }}
               transition={{
@@ -842,10 +852,20 @@ export default function CompositionHero({ poster = false }) {
                 ...(xfadePhase !== 'in' && isHovered
                   ? { borderRadius: { ...HOVER_MORPH, delay: 0 } }
                   : {}),
-                // F1b: scale/opacity no longer carry a crossfade — the wipe
-                // does. Scale rides the hover spring; opacity is dim-only.
-                scale: { ...HOVER_MORPH, delay: 0 },
-                opacity: { duration: 0.25, delay: 0 },
+                scale:
+                  xfadePhase === 'idle'
+                    ? { ...HOVER_MORPH, delay: 0 }
+                    : {
+                        duration: TRIANGLE_XFADE_MS / 1000,
+                        delay: xfadePhase === 'in' ? staggerDelay : 0,
+                      },
+                opacity:
+                  xfadePhase === 'idle'
+                    ? { duration: 0.25, delay: 0 }
+                    : {
+                        duration: TRIANGLE_XFADE_MS / 1000,
+                        delay: xfadePhase === 'in' ? staggerDelay : 0,
+                      },
                 filter: { duration: 0.25, delay: 0 },
               }}
               // Pointer events with an explicit type check (R3): iOS tap
@@ -972,7 +992,7 @@ export default function CompositionHero({ poster = false }) {
                   initial={{ opacity: 0 }}
                   exit={{ opacity: 0, transition: { duration: 0.2 } }}
                   animate={{
-                    opacity: 1, // F1b: ornaments stay opaque; the wipe covers their snap
+                    opacity: xfadePhase === 'out' ? 0 : 1,
                     x: o.x,
                     y: o.y,
                     width: o.w,
@@ -991,7 +1011,10 @@ export default function CompositionHero({ poster = false }) {
                           borderRadius: { duration: 0 },
                         }
                       : {}),
-                    opacity: { duration: 0.2, delay: 0 },
+                    opacity: {
+                      duration: xfadePhase === 'idle' ? 0.2 : TRIANGLE_XFADE_MS / 1000,
+                      delay: xfadePhase === 'in' ? staggerDelay : 0,
+                    },
                   }}
                 >
                   {/* Ornaments carry the columns hatching too */}
@@ -1024,22 +1047,6 @@ export default function CompositionHero({ poster = false }) {
             </g>
           ))}
         </motion.svg>
-
-        {/* F1b — anchor-bar palette-swap wipe (§3.9). Sweeps across the
-            triangle boundary; the geometry + clip + colorway snap behind it
-            (at out→in, when the bar is at full cover), so the composition
-            never blanks. Mounted only for the duration of the wipe. Reduced
-            motion never runs the cycle, so the bar never appears there. */}
-        {xfadePhase !== 'idle' && (
-          <motion.div
-            className="comp-wipe"
-            aria-hidden="true"
-            style={{ width: stage.w * 1.12, height: stage.h }}
-            initial={{ x: -stage.w * 1.12 }}
-            animate={{ x: xfadePhase === 'out' ? -stage.w * 0.06 : stage.w }}
-            transition={{ duration: TRIANGLE_XFADE_MS / 1000, ease: [0.7, 0, 0.3, 1] }}
-          />
-        )}
 
         </Stage>
 
