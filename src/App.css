@@ -267,6 +267,13 @@
   inset: 0;
 }
 
+/* U1: desktop keeps the wrapper invisible — brand + utils stay in the
+   letterbox corners (their own absolute positioning). The band only
+   materializes at the mobile breakpoint below. */
+.poster__chrome {
+  display: contents;
+}
+
 .poster__brand {
   position: absolute;
   top: 16px;
@@ -342,6 +349,75 @@
 .poster__util:disabled {
   opacity: 0.4;
   cursor: default;
+}
+
+/* ------------------------------------------------------------------
+   U1/U2 — mobile poster header (≤700px): a two-row paper band above the
+   stage. The poster becomes a flex column [band | composition]; the band
+   is solid paper (legibility over any shape color wins), and the stage
+   takes only the space BELOW it — a STRUCTURAL exclusion, so no
+   composition state, now or future, can place a shape under the header.
+   The geometry validator is untouched. Safe-area top inset respected
+   (pairs with viewport-fit=cover, U2). Desktop hover-tint is unchanged.
+------------------------------------------------------------------- */
+@media (max-width: 700px) {
+  .poster {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .poster__chrome {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 0 0 auto;
+    z-index: 40;
+    background: var(--paper);
+    border-bottom: 2px solid var(--ink);
+    padding: calc(env(safe-area-inset-top, 0px) + 12px) clamp(14px, 4vw, 20px) 12px;
+  }
+
+  /* Row 1 — wordmark, now in flow (no longer an absolute corner chip) */
+  .poster__brand {
+    position: static;
+    background: none;
+    padding: 0;
+    font-size: 22px;
+  }
+
+  /* Row 2 — utilities; full "FOR BUSINESS OWNERS" retained, ≥44px targets,
+     wrap rather than truncate on the narrowest phones */
+  .poster__utils {
+    position: static;
+    background: none;
+    padding: 0;
+    gap: 4px 16px;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .poster__util {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 2px;
+    /* legibility wins on mobile: fixed ink on the paper band, not the flood */
+    color: var(--ink-soft);
+  }
+
+  .poster__util:hover:not(:disabled),
+  .poster__util:focus-visible {
+    color: var(--ink);
+    border-bottom-color: var(--ink);
+  }
+
+  /* Stage exclusion: the composition fills only the remaining height below
+     the band. The fixed portrait canvas scales to fit (useStageFit). */
+  .comp--poster {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: auto;
+  }
 }
 
 /* ------------------------------------------------------------------
