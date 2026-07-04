@@ -23,4 +23,32 @@ Every judgment call, its reasoning, and how to reverse it. Reviewed once at end.
 - **Pinnacle re-encode: BLOCKED** (no ffmpeg). On the recapture list (§6).
 - **Manifest** stale "nothing wired yet" note brought current.
 
+## Section 3 — Crops
+- CRM today re-cropped **taller** (1195×290 @ 310,58 — now includes the "Today's
+  field day" card below the stat row, per ruling). Other 6 approved as generated;
+  CRM fieldnotes kept as the sidebar+sync interim (populated view on recapture list).
+- All 8 crops generated final into `src/assets/mobile/` at 2 widths each (native
+  ≤960w + 480w) for srcset. Reverse: delete `src/assets/mobile/*`.
+
+## Section 2 — New media integration (stills processed; clips blocked)
+- 17 new Pinnacle/ProSource page stills → `src/assets/mobile/` at 587w native +
+  360w (portrait phone shots). The 4 mp4 clips are **ffmpeg-blocked** → recapture list.
+- **Payload note:** `src/assets/mobile/` is ~7.2 MB (screenshots are detailed). If it
+  matters for Netlify, re-encode at lower JPEG quality or drop the unused expansion
+  stills. Flagged for M4 QA.
+- **Decided mobile sets** (restraint: lead + ≤3 supporting collapsed; rest in Full
+  Spec expansion; nothing dead):
+  - **Pinnacle** — lead `homepage` (native portrait clip is the intended lead but
+    ffmpeg-blocked; still leads for now). Supporting: `about` (the people story),
+    `rxsubmission` (tool), `womenshealth` (specialty). Expansion: `dermatology`,
+    `ophthalmology`, `generalrx`, `rxdatabase`.
+  - **ProSource** — lead `rxrefillrequest` (its proof statement is the refill form).
+    Supporting: `about`, `rxsubmission`, `womenshealth`. Expansion: `dermatology`,
+    `ophthalmology`, `generalrx`, `rxdatabase`, `FAQ`.
+  - Reasoning: each lead = the proof's headline story; supporting = story + a tool +
+    one specialty; the remaining specialty pages are repetitive, so they earn only
+    expansion slots. Reverse: edit the set arrays in projects.js.
+- **JSX wiring of these sets depends on the M1 responsive component (§4)** — assets
+  + decisions are ready; wiring status is in the close-out.
+
 ## Decisions (appended as I go)
