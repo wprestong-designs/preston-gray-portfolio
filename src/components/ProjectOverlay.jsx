@@ -38,6 +38,10 @@ const EXPAND_TRANSITION = { type: 'tween', duration: 0.5, ease: [0.32, 0.72, 0, 
 /* Content never waits forever if a layout-completion callback is missed
    (belt over braces — e.g. a zero-distance morph). */
 const EXPAND_FALLBACK_MS = 900
+/* P1.4 (oneshot): triangle deco on the statement panel — the triangle
+   vocabulary enters as accents, not a polygon state (see the stub in
+   composition-geometry.js). Reversible: set to 'none'. */
+const MONUMENT_DECO = 'triangle' // 'triangle' | 'none'
 
 export default function ProjectOverlay() {
   const { openId, originKey, scrollYRef, typeRectRef, originElRef, close, jumpTo } =
@@ -258,7 +262,7 @@ export default function ProjectOverlay() {
                 block above for why props can't do this here). */}
             <motion.h2
               ref={monumentRef}
-              className="ov-monument"
+              className={`ov-monument${Array.isArray(proof.monument) ? ' ov-monument--multi' : ''}`}
               aria-label={proof.name}
               style={{
                 x: monX,
@@ -274,8 +278,25 @@ export default function ProjectOverlay() {
                   : { opacity: 0, transition: { duration: 0.15 } }
               }
             >
-              <span aria-hidden="true">{proof.monument ?? proof.name}</span>
+              {/* P1.1: monument accepts a string (one line) or an array
+                  (staggered lines — SUMMIT / PHARMACY) */}
+              {Array.isArray(proof.monument) ? (
+                proof.monument.map((line, li) => (
+                  <span
+                    key={line}
+                    aria-hidden="true"
+                    className={`ov-monument__line${li > 0 ? ' ov-monument__line--stagger' : ''}`}
+                  >
+                    {line}
+                  </span>
+                ))
+              ) : (
+                <span aria-hidden="true">{proof.monument ?? proof.name}</span>
+              )}
             </motion.h2>
+            {MONUMENT_DECO === 'triangle' && (
+              <span className="ov-tri" aria-hidden="true" />
+            )}
             {/* The whisper meta — monument vs. small mono IS the
                 composition; reveals once the expansion lands (W1b) */}
             <motion.div

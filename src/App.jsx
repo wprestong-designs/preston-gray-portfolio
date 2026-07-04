@@ -43,6 +43,9 @@ function PageChrome() {
     const match = window.location.hash.match(/^#proof-([a-z]+)$/)
     if (!match) return
     const id = LEGACY[match[1]] ?? match[1]
+    if (LEGACY[match[1]]) {
+      console.warn(`[proof-catalog] legacy deep link #proof-${match[1]} → #proof-${id}`)
+    }
     if (id === 'about' || getProof(id)) {
       open(id, null, null)
       window.history.replaceState(null, '', window.location.pathname + window.location.search)

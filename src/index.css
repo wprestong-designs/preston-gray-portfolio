@@ -98,13 +98,14 @@
   --flood-sky-fg: #ffffff;
   --flood-purple: #5b21b6;
   --flood-purple-fg: #ffffff;
-  /* Y1 — pinnacle sage + prosource press-red. Sage chosen over coral:
-     coral fails the flood tier with white (3.09) and hue-collides with
-     BOTH ourco's orange and prosource's red. Flagged adjacencies: sage
-     (~100°, muted) vs summit's emerald display (~160°, vivid) — separated
-     by hue AND saturation; press-red (0°) vs ourco's orange band (~28°) —
-     separated by value/saturation, and prosource is always the smallest
-     shape. */
+  /* Y1/P1.2 — bristol sage · pinnacle teal-adjacent (sky tier) ·
+     prosource press-red. Coral rejected for pinnacle: fails the flood
+     tier with white (3.09 best candidate) and hue-collides with BOTH
+     ourco's orange and prosource's red. Six display hues at a glance:
+     green 160° · orange 28° · sage 100° · cyan 199° · red 0° · purple
+     262° — sage vs green resolved by saturation/value (muted olive vs
+     vivid emerald); red vs orange resolved by value, and prosource is
+     always the smallest shape. */
   --flood-sage: #46653f;
   --flood-sage-fg: #ffffff;
   --flood-red: #a11e1e;

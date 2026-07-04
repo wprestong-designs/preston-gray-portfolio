@@ -82,30 +82,33 @@ const TYPE_REVEAL_MS = 250
    the MORPH spring plus the full ripple stagger. */
 const TYPE_MORPH_FADE_MS = 150
 const TYPE_SETTLE_MS = 900
+/* P1.6 (oneshot): decisive uppercase crops — best-effort art direction
+   targeting 30–50% letterform mass visible per shape; every value stays
+   composer-editable for Preston's pass. */
 const LETTERFORMS = {
   summit: {
-    landscape: { text: 'Summit', scale: 2.5, dx: 0, dy: 0 },
-    portrait: { text: 'Summit', scale: 2.5, dx: 0, dy: 0 },
+    landscape: { text: 'Summit', scale: 2.6, dx: -0.06, dy: 0.02 },
+    portrait: { text: 'Summit', scale: 2.4, dx: -0.04, dy: 0 },
   },
   ourco: {
-    landscape: { text: 'Ourco', scale: 2.5, dx: 0, dy: 0 },
-    portrait: { text: 'Ourco', scale: 2.5, dx: 0, dy: 0 },
+    landscape: { text: 'Ourco', scale: 2.8, dx: 0.05, dy: -0.04 },
+    portrait: { text: 'Ourco', scale: 2.6, dx: 0.03, dy: -0.02 },
   },
   bristol: {
-    landscape: { text: 'Bristol', scale: 2.5, dx: 0, dy: 0 },
-    portrait: { text: 'Bristol', scale: 2.5, dx: 0, dy: 0 },
+    landscape: { text: 'Bristol', scale: 2.4, dx: -0.1, dy: 0.05 },
+    portrait: { text: 'Bristol', scale: 2.3, dx: -0.08, dy: 0.03 },
   },
   pinnacle: {
-    landscape: { text: 'Pinnacle', scale: 2.5, dx: 0, dy: 0 },
-    portrait: { text: 'Pinnacle', scale: 2.5, dx: 0, dy: 0 },
+    landscape: { text: 'Pinnacle', scale: 2.7, dx: 0.08, dy: 0.06 },
+    portrait: { text: 'Pinnacle', scale: 2.5, dx: 0.05, dy: 0.04 },
   },
   prosource: {
-    landscape: { text: 'Prosource', scale: 2.5, dx: 0, dy: 0 },
-    portrait: { text: 'Prosource', scale: 2.5, dx: 0, dy: 0 },
+    landscape: { text: 'Prosource', scale: 2.3, dx: -0.05, dy: -0.06 },
+    portrait: { text: 'Prosource', scale: 2.2, dx: -0.04, dy: -0.04 },
   },
   fieldintel: {
-    landscape: { text: 'Field Intel', scale: 2.5, dx: 0, dy: 0 },
-    portrait: { text: 'Field Intel', scale: 2.5, dx: 0, dy: 0 },
+    landscape: { text: 'Field Intel', scale: 3.0, dx: -0.12, dy: 0.04 },
+    portrait: { text: 'Field Intel', scale: 2.8, dx: -0.1, dy: 0.02 },
   },
 }
 const showsTypeAtRest = (shapeId, mode) =>
@@ -115,16 +118,26 @@ const showsTypeAtRest = (shapeId, mode) =>
    reveal + echo accent; tap 2 opens. Tapping another shape re-arms,
    tapping empty stage disarms, idle auto-disarms. */
 const ARM_DISARM_MS = 4000
-/* Echo accent silhouettes, per shape's family: daub → circle, arch →
-   quarter-round, bar → pill. Fill is the project's DEEP FLOOD color. */
+/* P1.4 (oneshot): the TRIANGLE vocabulary lands here — echo accents are
+   triangles in four rotations (clip-path is safe on echoes: they only
+   appear/disappear, never tween-morph — see the polygon-state stub in
+   composition-geometry.js). Fill is the project's DEEP FLOOD color.
+   Reversible: previous silhouettes were
+   { summit: 'circle', ourco: 'quarter', bristol: 'pill',
+     pinnacle: 'quarter', prosource: 'circle', fieldintel: 'quarter' }
+   and those CSS classes still exist. */
 const ECHO = {
-  summit: 'circle',
-  ourco: 'quarter',
-  bristol: 'pill',
-  pinnacle: 'quarter',
-  prosource: 'circle',
-  fieldintel: 'quarter',
+  summit: 'tri-bl',
+  ourco: 'tri-tr',
+  bristol: 'tri-br',
+  pinnacle: 'tri-tl',
+  prosource: 'tri-bl',
+  fieldintel: 'tri-tr',
 }
+/* P1.5 (oneshot): 39° hatching is the STRIP state's signature accent
+   (like crop marks belong to Registration). Per-state flag so it can be
+   reassigned or multiplied without touching render code. */
+const HATCH_STATES = ['strip']
 /* --------------------------------------------------------------------- */
 function useCast() {
   return useMemo(
@@ -210,11 +223,9 @@ function ComposerStage({ stateName, cast, orientation, typeMode, scrim, hatch })
                 borderRadius: l.r,
               }}
             >
-              {/* Y1 PROPOSAL MOCK (composer-only): 39° stripe hatching as
-                  the strip state's signature texture — the print-shop bars
-                  from Preston's reference SVG. Ships nowhere until the
-                  hatching home is approved. */}
-              {hatch && stateName === 'strip' && (
+              {/* P1.5: hatching preview — governed by the same HATCH_STATES
+                  flag as the live layer; the composer toggle just hides it */}
+              {hatch && HATCH_STATES.includes(stateName) && (
                 <span className="comp-hatch" aria-hidden="true" />
               )}
               {/* T1: at-rest letterform per the composer's mode toggle —
@@ -684,6 +695,15 @@ export default function CompositionHero({ poster = false }) {
                 className="comp-morph-source"
                 aria-hidden="true"
                 layoutId={`proof-shape-${shape.overlayId}`}
+              />
+              {/* P1.5: strip-state hatching — the state's signature print
+                  texture, opacity-gated like Registration's crop marks */}
+              <motion.span
+                className="comp-hatch"
+                aria-hidden="true"
+                initial={false}
+                animate={{ opacity: HATCH_STATES.includes(displayState) ? 1 : 0 }}
+                transition={{ duration: reducedMotion ? 0 : 0.4 }}
               />
               {/* T1: baked letterform, clipped by the shape's own
                   border-box (overflow:hidden survives the radius morphs —

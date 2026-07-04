@@ -194,28 +194,51 @@ export const LAYOUTS = {
     },
   },
   // Theme (Y1, from Preston's half-circle reference): PINWHEEL — four
-  // large petals in a 2×2 field, curves at the outer corners, plus the
-  // pinnacle/prosource quarter-round pair clustered on the center seam
-  // (the sanctioned overlap). 10px regime at the seams.
+  // large petals in a 2×2 field, curves at the OUTER corners only, plus
+  // the pinnacle/prosource quarter-round pair clustered on the center
+  // seam (the sanctioned overlap). NOTE: this state uses 12px gutters
+  // (the decoded reference geometry), the one exception to rule 4's 10px.
+  // Landscape values are the decoded table verbatim; the reference's
+  // "100%" corner radii are expressed as min(w,h) px so framer can tween
+  // them against every other state's px strings. Petal z sits below the
+  // center pair (global Z already orders petals < pinnacle < prosource).
+  // Insertion order matters: pinnacle and prosource tie on area (150²),
+  // and the stable byArea sort must land prosource last (rule 2) — keep
+  // prosource AFTER pinnacle in these objects.
   pinwheel: {
     landscape: {
-      summit: { x: -40, y: -40, w: 590, h: 340, r: '340px 0px 0px 0px', rot: 0 },
-      fieldintel: { x: 560, y: -40, w: 660, h: 340, r: '0px 340px 0px 0px', rot: 0 },
-      bristol: { x: -40, y: 310, w: 590, h: 330, r: '0px 0px 0px 330px', rot: 0 },
-      ourco: { x: 560, y: 310, w: 660, h: 330, r: '0px 0px 330px 0px', rot: 0 },
-      pinnacle: { x: 420, y: 170, w: 250, h: 250, r: '0px 0px 0px 250px', rot: 0 },
-      prosource: { x: 540, y: 290, w: 180, h: 180, r: '0px 180px 0px 0px', rot: 0 },
+      summit: { x: -30, y: -30, w: 544, h: 354, r: '354px 0px 0px 0px', rot: 0 },
+      fieldintel: { x: 526, y: -30, w: 704, h: 354, r: '0px 354px 0px 0px', rot: 0 },
+      bristol: { x: -30, y: 336, w: 544, h: 294, r: '0px 0px 0px 294px', rot: 0 },
+      ourco: { x: 526, y: 336, w: 704, h: 294, r: '0px 0px 294px 0px', rot: 0 },
+      pinnacle: { x: 400, y: 210, w: 150, h: 150, r: '150px 0px 0px 0px', rot: 0 },
+      prosource: { x: 490, y: 300, w: 150, h: 150, r: '0px 0px 150px 0px', rot: 0 },
     },
+    // Derived: cross at (300, 470), 12px gutters, fieldintel the larger
+    // bottom petal (bristol's is trimmed so the anchor stays largest).
     portrait: {
-      summit: { x: -40, y: -20, w: 335, h: 530, r: '335px 0px 0px 0px', rot: 0 },
-      fieldintel: { x: 305, y: -40, w: 335, h: 550, r: '0px 335px 0px 0px', rot: 0 },
-      bristol: { x: -40, y: 520, w: 335, h: 540, r: '0px 0px 0px 335px', rot: 0 },
-      ourco: { x: 305, y: 520, w: 335, h: 540, r: '0px 0px 335px 0px', rot: 0 },
-      pinnacle: { x: 180, y: 400, w: 240, h: 240, r: '0px 0px 0px 240px', rot: 0 },
-      prosource: { x: 300, y: 430, w: 180, h: 180, r: '0px 180px 0px 0px', rot: 0 },
+      summit: { x: -30, y: -30, w: 324, h: 494, r: '324px 0px 0px 0px', rot: 0 },
+      ourco: { x: 306, y: -30, w: 324, h: 494, r: '0px 324px 0px 0px', rot: 0 },
+      bristol: { x: -30, y: 476, w: 324, h: 570, r: '0px 0px 0px 324px', rot: 0 },
+      fieldintel: { x: 306, y: 476, w: 324, h: 594, r: '0px 0px 324px 0px', rot: 0 },
+      pinnacle: { x: 150, y: 380, w: 150, h: 150, r: '150px 0px 0px 0px', rot: 0 },
+      prosource: { x: 270, y: 455, w: 150, h: 150, r: '0px 0px 150px 0px', rot: 0 },
     },
   },
 }
+
+/*
+ * FUTURE-STATE STUB — clip-path polygon states (triangle et al.):
+ * A polygon state would need (1) every state migrated to clip-path with a
+ * NORMALIZED point count so framer can tween vertex lists, (2) faithful
+ * rounded corners re-expressed as many-point approximations (~20 pts per
+ * corner — heavy string interpolation × 6 shapes), and (3) a re-proof of
+ * the W1a projection interplay under the new mechanism. Y1 decision:
+ * triangles enter as T2 echo accents + monument deco instead (echoes
+ * appear/disappear — they never tween-morph, so clip-path is safe there).
+ * If a polygon state is ever attempted, it must pass the animation-start
+ * trace probe (no LAYOUT starts, single settle) before shipping.
+ */
 
 /* Distinct hover silhouette per shape — the "this shape is a door" signal */
 export const HOVER_R = {

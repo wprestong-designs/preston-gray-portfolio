@@ -547,6 +547,24 @@
   border-radius: var(--radius-pill);
 }
 
+/* P1.4 — triangle echoes (four rotations). clip-path is safe here:
+   echoes appear/disappear, they never tween-morph. */
+.comp-echo--tri-tl {
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+
+.comp-echo--tri-tr {
+  clip-path: polygon(0 0, 100% 0, 100% 100%);
+}
+
+.comp-echo--tri-bl {
+  clip-path: polygon(0 0, 0 100%, 100% 100%);
+}
+
+.comp-echo--tri-br {
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+}
+
 /* X3: no press/lift shadows on composition shapes — hover/arming is
    color and geometry only (scale, ink-in, type reveal). */
 
@@ -705,9 +723,9 @@
   fill: var(--coral);
 }
 
-/* Y1 proposal mock (composer-only): the 39° print-bar hatching from the
-   reference SVG, shown on the strip state. Clipped by the shape's own
-   radius (overflow hidden). Paper-white bars via the --bg token. */
+/* P1.5 — the 39° print-bar hatching from the reference SVG: the strip
+   state's signature texture (see HATCH_STATES). Clipped by the shape's
+   own radius (overflow hidden). Paper-white bars via the --bg token. */
 .comp-hatch {
   position: absolute;
   inset: -30%;
@@ -1054,6 +1072,33 @@
 .ov-monument {
   font-size: min(76vh, 58vw); /* 70–90% viewport-height letterforms */
   color: var(--ov-fg);
+}
+
+/* P1.1 — two-line monument (SUMMIT / PHARMACY): halved size so the pair
+   still lands in the 70–90vh band; second line staggers right */
+.ov-monument--multi {
+  font-size: min(38vh, 30vw);
+}
+
+.ov-monument__line {
+  display: block;
+}
+
+.ov-monument__line--stagger {
+  margin-left: 0.6em;
+}
+
+/* P1.4 — triangle deco (the triangle vocabulary as accent, not a state).
+   Sits under the meta whisper; decorative only. */
+.ov-tri {
+  position: absolute;
+  right: clamp(24px, 5vw, 90px);
+  bottom: clamp(44px, 9vh, 96px);
+  width: 46px;
+  height: 46px;
+  background: var(--ov-fg);
+  clip-path: polygon(0 100%, 100% 100%, 100% 0);
+  opacity: 0.85;
 }
 
 .ov-meta {

@@ -111,7 +111,7 @@
   width: 36.67%;
   height: 48.33%;
   border-radius: 0 24% 24% 0;
-  background: var(--display-sky);
+  background: var(--display-sage);
   z-index: 2;
 }
 
@@ -121,7 +121,7 @@
   width: 17.5%;
   height: 48.33%;
   border-radius: 36% 36% 0 0;
-  background: var(--display-sage);
+  background: var(--display-sky);
   z-index: 5;
 }
 

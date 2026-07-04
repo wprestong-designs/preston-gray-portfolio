@@ -110,9 +110,9 @@ verbs. Edit freely — these are drafts.
 
 ## PG-05 · Prosource Pharmacy — STILLS ONLY (in progress)
 
-**No clips.** Video slots stay `pending — project in progress`. Standing
-constraint: Prosource is never rendered as a live link; captions carry
-"in progress." (`src/assets/prosource-home.jpg` was generated from the raw
+**No clips.** Video slots read "Screen captures coming — form flow to
+follow." Standing constraint: Prosource is never rendered as a live link;
+captions carry "in progress." (`src/assets/prosource-home.jpg` was generated from the raw
 still for the overlay/preview — 159 KB.)
 
 | File | Draft caption |

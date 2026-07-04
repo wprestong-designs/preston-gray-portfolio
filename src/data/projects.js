@@ -90,7 +90,9 @@ export const projects = [
     colorDisplay: 'var(--display-green)',
     colorHover: 'var(--accent)',
     displayFg: 'var(--display-green-fg)',
-    monument: 'Summit',
+    // P1.1 (oneshot): full-name monument, two staggered lines. Reversible:
+    // a plain string renders single-line (renderer supports both).
+    monument: ['Summit', 'Pharmacy'],
     slug: 'pg-01',
     preview: summitPreview,
     panels: [
@@ -182,20 +184,23 @@ export const projects = [
     ],
   },
   /* Y1: the Pharmacy Network split into its three brands — each a proof
-     of its own. Bristol keeps the sky family; pinnacle takes sage,
-     prosource takes the press-red. All statements/points are PLACEHOLDER
-     copy for G2. */
+     of its own. P1.2 families: bristol → sage, pinnacle → teal-adjacent
+     (sky tier), prosource → press-red. All statements/points are
+     PLACEHOLDER copy for G2. */
   {
     id: 'bristol',
     index: '03',
     name: 'Bristol Pharmacy',
     tag: 'Oklahoma City',
-    color: 'var(--flood-sky)',
-    colorFg: 'var(--flood-sky-fg)',
-    colorInk: 'var(--sky-deep)',
-    colorDisplay: 'var(--display-sky)',
-    colorHover: 'var(--flood-sky)',
-    displayFg: 'var(--display-sky-fg)',
+    /* P1.2 (oneshot): bristol reassigned sky -> SAGE per the run spec.
+       Prior family preserved for reversal: sky (flood #075985 / display
+       #0ea5e9). */
+    color: 'var(--flood-sage)',
+    colorFg: 'var(--flood-sage-fg)',
+    colorInk: 'var(--sage-deep)',
+    colorDisplay: 'var(--display-sage)',
+    colorHover: 'var(--flood-sage)',
+    displayFg: 'var(--display-sage-fg)',
     monument: 'Bristol',
     slug: 'pg-03',
     preview: bristolPreview,
@@ -239,12 +244,17 @@ export const projects = [
     index: '04',
     name: 'Pinnacle Rx',
     tag: 'Little Rock',
-    color: 'var(--flood-sage)',
-    colorFg: 'var(--flood-sage-fg)',
-    colorInk: 'var(--sage-deep)',
-    colorDisplay: 'var(--display-sage)',
-    colorHover: 'var(--flood-sage)',
-    displayFg: 'var(--display-sage-fg)',
+    /* P1.2 (oneshot): pinnacle takes the TEAL-ADJACENT family (existing
+       sky tier, display #0ea5e9 reads cyan) — chosen over coral, which
+       fails flood AA with white (3.09 best candidate) and sits in the
+       warm band between ourco's orange and prosource's red. Prior
+       assignment preserved for reversal: sage. */
+    color: 'var(--flood-sky)',
+    colorFg: 'var(--flood-sky-fg)',
+    colorInk: 'var(--sky-deep)',
+    colorDisplay: 'var(--display-sky)',
+    colorHover: 'var(--flood-sky)',
+    displayFg: 'var(--display-sky-fg)',
     monument: 'Pinnacle',
     slug: 'pg-04',
     preview: pinnacleHome,
