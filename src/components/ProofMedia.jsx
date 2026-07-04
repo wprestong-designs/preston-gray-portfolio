@@ -11,6 +11,11 @@
  *
  * A video item with no sources yet (srcMp4/srcWebm null) renders its
  * poster with a CLIP PENDING mark — the pre-capture placeholder state.
+ * A `pendingNote` overrides that mark's wording per item.
+ *
+ * P2 HARD BLOCK: `crmVerified: false` renders POSTER-ONLY — the <video>
+ * element is never emitted until Preston flips the flag in projects.js
+ * (synthetic-demo verification, see media-manifest.md checkboxes).
  */
 import { useEffect, useRef, useState } from 'react'
 import { useReducedMotion } from 'motion/react'
@@ -21,7 +26,9 @@ export default function ProofMedia({ item, active = false, near = false }) {
   const [tapPlay, setTapPlay] = useState(false)
   const [mounted, setMounted] = useState(false)
 
-  const hasVideo = item.kind === 'video' && (item.srcMp4 || item.srcWebm)
+  const gated = item.crmVerified === false
+  const hasVideo =
+    item.kind === 'video' && !gated && (item.srcMp4 || item.srcWebm)
   const wantsVideo = hasVideo && (reducedMotion ? tapPlay : near)
   const shouldPlay = hasVideo && (reducedMotion ? tapPlay : active)
 
@@ -62,7 +69,9 @@ export default function ProofMedia({ item, active = false, near = false }) {
         {item.kind === 'video' && !hasVideo && (
           <div className="pm__pending-wrap">
             <img src={item.poster} alt={item.alt ?? item.caption ?? ''} loading="lazy" />
-            <span className="pm__pending">Clip pending</span>
+            <span className="pm__pending">
+              {gated ? 'Pending verification' : item.pendingNote ?? 'Clip pending'}
+            </span>
           </div>
         )}
 

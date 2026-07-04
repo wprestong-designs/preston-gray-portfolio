@@ -1140,6 +1140,17 @@
   margin-top: 8px;
 }
 
+/* Y2 — media-panel placard: the museum-label register, distinct from the
+   mono caption. Reading face, colorFg (AA-verified on the flood). */
+.ov-body {
+  flex-basis: 100%;
+  max-width: 54ch;
+  font-size: clamp(15px, 1.5vw, 17.5px);
+  line-height: 1.55;
+  color: var(--ov-fg);
+  margin-top: 6px;
+}
+
 /* X2 — quiet return panel */
 .ov-return {
   font-family: var(--font-mono);

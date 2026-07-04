@@ -324,6 +324,10 @@ export default function ProjectOverlay() {
                 near={near}
               />
             ))}
+            {/* Y2: the placard — 2–3 sentences in the reading face,
+                below the media row. Reading-text rules apply (colorFg on
+                the deep flood, AA ≥4.5). */}
+            {panel.body && <p className="ov-body">{panel.body}</p>}
           </section>
         )
       case 'points':
