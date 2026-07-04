@@ -656,35 +656,41 @@ export const aboutOverlay = {
   monument: 'About',
   color: 'var(--flood-green-fg)',
   colorFg: 'var(--ink)',
+  // P5: reconciled to site-copy-draft-v1.md (draft priority). Lines where
+  // the draft left an open [VERIFY] hole (RuneScape year, dog's name)
+  // keep the prior working copy — flagged in content-state-report §6.
   panels: [
     {
       type: 'statement',
       statement:
-        'Websites, customer handouts, social posts, brand basics, and simple follow-up systems — practical pieces, built well, that make your business easier to find, easier to trust, and easier to choose.',
+        'I’m Preston Gray — a designer and builder in Denver. Days, I grow a pharmacy’s business face to face; nights and weekends, I design and build the websites, brands, and tools that make small businesses easier to find, easier to trust, and easier to choose.',
+      bodyDraft: true,
     },
     {
       type: 'points',
       label: 'What I make',
       points: [
-        'Websites & landing pages',
-        'Customer handouts & print pieces',
-        'Getting found locally — Google Business & reviews',
-        'Simple follow-up systems & internal tools',
+        'Websites that do the front-counter job',
+        'Customer materials — flyers, handouts, service sheets',
+        'Getting found locally',
+        'Simple follow-up systems',
       ],
     },
     {
       type: 'points',
       label: 'Off the press',
       points: [
-        'Woodworking projects that outgrow the garage',
+        'Woodworking — sawdust as therapy',
         'Old School RuneScape — patience training',
         'A very good dog (see portrait)',
+        'English lit degree, recovering nicely',
       ],
     },
     {
       type: 'contact',
       statement:
-        'Tell me what’s not working — I’ll bring back a clear plan and pieces you can actually use.',
+        'Have a business that deserves better materials? Let’s talk.',
+      bodyDraft: true,
     },
   ],
 }
