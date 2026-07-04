@@ -38,7 +38,9 @@ export default function About() {
               Websites &amp; clear customer copy
             </li>
             <li className="about__fact">
-              <span className="about__fact-dot about__fact-dot--sage" />
+              {/* Rule 2: About wears Lead + Support + one Pop = 3 brights;
+                  the former sage (Pop-1) dot folds into Lead. */}
+              <span className="about__fact-dot about__fact-dot--green" />
               Practical systems &amp; internal tools
             </li>
             <li className="about__fact">

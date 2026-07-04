@@ -194,7 +194,7 @@
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.1em;
-  color: var(--accent);
+  color: var(--accent-deep); /* numeral is text → text-grade Grape (7.1:1); Lead border stays decorative */
   border: 2px solid var(--accent);
   border-radius: 0;
   padding: 3px 8px;

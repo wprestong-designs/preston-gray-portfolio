@@ -200,12 +200,14 @@
   margin-top: 26px;
 }
 
-/* Solid spruce italic with a highlighter sweep — no gradient text */
+/* Ink italic under a Flash highlighter sweep (§3.6) — the phrase is
+   marked by the sweep, not by a low-contrast bright. (Bubblegum/--accent
+   is 3.0:1 on white = shapes-only per Appendix B; never headline text.) */
 .hero__headline-accent {
   display: inline-block;
   white-space: nowrap;
   font-style: italic;
-  color: var(--accent);
+  color: var(--ink);
   background-image: linear-gradient(
     to top,
     color-mix(in srgb, var(--flash) 80%, transparent) 0,
@@ -607,7 +609,7 @@
   height: 100%;
   pointer-events: none;
   stroke: var(--ink);
-  stroke-width: 1.5;
+  stroke-width: 2;
 }
 
 .comp-label {
@@ -737,7 +739,7 @@
   pointer-events: none;
   z-index: 40;
   stroke: var(--coral);
-  stroke-width: 1.5;
+  stroke-width: 2;
   stroke-dasharray: 6 5;
   fill: var(--coral);
 }
@@ -2402,20 +2404,21 @@ a.link-pill:hover {
   margin-top: 10px;
 }
 
+/* Rule 2 — three brights only: Lead (green) + Support (sky) + Pop-2
+   (orange). The sage/Pop-1 accent is retired (row 06 rides sky). */
 .service-row--orange .service-row__chip { background: var(--orange); }
 .service-row--sky .service-row__chip { background: var(--sky); }
 .service-row--green .service-row__chip { background: var(--green); }
-.service-row--sage .service-row__chip { background: var(--sage); }
 
 .service-row--orange:hover { background: var(--orange-tint); }
 .service-row--sky:hover { background: var(--sky-tint); }
 .service-row--green:hover { background: var(--green-tint); }
-.service-row--sage:hover { background: var(--sage-tint); }
 
+/* Hover numbers all use the text-grade deep (--*-deep == --wildcard); the
+   green row was on --green (Lead, 2.5:1 on its tint) and failed the floor. */
 .service-row--orange:hover .service-row__number { color: var(--orange-deep); }
 .service-row--sky:hover .service-row__number { color: var(--sky-deep); }
-.service-row--green:hover .service-row__number { color: var(--green); }
-.service-row--sage:hover .service-row__number { color: var(--sage-deep); }
+.service-row--green:hover .service-row__number { color: var(--green-deep); }
 
 /* ==================================================================
    About — white base
@@ -2441,7 +2444,7 @@ a.link-pill:hover {
   font-family: var(--font-display);
   font-style: italic;
   font-size: 24px;
-  color: var(--accent);
+  color: var(--wildcard); /* text-grade Grape (7.1:1); Lead was 3.0:1 = shapes-only */
   margin: 4px 0 10px;
 }
 
@@ -2468,10 +2471,10 @@ a.link-pill:hover {
   flex-shrink: 0;
 }
 
+/* Rule 2 — three brights: Lead + Pop-2 + Support (sage/Pop-1 retired). */
 .about__fact-dot--green { background: var(--accent); }
 .about__fact-dot--orange { background: var(--orange); }
 .about__fact-dot--sky { background: var(--sky); }
-.about__fact-dot--sage { background: var(--sage); }
 
 /* Portrait — taped proof, ready for a real photo */
 .about__visual {
@@ -2571,11 +2574,14 @@ a.link-pill:hover {
 /* ==================================================================
    Contact — solid plum panel
 ================================================================== */
+/* "Plum panel" — the ground is --wildcard (Grape), a deep bright that
+   carries white text at ~7:1. It was --accent (Bubblegum, 3.0:1), on which
+   the white title/subtitle failed the floor (Rule 10). */
 .contact__card {
   padding: clamp(56px, 7vw, 92px) clamp(28px, 6vw, 96px) clamp(40px, 5vw, 56px);
   border: 2px solid var(--ink);
   border-radius: var(--radius-lg);
-  background: var(--accent);
+  background: var(--wildcard);
   text-align: center;
   box-shadow: var(--press-lg);
 }
@@ -2589,7 +2595,7 @@ a.link-pill:hover {
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--accent-soft);
+  color: var(--flash); /* Flash on the plum ground (~5.9:1); pale pink was 1.8:1 */
   margin-bottom: 18px;
 }
 
@@ -2598,7 +2604,7 @@ a.link-pill:hover {
   content: '';
   width: 22px;
   height: 3px;
-  background: var(--accent-soft);
+  background: var(--flash);
 }
 
 .contact__title {
@@ -2631,7 +2637,7 @@ a.link-pill:hover {
 }
 
 .contact__card .btn:focus-visible {
-  outline-color: var(--accent-soft);
+  outline-color: var(--flash);
 }
 
 .contact__mark {

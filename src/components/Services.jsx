@@ -41,7 +41,9 @@ const services = [
     title: 'Practical Systems & Internal Tools',
     description:
       'Forms, delivery maps, reports, and simple internal tools — the unglamorous pieces that make a business run smoother.',
-    accent: 'sage',
+    // Rule 2: the section holds Lead + Support + one Pop = 3 brights; the
+    // former 4th accent (sage/Pop-1) folds into Support (sky).
+    accent: 'sky',
   },
 ]
 

@@ -29,7 +29,7 @@
   --bg-off: var(--ground-tint);
   --bg-raised: var(--ground-tint);
   --ink-soft: color-mix(in srgb, var(--ink) 72%, var(--paper));
-  --ink-faint: color-mix(in srgb, var(--ink) 55%, var(--paper));
+  --ink-faint: color-mix(in srgb, var(--ink) 62%, var(--paper)); /* 62% clears AA 4.5:1 at body size; 55% was 4.0:1 */
   --ink-on-dark: var(--anchor-fg);
   --ink-on-dark-soft: color-mix(in srgb, var(--anchor-fg) 78%, transparent);
   --border: color-mix(in srgb, var(--anchor) 40%, var(--paper));
