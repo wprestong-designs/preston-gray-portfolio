@@ -256,7 +256,9 @@
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.08em;
-  color: var(--ink-faint);
+  /* P6 a11y: ink-faint measured 2.89 on white — reading text takes the
+     AA-passing soft ink (7.63) */
+  color: var(--ink-soft);
 }
 
 .wk-proof h3 {
@@ -299,7 +301,7 @@
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--ink-faint);
+  color: var(--ink-soft); /* P6 a11y: was ink-faint 2.83 */
 }
 
 @media (max-width: 680px) {

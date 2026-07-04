@@ -445,10 +445,11 @@ export default function CompositionHero({ poster = false }) {
 
   const displayState = staticLayout ? 'registration' : stateName
   const layout = LAYOUTS[displayState][orientation]
-  // U1: resolved colorway — reduced-motion statics wear canonical; a
-  // ?colorway= pin wins over the cycle.
+  // U1: resolved colorway — reduced-motion statics wear canonical UNLESS
+  // a ?colorway= pin is present (a static pin adds zero motion — P6
+  // parity fix); a pin also wins over the live cycle.
   const displayColorway = staticLayout
-    ? 'canonical'
+    ? pinnedColorway ?? 'canonical'
     : pinnedColorway ?? colorwayName
 
   // U0b: at-rest letterforms hide while the comp is morphing. The flag
@@ -470,18 +471,28 @@ export default function CompositionHero({ poster = false }) {
   const overlayOpen = openId !== null
   useEffect(() => {
     if (composer || staticLayout || paused || overlayOpen) return undefined
+    let colorwayTimer
     const t = setInterval(() => {
       setStateName((current) => {
         const others = STATE_ORDER.filter((s) => s !== current)
         return others[Math.floor(Math.random() * others.length)]
       })
-      // U1: colorway advances WITH the geometry, its own no-repeat shuffle
-      setColorwayName((current) => {
-        const others = COLORWAY_ORDER.filter((c) => c !== current)
-        return others[Math.floor(Math.random() * others.length)]
-      })
+      // U1: colorway advances each cycle with its own no-repeat shuffle —
+      // OFFSET half a cycle (P6 review): the background-color transition
+      // repaint no longer stacks onto the morph's heaviest frames, and
+      // the between-morphs re-ink reads like a fresh press pass.
+      clearTimeout(colorwayTimer)
+      colorwayTimer = setTimeout(() => {
+        setColorwayName((current) => {
+          const others = COLORWAY_ORDER.filter((c) => c !== current)
+          return others[Math.floor(Math.random() * others.length)]
+        })
+      }, CYCLE_MS / 2)
     }, CYCLE_MS)
-    return () => clearInterval(t)
+    return () => {
+      clearInterval(t)
+      clearTimeout(colorwayTimer)
+    }
   }, [composer, staticLayout, paused, overlayOpen])
 
   // Grammar check while art-directing

@@ -196,6 +196,8 @@
      shape ramps; display text only, per the matrix above. */
   --accent-lime: #c1ff72;
   --accent-citrus: #ffde59;
+  /* P6: semantic white-text token so no raw hex escapes the fg pipeline */
+  --fg-white: #ffffff;
 
   --display-green-fg: var(--flood-green-fg); /* cream · 3.19 on display · 6.65 on flood */
   --display-orange-fg: #ffffff; /* 2.29 on display (ALL-mode caveat) · 5.75 on flood */

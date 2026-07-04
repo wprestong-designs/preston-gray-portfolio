@@ -55,9 +55,14 @@ const ACCENT_TOKEN = {
   'press-red-flood': 'var(--flood-red)',
 }
 
-/* Luminance side per member for the accent pick — mirrors the measured
-   threshold (only the red/purple deeps sit on the dark side). */
-const DARK_MEMBERS = new Set(['red/deep', 'purple/deep'])
+/* Luminance side per member for the accent pick — DERIVED from the same
+   measured MEMBER_FG data (white-fg members are the dark side), so a
+   ramp retune can't silently desynchronize this from the matrix (P6). */
+const DARK_MEMBERS = new Set(
+  Object.entries(MEMBER_FG)
+    .filter(([, fg]) => fg === 'white')
+    .map(([key]) => key),
+)
 
 export const COLORWAYS = {
   canonical: {
@@ -120,12 +125,16 @@ export function resolveFill(colorwayName, projectId) {
   return STEP_TOKEN(family, cw.members[family] ?? 'canonical')
 }
 
-/** The colorway's display accent for a project's current member. */
+/** The colorway's display accent for a project's current member.
+ *  Returns NULL for art-only members (no display string may sit there —
+ *  the matrix exempts them from accent validation, so a consumer must
+ *  treat null as "no text on this fill"). */
 export function resolveAccent(colorwayName, projectId) {
   const cw = COLORWAYS[colorwayName] ?? COLORWAYS.canonical
   const family = PROJECT_FAMILY[projectId]
   const step = cw.members[family] ?? 'canonical'
   const memberKey = `${family}/${step === 'canonical' ? 'deep' : step}`
+  if (MEMBER_FG[memberKey] === null) return null // art-only guard (P6)
   const name =
     cw.accents.perFamily?.[family] ??
     (DARK_MEMBERS.has(memberKey) ? cw.accents.onDark : cw.accents.onLight)
@@ -137,7 +146,9 @@ export function memberBodyFg(family, step) {
   const key = `${family}/${step === 'canonical' ? 'deep' : step}`
   const pick = MEMBER_FG[key]
   if (pick === 'ink') return 'var(--ink)'
-  if (pick === 'white') return '#ffffff'
+  // P6 review fix: token, not raw hex, so no bare color escapes the
+  // pipeline into component styles
+  if (pick === 'white') return 'var(--fg-white)'
   return null
 }
 
@@ -152,12 +163,17 @@ export function memberToken(family, step) {
 
 /* U2: ramp members allowed BEHIND TEXT, per family, in step order —
    the art-only members (green/deep, sky/deep, red/vivid, purple/vivid)
-   are excluded here and must stay excluded (matrix law). */
+   are excluded here and must stay excluded (matrix law).
+   P6 review fix: purple/deep is ALSO excluded — it is text-safe alone
+   (white 5.7) but its white fg fails mid-wipe when the adjacent tint
+   surface sweeps under it (white on lavender ≈ 1.5). Panel sequences
+   must keep ONE fg polarity per family so scrubbed seam overlaps stay
+   AA; every family below is ink-only. */
 export const TEXT_SAFE_STEPS = {
   green: ['tint', 'soft', 'vivid'],
   orange: ['tint', 'soft', 'vivid', 'deep'],
   sage: ['tint', 'soft', 'vivid', 'deep'],
   sky: ['tint', 'soft', 'vivid'],
   red: ['tint', 'soft'],
-  purple: ['tint', 'soft', 'deep'],
+  purple: ['tint', 'soft'],
 }

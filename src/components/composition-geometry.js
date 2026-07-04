@@ -58,12 +58,15 @@ export const Z = {
  *   3. Every state fills the stage near edge-to-edge — target ~85%
  *      coverage; shapes may BLEED past the stage edges (the container
  *      crops); 2–3 shapes per state touch or cross an edge.
- *   4. Gap regimes: GRID states (registration, tiles, quarters, pinwheel)
- *      use exactly 10px, never mixed — rule 2's prosource-overlap (and
- *      pinwheel's center cluster) are the sanctioned exceptions.
+ *   4. Gap regimes: GRID states use exactly 10px — EXCEPT pinwheel,
+ *      whose decoded reference geometry is 12px (codified P6); never
+ *      mixed within a state. Rule 2's prosource-overlap (and pinwheel's
+ *      center cluster) are the sanctioned overlap exceptions.
  *      CONNECTED states (swatches, circles, strip) must form ONE
  *      connected mass: "touching" means bounding boxes interpenetrate
  *      ≥40px on BOTH axes, and all six shapes sit in a single component.
+ *      (Gutter widths are hand-audited — a machine gutter check is a
+ *      known validator gap, logged on the punch list.)
  *   5. Each state has ONE geometric theme.
  *   6. TAPPABLE MINIMUM: every shape measures ≥110 design px on both
  *      axes in every state (≥44 CSS px at the smallest stage scale ~0.6).
@@ -114,7 +117,13 @@ export const LAYOUTS = {
     },
   },
   // Theme: printer's test strip — one bar cluster, connected regime,
-  // uniform 45px overlaps (anchor included).
+  // uniform 45px overlaps (anchor included). Reference: Preston's
+  // "pill bar design.svg" (Media/Custom Graphics) — seven slim staggered
+  // pills; these bars are the LAWFUL adaptation (the reference's ~66px
+  // widths sit under the 110px tappable minimum and can't reach rule 3's
+  // coverage on the 2:1 stage). Slim them toward the reference in the
+  // composer within those bounds; the 39° hatch layer is also native
+  // to this state (HATCH_STATES).
   strip: {
     landscape: {
       summit: { x: -20, y: 170, w: 180, h: 390, r: '90px 90px 90px 90px', rot: 0 },
@@ -314,13 +323,16 @@ export function validateGrammar() {
   Object.entries(LAYOUTS).forEach(([state, orientations]) => {
     Object.entries(orientations).forEach(([orientation, layout]) => {
       const tag = `${state}/${orientation}`
-      const byArea = Object.entries(layout).sort(
-        (a, b) => b[1].w * b[1].h - a[1].w * a[1].h,
-      )
-      if (byArea[0][0] !== 'fieldintel') {
-        console.warn(`[comp grammar] ${tag}: fieldintel is not the largest shape (${byArea[0][0]} is)`)
+      // P6: extremes are checked by comparison, not sort position — a
+      // pinnacle/prosource area TIE (pinwheel 150²) must not depend on
+      // Object.entries insertion order surviving refactors.
+      const areas = Object.entries(layout).map(([id, s]) => [id, s.w * s.h])
+      const fieldArea = areas.find(([id]) => id === 'fieldintel')[1]
+      const prosArea = areas.find(([id]) => id === 'prosource')[1]
+      if (areas.some(([id, a]) => id !== 'fieldintel' && a > fieldArea)) {
+        console.warn(`[comp grammar] ${tag}: fieldintel is not the largest shape`)
       }
-      if (byArea[byArea.length - 1][0] !== 'prosource') {
+      if (areas.some(([id, a]) => id !== 'prosource' && a < prosArea)) {
         console.warn(`[comp grammar] ${tag}: prosource is not the smallest shape`)
       }
       const p = layout.prosource

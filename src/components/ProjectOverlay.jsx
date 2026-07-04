@@ -84,12 +84,25 @@ function computeSurfaces(proof) {
   })
 }
 
+/* P6 review fix: viewport metrics are CACHED at module scope and updated
+   by one resize listener — the per-scroll-frame transforms below were
+   reading window.innerWidth/Height (forced-layout list) up to ~16× per
+   frame across the wipe layers. */
+let VW = typeof window === 'undefined' ? 1200 : window.innerWidth
+let VH = typeof window === 'undefined' ? 800 : window.innerHeight
+if (typeof window !== 'undefined') {
+  window.addEventListener('resize', () => {
+    VW = window.innerWidth
+    VH = window.innerHeight
+  })
+}
+
 /* The wipe front, as a clip-path string. Element box = one cell plus the
    left bleed; p ∈ [0,1] is the seam's viewport crossing. All arithmetic
    lives here so geometries stay declarative in data. */
 function clipFor(geometry, p) {
-  const vw = window.innerWidth
-  const vh = window.innerHeight
+  const vw = VW
+  const vh = VH
   const bleed = (WIPE_BLEED_VW / 100) * vw
   const width = bleed + vw
   const seamPct = (bleed / width) * 100
@@ -113,16 +126,14 @@ function clipFor(geometry, p) {
 function WipeBg({ scrollYProgress, travel, getOffset, surface, mode }) {
   const clipPath = useTransform(scrollYProgress, (v) => {
     if (mode !== 'clip') return 'none'
-    const vwPx = window.innerWidth
     const translate = v * travel
-    const p = Math.min(1, Math.max(0, (translate - (getOffset() - vwPx)) / vwPx))
+    const p = Math.min(1, Math.max(0, (translate - (getOffset() - VW)) / VW))
     return clipFor(surface.wipe, p)
   })
   const opacity = useTransform(scrollYProgress, (v) => {
     if (mode !== 'fade') return 1
-    const vwPx = window.innerWidth
     const translate = v * travel
-    return Math.min(1, Math.max(0, (translate - (getOffset() - vwPx)) / vwPx))
+    return Math.min(1, Math.max(0, (translate - (getOffset() - VW)) / VW))
   })
   return (
     <motion.div
@@ -205,7 +216,13 @@ export default function ProjectOverlay() {
       setFlipFrom(null)
       return
     }
-    const r = el.getBoundingClientRect()
+    // P6 review fix (HIGH): a multi-line monument (SUMMIT / PHARMACY) is
+    // two line-boxes tall — scaling the WHOLE block to the one-line
+    // fragment height halved the glyph size at the handoff. Measure the
+    // FIRST LINE for both the scale denominator and the position delta;
+    // single-line monuments have no .ov-monument__line and fall through.
+    const lineEl = el.querySelector('.ov-monument__line') ?? el
+    const r = lineEl.getBoundingClientRect()
     const from = {
       x: frag.x - r.x,
       y: frag.y - r.y,
@@ -270,7 +287,7 @@ export default function ProjectOverlay() {
   // Horizontal mode: active panel = the cell under the viewport center
   useMotionValueEvent(scrollYProgress, 'change', (v) => {
     if (!horizontal) return
-    const center = v * travel + window.innerWidth / 2
+    const center = v * travel + VW / 2
     const offsets = cellOffsets.current
     let idx = 0
     for (let i = 0; i < offsets.length; i++) {
@@ -544,6 +561,11 @@ export default function ProjectOverlay() {
           animate={{ opacity: expanded ? 1 : 0 }}
           exit={{ opacity: 0, transition: { duration: 0.15 } }}
           transition={{ duration: 0.25 }}
+          // P6 review fix (HIGH): the chrome floats over whichever panel
+          // is active — its fg must follow that panel's surface (white
+          // colorFg on a candy-tint panel measured ~1.5:1). CSS color
+          // transitions smooth the handoff.
+          style={{ '--ov-fg': surfaces[activePanel]?.fg ?? proof.colorFg }}
         >
           <span className="ov-mono">{isAbout ? 'About' : `Proof ${proof.index}`}</span>
           <button
@@ -588,7 +610,16 @@ export default function ProjectOverlay() {
                             panel.type === 'statement' ? ' overlay__cell--statement' : ''
                           }`}
                           key={`${panel.type}-${i}`}
-                          style={surfaces[i] ? { '--ov-fg': surfaces[i].fg } : undefined}
+                          // P6 review fix: surfaced cells paint their own
+                          // BASE background — the wipe layer only shapes
+                          // the seam, so the deep flood can never show
+                          // behind panel text (the diagonal's skew wedge
+                          // exposed it for the first ~17% of transit).
+                          style={
+                            surfaces[i]
+                              ? { '--ov-fg': surfaces[i].fg, background: surfaces[i].bg }
+                              : undefined
+                          }
                         >
                           {/* U2: the geometric wipe — next surface sweeps
                               back over the seam, scrubbed by scroll */}
