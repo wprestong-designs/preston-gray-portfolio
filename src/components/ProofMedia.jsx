@@ -101,8 +101,20 @@ export default function ProofMedia({ item, active = false, near = false }) {
             poster={item.poster}
             onClick={reducedMotion ? () => setTapPlay((p) => !p) : undefined}
           >
-            {item.srcWebm && <source src={item.srcWebm} type="video/webm" />}
-            {item.srcMp4 && <source src={item.srcMp4} type="video/mp4" />}
+            {/* Source order = smaller encode first so the browser picks the
+                lighter file. Default webm-first; item.mp4First flips it for
+                the clips whose mp4 encoded smaller than the webm (measured). */}
+            {item.mp4First ? (
+              <>
+                {item.srcMp4 && <source src={item.srcMp4} type="video/mp4" />}
+                {item.srcWebm && <source src={item.srcWebm} type="video/webm" />}
+              </>
+            ) : (
+              <>
+                {item.srcWebm && <source src={item.srcWebm} type="video/webm" />}
+                {item.srcMp4 && <source src={item.srcMp4} type="video/mp4" />}
+              </>
+            )}
           </video>
         )}
       </div>

@@ -22,8 +22,7 @@ import pinnacleHome from '../assets/pinnacle-home.jpg'
 import prosourceHome from '../assets/prosource-home.jpg'
 import fieldIntelPreview from '../assets/crm-analytics-desktop.jpg'
 import crmFieldnotesDesktop from '../assets/crm-fieldnotes-desktop.jpg'
-import crmTerritoryMobile from '../assets/crm-territorymap-mobile.jpg'
-import crmAnalyticsExplorer from '../assets/crm-analytics-mobile-explorer.png'
+// crm-territorymap-mobile + analytics-explorer imports removed — CRM data-safety unwire (2026-07-04)
 // crm-field-desktop.jpg (manifest still #3) is trimmed from wiring: the
 // panel-size rule caps media panels at 3 items and both CRM media panels
 // are full — logged in oneshot-report.md Open Items.
@@ -44,12 +43,7 @@ import summitDermPoster from '../assets/media/summit-dermatology-desktop-poster.
 import crmTodayMp4 from '../assets/media/crm-todaydashboard-scroll-desktop.mp4'
 import crmTodayWebm from '../assets/media/crm-todaydashboard-scroll-desktop.webm'
 import crmTodayPoster from '../assets/media/crm-todaydashboard-scroll-desktop-poster.jpg'
-import crmFieldMp4 from '../assets/media/crm-field-scroll-mobile.mp4'
-import crmFieldWebm from '../assets/media/crm-field-scroll-mobile.webm'
-import crmFieldPoster from '../assets/media/crm-field-scroll-mobile-poster.jpg'
-import crmMapMp4 from '../assets/media/summit-crm-territorymap-zoom-desktop.mp4'
-import crmMapWebm from '../assets/media/summit-crm-territorymap-zoom-desktop.webm'
-import crmMapPoster from '../assets/media/summit-crm-territorymap-zoom-desktop-poster.jpg'
+// crm field-scroll-mobile + territorymap-zoom-desktop imports removed — CRM data-safety unwire (2026-07-04)
 import crmAnalyticsMp4 from '../assets/media/crm-analytics-desktop.mp4'
 import crmAnalyticsWebm from '../assets/media/crm-analytics-desktop.webm'
 import crmAnalyticsPoster from '../assets/media/crm-analytics-desktop-poster.jpg'
@@ -240,6 +234,7 @@ export const projects = [
           {
             kind: 'video',
             srcMp4: summitRxSubMp4,
+            mp4First: true, // mp4 < webm (measured) — serve mp4 first
             srcWebm: summitRxSubWebm,
             poster: summitRxSubPoster,
             frame: 'browser',
@@ -264,6 +259,7 @@ export const projects = [
           {
             kind: 'video',
             srcMp4: summitDermMp4,
+            mp4First: true,
             srcWebm: summitDermWebm,
             poster: summitDermPoster,
             frame: 'browser',
@@ -693,6 +689,7 @@ export const projects = [
           {
             kind: 'video',
             srcMp4: crmTodayMp4,
+            mp4First: true,
             srcWebm: crmTodayWebm,
             poster: crmTodayPoster,
             frame: 'browser',
@@ -702,52 +699,18 @@ export const projects = [
           },
         ],
       },
-      {
-        type: 'media',
-        body: 'The real interface is a phone in a parking lot. Field notes sync between visits, account profiles load in a tap, and the map knows the territory, Denver to Colorado Springs, better than I do.',
-        bodyDraft: true,
-        items: [
-          {
-            kind: 'video',
-            srcMp4: crmFieldMp4,
-            srcWebm: crmFieldWebm,
-            poster: crmFieldPoster,
-            frame: 'phone',
-            caption: 'Field notes sync from the passenger seat',
-            alt: 'Scrolling Field Intel’s mobile field view (demo data)',
-            crmVerified: false,
-          },
-          {
-            kind: 'image',
-            src: crmTerritoryMobile,
-            frame: 'phone',
-            caption: 'Territory, mapped',
-            alt: 'Field Intel territory map on a phone (demo data)',
-          },
-          {
-            kind: 'image',
-            src: crmAnalyticsExplorer,
-            frame: 'phone',
-            caption: 'The whole CRM, pocket-sized',
-            alt: 'Field Intel analytics explorer on a phone (demo data)',
-          },
-        ],
-      },
+      /* CRM DATA-SAFETY UNWIRE (2026-07-04): the mobile field/territory/
+         analytics-explorer captures and the desktop territory-map zoom were
+         removed — none carry a visible "DEMO · SAMPLE DATA" badge (mobile
+         layouts hide the sidebar badge; the territory-map zoom predates it),
+         so they fail the standing badge rule. On the recapture list. Panel 3
+         (mobile field narrative) is dropped whole rather than left an empty
+         slot; its copy returns when the assets are recaptured with the badge. */
       {
         type: 'media',
         body: 'Every visit becomes data: territory coverage, account activity, momentum by practice. The analytics view turns a season of windshield time into a plan for next week.',
         bodyDraft: true,
         items: [
-          {
-            kind: 'video',
-            srcMp4: crmMapMp4,
-            srcWebm: crmMapWebm,
-            poster: crmMapPoster,
-            frame: 'browser',
-            caption: 'Territory, up close',
-            alt: 'Zooming a territory map of provider accounts in Field Intel (demo data)',
-            crmVerified: false,
-          },
           {
             kind: 'video',
             srcMp4: crmAnalyticsMp4,

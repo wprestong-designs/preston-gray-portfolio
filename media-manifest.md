@@ -5,11 +5,17 @@ Source folders (raw, gitignored, never committed):
 - `Media/Screenshots/` — 45 stills
 - `C:\Users\wpgra\OneDrive\Videos\Clipchamp\Video Project\Exports\crm-accountscroll-mobile.mp4` — one stray export outside the repo (move into `Media/Screencaptures/` before processing)
 
-**PROCESSED ✓** — all 11 selected clips are encoded in `src/assets/media/`
-(33 files: mp4 + webm + poster per clip) via `scripts/process-media.mjs`.
-Real sizes are in the Budget section. **Nothing is wired into panels yet** —
-edit selections/captions here, check off the CRM verification lines, then
-approve the wiring pass.
+**PROCESSED ✓ + WIRED** — 12 clips encoded in `src/assets/media/` (36 files:
+mp4 + webm + poster per clip) via `scripts/process-media.mjs`; all wired into
+the proof panels. Real sizes are in the Budget section.
+
+**CRM data-safety update (2026-07-04):** four badge-less CRM assets were
+UNWIRED (territory-map zoom-desktop, field-scroll-mobile, territorymap-mobile,
+analytics-mobile-explorer) — see `docs/recapture-list-20260704.md`. The kept
+CRM assets carry a visible "DEMO · SAMPLE DATA" badge (or are provably empty).
+
+**Pending processing:** 4 new Pinnacle/ProSource mobile mp4 captures in
+`Media/Screencaptures/` await `process-media.mjs` (ffmpeg) — see recapture list.
 
 Caption register: mono-face fragments, under ten words, noun-forward, no marketing
 verbs. Edit freely — these are drafts.
