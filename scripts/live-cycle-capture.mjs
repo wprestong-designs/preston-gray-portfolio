@@ -22,18 +22,22 @@ for (let i = 0; i < N; i += 1) {
   const path = `${OUT}/f${String(i).padStart(3, '0')}.png`
   await comp.screenshot({ path })
   // mean luminance of the stage (near-white ≈ blank frame)
-  const lum = await page.evaluate(() => {
+  const info = await page.evaluate(() => {
+    const comp = document.querySelector('.comp')
     const s = document.querySelector('.comp__stage')
-    if (!s) return null
-    const shapes = s.querySelectorAll('.comp-shape')
     let visible = 0
-    shapes.forEach((el) => {
-      const r = el.getBoundingClientRect()
-      if (r.width > 4 && r.height > 4) visible += 1
-    })
-    return { shapes: shapes.length, visible }
+    let shapes = 0
+    if (s) {
+      const els = s.querySelectorAll('.comp-shape')
+      shapes = els.length
+      els.forEach((el) => {
+        const r = el.getBoundingClientRect()
+        if (r.width > 4 && r.height > 4) visible += 1
+      })
+    }
+    return { shapes, visible, state: comp?.dataset.state, theme: comp?.dataset.theme, clip: comp?.dataset.clip }
   })
-  log.push({ i, t: i * EVERY, ...lum })
+  log.push({ i, t: i * EVERY, ...info })
   await sleep(EVERY)
 }
 await writeFile(`${OUT}/log.json`, JSON.stringify(log, null, 2))

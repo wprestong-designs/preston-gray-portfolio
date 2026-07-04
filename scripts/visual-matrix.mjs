@@ -20,9 +20,11 @@ import { chromium } from 'playwright'
 import { mkdir, writeFile, rm } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
+import { buildTransitionGraph } from '../src/components/composition-geometry.js'
+import { walkCoverage, bagCoverage, THEMES as ENGINE_THEMES } from '../src/components/composition-random.js'
 
 const BASE = process.env.BASE_URL || 'http://localhost:5173'
-const PASSES = (process.env.PASS || 'MTC').toUpperCase()
+const PASSES = (process.env.PASS || 'MTCV').toUpperCase()
 const SEED = Number(process.env.SEED || 1) // deterministic transition-theme picks; feeds R2 walk
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)))
 const OUT = process.env.OUT || join(ROOT, 'scratchpad', 'visual-matrix')
@@ -56,10 +58,8 @@ function rng(seed) {
     return ((x ^ (x >>> 14)) >>> 0) / 4294967296
   }
 }
-const setTheme = (page, theme) =>
-  page.evaluate((t) => {
-    document.documentElement.dataset.theme = t
-  }, theme)
+// The poster owns data-theme on .comp — drive it through the control surface.
+const setTheme = (page, theme) => page.evaluate((t) => window.__comp?.setTheme(t), theme)
 
 async function passM(page) {
   await mkdir(join(OUT, 'matrix'), { recursive: true })
@@ -70,9 +70,10 @@ async function passM(page) {
         waitUntil: 'networkidle',
       })
       const comp = await page.waitForSelector('.comp')
+      await page.waitForFunction(() => Boolean(window.__comp))
       for (const theme of THEMES) {
         await setTheme(page, theme)
-        await sleep(120)
+        await sleep(150)
         await comp.screenshot({ path: join(OUT, 'matrix', `${orient}__${theme}__${state}.png`) })
       }
       process.stdout.write(`  M ${orient} ${state}\n`)
@@ -186,6 +187,28 @@ async function passC(page) {
   }
 }
 
+async function passV() {
+  // Coverage proof — run the seeded walk + palette bag N steps, report visit
+  // counts (evidence the whole matrix gets traversed, no starvation).
+  const graph = buildTransitionGraph()
+  const STEPS = 900
+  const walk = walkCoverage(graph, SEED, STEPS)
+  const bag = bagCoverage(ENGINE_THEMES, SEED, STEPS)
+  const walkVals = Object.values(walk)
+  const bagVals = Object.values(bag)
+  const report = {
+    seed: SEED, steps: STEPS,
+    stateVisits: walk, stateMin: Math.min(...walkVals), stateMax: Math.max(...walkVals),
+    themeVisits: bag, themeMin: Math.min(...bagVals), themeMax: Math.max(...bagVals),
+    neighbors: Object.fromEntries(Object.entries(graph).map(([k, v]) => [k, v.length])),
+  }
+  await writeFile(join(OUT, 'coverage.json'), JSON.stringify(report, null, 2))
+  process.stdout.write(
+    `  V coverage (seed=${SEED}, ${STEPS} steps): states ${report.stateMin}-${report.stateMax} visits, ` +
+      `themes ${report.themeMin}-${report.themeMax}. no starvation=${report.stateMin > 0}\n`,
+  )
+}
+
 async function buildIndex() {
   const cell = (src) => `<figure><img loading="lazy" src="${src}"></figure>`
   let html = `<!doctype html><meta charset=utf8><title>visual matrix — state×theme</title>
@@ -221,6 +244,7 @@ async function main() {
     if (PASSES.includes('M')) await passM(page)
     if (PASSES.includes('T')) await passT(page)
     if (PASSES.includes('C')) await passC(page)
+    if (PASSES.includes('V')) await passV()
     await buildIndex()
   } finally {
     await browser.close()

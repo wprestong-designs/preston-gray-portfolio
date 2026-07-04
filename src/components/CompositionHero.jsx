@@ -28,10 +28,10 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { projects } from '../data/projects.js'
 import {
   COLORWAYS,
-  COLORWAY_ORDER,
   isValidColorway,
   resolveFill,
 } from '../data/colorways.js'
+import { makeRng, makeShuffleBag, makeWalk, THEMES } from './composition-random.js'
 import { useFloodColor } from '../context/flood-context.js'
 import { useProofOverlay } from '../context/overlay-context.js'
 import {
@@ -48,16 +48,16 @@ import {
   STAGGER_MS,
   STAGGER_ORDER,
   STATE_ORDER,
-  TRIANGLE_NEIGHBORS,
   Z,
   buildFidelityLayout,
+  buildTransitionGraph,
   isOneMass,
-  nextCycleState,
   shapeClipPolygon,
   stageTransform,
   touchEdges,
   useOrientation,
   useStageFit,
+  validateContrastVsGround,
   validateCycleMotion,
   validateGrammar,
 } from './composition-geometry.js'
@@ -164,6 +164,21 @@ const HATCH_STATES = ['columns']
 const CLIP_ARM_MS = 1400
 /* F1 spec: baked fragments stay OFF the small triangles */
 const TRIANGLE_NO_TYPE = ['pinnacle', 'prosource']
+/* R2: the poster's palette is the data-theme (set on .comp). Shapes read ROLE
+   tokens DIRECTLY — not the `:root`-declared `--display-*` tier, whose
+   `var(--lead)` resolves once at :root (memphis) and inherits down as a fixed
+   color, so a scoped [data-theme] can't re-hue it. Role tokens ARE redefined in
+   every [data-theme] block, so .comp[data-theme=X] re-hues these. The mapping
+   mirrors index.css's display tier (green→lead, orange→pop-2, …) so memphis is
+   pixel-identical to before; the other 7 themes now actually appear. */
+const POSTER_ROLE = {
+  summit: '--lead',
+  ourco: '--pop-2',
+  bristol: '--pop-1',
+  pinnacle: '--support',
+  prosource: '--signal',
+  fieldintel: '--wildcard',
+}
 /* --------------------------------------------------------------------- */
 function useCast() {
   return useMemo(
@@ -465,10 +480,6 @@ export default function CompositionHero({ poster = false }) {
   const typeMode = TYPE_MODES.includes(params.get('type'))
     ? params.get('type')
     : AT_REST_MODE
-  // U1: ?colorway= pins one colorway (geometry keeps cycling)
-  const pinnedColorway = isValidColorway(params.get('colorway'))
-    ? params.get('colorway')
-    : null
   // R0 VISUAL HARNESS (dev only). ?harness=1 freezes the auto-cycle and the
   // clip arm/disarm timers, and exposes window.__comp so scripts/visual-
   // matrix.mjs can force any (state, colorway, clip) — the permanent
@@ -479,6 +490,25 @@ export default function CompositionHero({ poster = false }) {
   const forcedState =
     harness && STATE_ORDER.includes(params.get('state')) ? params.get('state') : null
   const forcedClip = harness && params.get('clip') === '1'
+  const forcedTheme = harness && THEMES.includes(params.get('theme')) ? params.get('theme') : null
+
+  // R2 constrained-random engine (seedable, created once). Seed: harness &
+  // reduced-motion use a FIXED seed (reproducible); the live site seeds from
+  // time. The walk (geometry) and the palette shuffle-bag (8 themes) share one
+  // RNG and both advance ONLY at a geometry boundary — palette stays coupled.
+  const engine = useRef(null)
+  useEffect(() => {
+    if (engine.current) return
+    // Time seed lives in an effect (impure — not allowed during render).
+    const liveSeed = harness ? Number(params.get('seed')) || 1 : Date.now() >>> 0 || 1
+    const rng = makeRng(reducedMotion ? 1 : liveSeed)
+    engine.current = {
+      walk: makeWalk(buildTransitionGraph(), rng, { start: 'registration' }),
+      themeBag: makeShuffleBag(THEMES, rng),
+    }
+    // Pre-choose the first successor so the lookahead is primed on tick 1.
+    nextRef.current = engine.current.walk.advance()
+  }, [harness, reducedMotion, params])
   // R3: touch is first-class — the cycle runs and shapes are live links
   // everywhere. Only reduced motion pins the static Registration state
   // (shapes stay tappable).
@@ -488,19 +518,27 @@ export default function CompositionHero({ poster = false }) {
   const stage = STAGES[orientation]
   const [wrapRef, fit] = useStageFit(stage)
   const [stateName, setStateName] = useState(forcedState ?? 'registration')
-  // stateRef mirrors stateName for the interval's fixed-cycle successor
-  // (no side effects inside setState updaters).
+  // stateRef mirrors stateName for the walk's successor selection (no side
+  // effects inside setState updaters).
   const stateRef = useRef(forcedState ?? 'registration')
+  // One-step lookahead: nextRef holds the successor CHOSEN when the current
+  // state was entered, so the clip window can arm DURING the pre-triangle dwell
+  // (the walk makes triangle's neighbour dynamic — columns/quarters/tiles — so
+  // a fixed pre/post pair no longer works). prevRef detects leaving triangle.
+  const nextRef = useRef(null)
+  const prevRef = useRef(null)
   // Triangle clip-morph window (run-2 §5): clipArmed is the timed flag (set
   // at the neighbours' REST by the effect below); clipActive derives it off
   // the static/reduced case, so shapes only ever clip while the cycle is live.
   const [clipArmed, setClipArmed] = useState(forcedClip)
-  // U1: the colorway axis. First paint is CANONICAL (brand-stable); the
-  // cycle then moves through the eight named colorways, shuffled without
-  // repeat and COUPLED to the geometry morph — a shape re-inks only as it
-  // changes silhouette, never at rest. Reduced motion pins canonical;
-  // ?colorway= pins any.
-  const [colorwayName, setColorwayName] = useState('canonical')
+  // R2: the palette axis is now the DATA-THEME (the 64-color system), scoped to
+  // the poster (data-theme on .comp — the rest of the page stays memphis). It
+  // advances via an 8-theme shuffle-bag COUPLED to the geometry morph — a shape
+  // re-inks only as it changes silhouette (staggered CSS transition), never at
+  // rest. Fills read the CANONICAL display tier, which resolves through the
+  // active theme's roles → no tint wash-out (the R1 paper-on-paper fix). Reduced
+  // motion / first paint pin memphis; ?theme= pins any (harness).
+  const [posterTheme, setPosterTheme] = useState(forcedTheme ?? 'memphis')
   // B1a: hover is SINGLE-OWNER, flood-context semantics. hoveredId is the
   // one source of truth for label, sibling dim, ink-in fill, and (when T1
   // lands) the type-reveal. The ref mirrors it for event-time ownership
@@ -534,12 +572,10 @@ export default function CompositionHero({ poster = false }) {
   // Clip only while the cycle is live (never static/reduced).
   const clipActive = clipArmed && !staticLayout
   const layout = LAYOUTS[displayState][orientation]
-  // U1: resolved colorway — reduced-motion statics wear canonical UNLESS
-  // a ?colorway= pin is present (a static pin adds zero motion — P6
-  // parity fix); a pin also wins over the live cycle.
-  const displayColorway = staticLayout
-    ? pinnedColorway ?? 'canonical'
-    : pinnedColorway ?? colorwayName
+  // The poster's active theme — memphis while static/reduced; the walked theme
+  // otherwise; ?theme= pins one under the harness. Applied as data-theme on
+  // .comp so shapes re-hue through their role tokens (POSTER_ROLE).
+  const displayTheme = staticLayout ? forcedTheme ?? 'memphis' : posterTheme
 
   // U0b: at-rest letterforms hide while the comp is morphing. The flag
   // drops in the same render the layout target changes (state cycle OR
@@ -561,19 +597,22 @@ export default function CompositionHero({ poster = false }) {
   useEffect(() => {
     if (composer || staticLayout || paused || overlayOpen || harness) return undefined
     const t = setInterval(() => {
-      // Fixed cycle (run-2 §5): advance in STATE_ORDER — no shuffle. The
-      // choreography is a designed, watched sequence (arrangement differs
-      // every step; triangle only touches rect-family neighbours). The
-      // colorway re-ink stays COUPLED to the geometry morph — a shape
-      // re-inks only as it changes silhouette, one gesture. The triangle
-      // boundary is a true clip-path morph now (no blackout, no wipe).
-      const next = nextCycleState(stateRef.current)
-      stateRef.current = next
-      setStateName(next)
-      setColorwayName((c) => {
-        const pool = COLORWAY_ORDER.filter((x) => x !== c)
-        return pool[Math.floor(Math.random() * pool.length)]
-      })
+      // R2 constrained-random walk: the next state is a legal neighbour of the
+      // current one (arrangement differs; triangle only touches rect-family;
+      // min-motion enforced), excluding the last 3 and weighted toward least-
+      // recently-seen. The palette advances via an independent 8-theme shuffle-
+      // bag IN THE SAME TICK, so the re-ink stays coupled to the geometry morph
+      // (a shape re-inks only as it changes silhouette). Both are seeded, so the
+      // choreography is reproducible. Triangle boundary stays a true clip morph.
+      if (!engine.current || nextRef.current === null) return
+      const nxt = nextRef.current
+      prevRef.current = stateRef.current
+      stateRef.current = nxt
+      setStateName(nxt)
+      // Pre-choose the state AFTER this one, so the clip effect (which runs on
+      // the stateName change below) already knows whether triangle is coming.
+      nextRef.current = engine.current.walk.advance()
+      setPosterTheme(engine.current.themeBag.next())
     }, CYCLE_MS)
     return () => clearInterval(t)
   }, [composer, staticLayout, paused, overlayOpen, harness])
@@ -586,12 +625,18 @@ export default function CompositionHero({ poster = false }) {
   // window. CLIP_ARM_MS sits after the morph settles, before the next tick.
   useEffect(() => {
     if (staticLayout || harness) return undefined // harness drives clip explicitly
-    const [pre, post] = TRIANGLE_NEIGHBORS
-    if (stateName === pre) {
+    // ARM at the pre-triangle neighbour's REST (its successor is triangle), so
+    // the border-radius→polygon swap lands while the shape is still — then the
+    // morph INTO triangle interpolates polygons. DISARM at the post-triangle
+    // neighbour's REST (its predecessor was triangle). Both endpoints are rect-
+    // family (the graph guarantees it). Every non-adjacent state leaves the flag
+    // untouched, so it stays false outside the window. Keyed off stateName so
+    // hover-pause / reduced-motion can never misfire it.
+    if (nextRef.current === 'triangle') {
       const t = setTimeout(() => setClipArmed(true), CLIP_ARM_MS)
       return () => clearTimeout(t)
     }
-    if (stateName === post) {
+    if (prevRef.current === 'triangle') {
       const t = setTimeout(() => setClipArmed(false), CLIP_ARM_MS)
       return () => clearTimeout(t)
     }
@@ -610,6 +655,22 @@ export default function CompositionHero({ poster = false }) {
       if (fails.length) {
         console.warn('[composition] cycle min-motion FAIL:', fails)
       }
+      // R2: permanent paper-on-paper guard. Resolve each shape's ROLE fill
+      // under every theme via a probe, and compare to the poster's actual
+      // ground — the constant WHITE (memphis --paper), since the poster keeps a
+      // white ground regardless of theme. Flags any fill within the floor.
+      const probe = document.createElement('div')
+      probe.style.cssText = 'position:fixed;left:-9999px;top:-9999px;width:1px;height:1px'
+      document.body.appendChild(probe)
+      const read = (theme, cssVar) => {
+        probe.dataset.theme = theme
+        probe.style.background = `var(${cssVar})`
+        const m = getComputedStyle(probe).backgroundColor.match(/[\d.]+/g)
+        return [Number(m[0]), Number(m[1]), Number(m[2])]
+      }
+      const ground = read('memphis', '--paper')
+      validateContrastVsGround(read, THEMES, Object.entries(POSTER_ROLE), ground)
+      probe.remove()
     }
   }, [composer])
 
@@ -636,13 +697,13 @@ export default function CompositionHero({ poster = false }) {
     if (!harness) return undefined
     window.__comp = {
       states: STATE_ORDER,
-      colorways: ['canonical', ...COLORWAY_ORDER],
+      themes: THEMES,
       clipStates: [...CLIP_STATES],
       setState: (n) => {
         stateRef.current = n
         setStateName(n)
       },
-      setColorway: (c) => setColorwayName(c),
+      setTheme: (t) => setPosterTheme(t),
       setClip: (v) => setClipArmed(Boolean(v)),
       getState: () => stateRef.current,
     }
@@ -780,6 +841,9 @@ export default function CompositionHero({ poster = false }) {
   return (
     <div
       className={`comp${poster ? ' comp--poster' : ''}`}
+      data-theme={displayTheme}
+      data-state={displayState}
+      data-clip={clipActive ? '1' : '0'}
       aria-label="Project composition — each shape opens its proof"
     >
       {/* T2: taps that land outside every shape disarm */}
@@ -788,10 +852,10 @@ export default function CompositionHero({ poster = false }) {
         {cast.map((shape) => {
           const l = layout[shape.id]
           const lf = LETTERFORMS[shape.id]?.[orientation]
-          // U1: the at-rest fill comes from the current colorway's ramp
-          // member for this project's family; ink-in still lands on the
-          // DEEP FLOOD (identity anchor — never colorway-driven).
-          const fill = resolveFill(displayColorway, shape.id)
+          // R2: the at-rest fill is this shape's ROLE token, re-hued by the
+          // poster's active data-theme; ink-in still lands on the DEEP FLOOD
+          // (identity anchor — never theme-driven).
+          const fill = `var(${POSTER_ROLE[shape.id] ?? '--lead'})`
           const isHovered = hoveredShape?.id === shape.id
           const isArmed = armedId === shape.id
           // isActive unions the two preview owners (mouse hover / touch

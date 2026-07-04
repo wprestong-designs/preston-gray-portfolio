@@ -264,7 +264,11 @@
 
 .comp--poster .comp__stage-wrap {
   position: absolute;
-  inset: 0;
+  /* R1.6 fix: guaranteed top/bottom clearance so the floating brand + utils
+     always sit in a letterbox band — the stage never reaches the header on any
+     aspect ratio. Applies to EVERY state uniformly (the solid triangle just
+     exposed the missing clearance; it now obeys the same bounds as the rest). */
+  inset: clamp(52px, 7vh, 76px) 0;
 }
 
 /* U1: desktop keeps the wrapper invisible — brand + utils stay in the
@@ -417,6 +421,12 @@
     flex: 1 1 auto;
     min-height: 0;
     height: auto;
+  }
+
+  /* Mobile has a real header BAND above this flex area — the stage no longer
+     shares space with a floating header, so drop the desktop clearance. */
+  .comp--poster .comp__stage-wrap {
+    inset: 0;
   }
 }
 
@@ -827,13 +837,16 @@
   position: absolute;
   inset: -30%;
   pointer-events: none;
-  /* P6 review fix: bars are SOLID paper (--bg) — the composer-era 92%
-     color-mix tinted with every fill beneath, the exact stained-glass
-     reading the opaque-fills law bans. */
+  /* R1.5 decision: toned from bold candy-stripes (12px bars @ 22% coverage,
+     which read as the proofstrips treatment) to a WHISPER pinstripe — a 3px
+     paper hairline every 46px (~7% coverage, the grammar's "whisper" density).
+     Bars stay SOLID paper (--bg): a semi-transparent bar would tint the fill
+     beneath (the stained-glass reading the opaque-fills law bans). Columns
+     keeps a signature print texture without shouting. */
   background: repeating-linear-gradient(
     39deg,
-    transparent 0 42px,
-    var(--bg) 42px 54px
+    transparent 0 43px,
+    var(--bg) 43px 46px
   );
 }
 

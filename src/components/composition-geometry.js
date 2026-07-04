@@ -593,6 +593,95 @@ export function validateCycleMotion(orientation = 'landscape') {
   return fails
 }
 
+/* ── Transition graph (run-2 R2) ─────────────────────────────────
+   The random walk may only step along LEGAL edges. An edge A—B is legal iff:
+     · arrangement differs (no two same-arrangement states adjacent),
+     · triangle only neighbours the rect-family (morph-compat + §1 spec),
+     · the pair clears the minimum-motion threshold in BOTH orientations.
+   (Fine-family already differs — every state's vocabulary is distinct.)
+   Every state is guaranteed ≥2 legal neighbours; buildTransitionGraph warns
+   (dev) if any is stranded so it can be recomposed or relaxed with sign-off. */
+export const STATE_CLASS = {
+  registration: { fine: 'mixed', arr: 'grid' },
+  circles: { fine: 'circle', arr: 'scatter' },
+  columns: { fine: 'bar', arr: 'row' },
+  triangle: { fine: 'triangle', arr: 'pinwheel' },
+  pillrhythm: { fine: 'pill', arr: 'stagger' },
+  quarters: { fine: 'quarter', arr: 'grid' },
+  swatches: { fine: 'blob', arr: 'scatter' },
+  tiles: { fine: 'tile', arr: 'grid' },
+  pinwheel: { fine: 'plate', arr: 'pinwheel' },
+}
+/* Angular / rect-family states — the only silhouettes a triangle can morph
+   to and from without a corner-pop (all border-radius-driven rectangles). */
+export const RECT_FAMILY = new Set(['columns', 'quarters', 'tiles'])
+
+function pairMotionOK(a, b) {
+  return ['landscape', 'portrait'].every((o) => {
+    const la = LAYOUTS[a]?.[o]
+    const lb = LAYOUTS[b]?.[o]
+    if (!la || !lb) return false
+    const short = Math.min(STAGES[o].w, STAGES[o].h)
+    const moved = MOTION_PROOF_IDS.filter((id) => shapeMoves(la[id], lb[id], short)).length
+    return moved >= MOTION_MIN
+  })
+}
+
+export function legalEdge(a, b) {
+  if (a === b) return false
+  if (STATE_CLASS[a].arr === STATE_CLASS[b].arr) return false
+  if (a === 'triangle' || b === 'triangle') {
+    const other = a === 'triangle' ? b : a
+    if (!RECT_FAMILY.has(other)) return false
+  }
+  return pairMotionOK(a, b)
+}
+
+export function buildTransitionGraph() {
+  const graph = {}
+  STATE_ORDER.forEach((a) => {
+    graph[a] = STATE_ORDER.filter((b) => legalEdge(a, b))
+  })
+  if (import.meta.env?.DEV) {
+    Object.entries(graph).forEach(([s, ns]) => {
+      if (ns.length < 2) console.warn(`[comp graph] ${s} stranded — only ${ns.length} legal neighbour(s): ${ns}`)
+    })
+  }
+  return graph
+}
+
+/* Contrast-vs-ground (run-2 R2) — permanent paper-on-paper guard. `readColor`
+   resolves a CSS var to [r,g,b] under a given theme (injected, so this stays
+   DOM-free); `fills` is [[label, cssVar], …] (the poster's ROLE tokens, which
+   re-hue per theme); `ground` is the composition's ACTUAL ground [r,g,b] (white
+   — the poster keeps the constant white ground regardless of theme). Returns
+   every (theme, fill) within FLOOR:1 of ground — the fills that would vanish. */
+export const GROUND_CONTRAST_FLOOR = 1.5
+function relLum([r, g, b]) {
+  const f = (v) => {
+    const s = v / 255
+    return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4
+  }
+  return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b)
+}
+export function contrastRatio(a, b) {
+  const [hi, lo] = [relLum(a), relLum(b)].sort((x, y) => y - x)
+  return (hi + 0.05) / (lo + 0.05)
+}
+export function validateContrastVsGround(readColor, themes, fills, ground) {
+  const fails = []
+  themes.forEach((theme) => {
+    fills.forEach(([label, cssVar]) => {
+      const ratio = Math.round(contrastRatio(readColor(theme, cssVar), ground) * 100) / 100
+      if (ratio < GROUND_CONTRAST_FLOOR) fails.push({ theme, fill: label, ratio })
+    })
+  })
+  if (import.meta.env?.DEV && fails.length) {
+    console.warn('[comp contrast] fills within', GROUND_CONTRAST_FLOOR, ':1 of ground:', fails)
+  }
+  return fails
+}
+
 export function validateGrammar() {
   // Both orientations are always validated, whatever the composer shows
   Object.entries(LAYOUTS).forEach(([state, orientations]) => {
