@@ -88,7 +88,8 @@
   --flood-pad: clamp(48px, 6vw, 80px);
 
   /* Project flood colors — all pairings verified ≥4.5:1 (WCAG AA body):
-     cream/spruce 6.65 · white/burnt 5.75 · white/steel 7.56 · white/plum 8.98 */
+     cream/spruce 6.65 · white/burnt 5.75 · white/steel 7.56 · white/plum 8.98
+     · white/sage 6.58 · white/press-red 7.72 (Y1 tiers) */
   --flood-green: var(--green);
   --flood-green-fg: #f6ecc9;
   --flood-orange: #a84a0c;
@@ -97,6 +98,43 @@
   --flood-sky-fg: #ffffff;
   --flood-purple: #5b21b6;
   --flood-purple-fg: #ffffff;
+  /* Y1 — pinnacle sage + prosource press-red. Sage chosen over coral:
+     coral fails the flood tier with white (3.09) and hue-collides with
+     BOTH ourco's orange and prosource's red. Flagged adjacencies: sage
+     (~100°, muted) vs summit's emerald display (~160°, vivid) — separated
+     by hue AND saturation; press-red (0°) vs ourco's orange band (~28°) —
+     separated by value/saturation, and prosource is always the smallest
+     shape. */
+  --flood-sage: #46653f;
+  --flood-sage-fg: #ffffff;
+  --flood-red: #a11e1e;
+  --flood-red-fg: #ffffff;
+  --sage-deep: #354d30;
+  --red-deep: #821717;
+
+  /* Display tier — poster-register siblings of the flood hues, used ONLY
+     by the composition hero shapes. Same hue families, two registers:
+     flood = ink, display = poster. */
+  --display-green: #059669;
+  --display-orange: #f79245; /* exact value from the Field Intel design system */
+  --display-sky: #0ea5e9;
+  --display-purple: var(--purple); /* one electric step up from the plum flood */
+  --display-sage: #87b06a; /* Y1 · pinnacle */
+  --display-red: #d42b2b; /* Y1 · prosource — supplied brand candidate */
+
+  /* displayFg (T1) — type-layer pairings, dual ratios documented like the
+     flood pairs. The baked letterforms sit on the DISPLAY fill at rest and
+     on the FLOOD fill during hover/arming (the reveal coincides with the
+     ink-in), so both ratios matter. Letterforms are aria-hidden decorative
+     texture (accessible names live on the shape labels) — these ratios are
+     a legibility bar we choose to hold, not a WCAG gate. */
+  --display-green-fg: var(--flood-green-fg); /* cream · 3.19 on display · 6.65 on flood */
+  --display-orange-fg: #ffffff; /* 2.29 on display (ALL-mode caveat) · 5.75 on flood */
+  --display-sky-fg: #ffffff; /* 2.77 on display (ALL-mode caveat) · 7.56 on flood */
+  --display-purple-fg: #ffffff; /* 5.70 on display · 8.98 on flood */
+  --display-sage-fg: #ffffff; /* 2.49 on display (ALL-mode caveat) · 6.58 on flood */
+  --display-red-fg: #ffffff; /* 5.02 on display · 7.72 on flood — passes both tiers */
+  /* about letterform: var(--ink) · 10.43 on cream */
 
   /* Fonts */
   --font-body: 'Inter', system-ui, 'Segoe UI', sans-serif;
@@ -128,6 +166,20 @@ body {
   background: var(--bg);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  overscroll-behavior-y: none; /* poster homepage: no bounce past the art */
+}
+
+/* Visually hidden, present for crawlers and screen readers (R5) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 
 h1,
@@ -181,7 +233,8 @@ svg {
   border-radius: var(--radius-md);
 }
 
-section[id] {
+section[id],
+.spread[id] {
   scroll-margin-top: 88px;
 }
 

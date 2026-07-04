@@ -5,6 +5,8 @@
  * When closed, the inner content is visibility:hidden, so it leaves the
  * tab order and accessibility tree.
  */
+import { StampWobble } from './ProofLift.jsx'
+
 export default function SpecPanel({ id, open, spec }) {
   return (
     <div id={id} className={`spec${open ? ' is-open' : ''}`}>
@@ -64,7 +66,9 @@ export default function SpecPanel({ id, open, spec }) {
                       </div>
                     )}
                     <img src={item.image} alt={item.alt} loading="lazy" />
-                    {item.badge && <span className="spec-badge">{item.badge}</span>}
+                    {item.badge && (
+                      <StampWobble className="spec-badge">{item.badge}</StampWobble>
+                    )}
                   </div>
                   <p className="spec-item__caption">{item.caption}</p>
                 </li>

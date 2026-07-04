@@ -19,6 +19,11 @@ dist-ssr
 # Local reference material
 Screenshots/
 
+# Raw media captures — NEVER committed (V2 hygiene). Only processed
+# outputs (mp4/webm/poster triplets) enter src/assets/media/.
+Media/
+media-raw/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

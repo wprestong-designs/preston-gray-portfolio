@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import SectionHeader from './SectionHeader.jsx'
 import SpecPanel from './SpecPanel.jsx'
+import { useFloodColor } from '../context/flood-context.js'
+import { getProofBySlug } from '../data/projects.js'
+import { ProofLift, StampWobble } from './ProofLift.jsx'
 import summitHome from '../assets/summit-home.jpg'
 import summitRefill from '../assets/summit-refill.png'
 import summitDermatology from '../assets/summit-dermatology.jpg'
@@ -361,7 +364,7 @@ function Frame({ url, image, alt, note, className = '' }) {
 
 export default function FeaturedWork() {
   const [openSpecs, setOpenSpecs] = useState({})
-  const [floodedId, setFloodedId] = useState(null)
+  const { activeId, flood, clearFlood } = useFloodColor()
   const spreadRefs = useRef({})
 
   const toggleSpec = (id) =>
@@ -370,18 +373,19 @@ export default function FeaturedWork() {
   /*
    * Touch devices have no hover, so the flood follows scroll: a spread
    * floods while it crosses the middle band of the viewport. Spreads
-   * initialize white — the observer only fires after mount.
+   * initialize white — the observer only fires after mount. On pointer
+   * devices the mouse/focus handlers below drive the same shared context.
    */
   useEffect(() => {
     if (window.matchMedia('(hover: hover)').matches) return undefined
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          const id = entry.target.dataset.spread
+          const proofId = entry.target.dataset.proof
           if (entry.isIntersecting) {
-            setFloodedId(id)
+            flood(proofId)
           } else {
-            setFloodedId((prev) => (prev === id ? null : prev))
+            clearFlood(proofId)
           }
         })
       },
@@ -389,7 +393,7 @@ export default function FeaturedWork() {
     )
     Object.values(spreadRefs.current).forEach((el) => el && observer.observe(el))
     return () => observer.disconnect()
-  }, [])
+  }, [flood, clearFlood])
 
   return (
     <section className="work section" id="work">
@@ -405,38 +409,44 @@ export default function FeaturedWork() {
         {features.map((f) => {
           const specId = `spec-${f.id}`
           const isOpen = !!openSpecs[f.id]
+          const proof = getProofBySlug(f.id)
+          const proofId = proof?.id
           return (
             <li
               key={f.index}
+              id={f.id}
               ref={(el) => {
                 spreadRefs.current[f.id] = el
               }}
               data-spread={f.id}
-              className={`spread spread--${f.accent}${floodedId === f.id ? ' is-flooded' : ''}`}
+              data-proof={proofId}
+              className={`spread spread--${f.accent}${activeId === proofId ? ' is-flooded' : ''}`}
+              onMouseEnter={() => flood(proofId)}
+              onMouseLeave={() => clearFlood(proofId)}
+              onFocus={() => flood(proofId)}
+              onBlur={(e) => {
+                if (!e.currentTarget.contains(e.relatedTarget)) clearFlood(proofId)
+              }}
             >
               <div className="spread__inner">
                 <div className="spread__media">
-                  <span className="spread__sticker" aria-hidden="true">
+                  <StampWobble className="spread__sticker" aria-hidden="true">
                     {f.index}
-                  </span>
+                  </StampWobble>
                   <div className={`spread__frames${f.media === 'dual' ? ' spread__frames--dual' : ''}`}>
                     {f.media === 'dual' ? (
                       <>
-                        <Frame
-                          className="spread__frame--a"
-                          url={f.urlA}
-                          image={f.imageA}
-                          alt={f.altA}
-                        />
-                        <Frame
-                          className="spread__frame--b"
-                          url={f.urlB}
-                          image={f.imageB}
-                          alt={f.altB}
-                        />
+                        <ProofLift className="spread__frame--a" color={proof?.color}>
+                          <Frame url={f.urlA} image={f.imageA} alt={f.altA} />
+                        </ProofLift>
+                        <ProofLift className="spread__frame--b" color={proof?.color}>
+                          <Frame url={f.urlB} image={f.imageB} alt={f.altB} />
+                        </ProofLift>
                       </>
                     ) : (
-                      <Frame url={f.url} image={f.image} alt={f.alt} note={f.placeholderNote} />
+                      <ProofLift color={proof?.color}>
+                        <Frame url={f.url} image={f.image} alt={f.alt} note={f.placeholderNote} />
+                      </ProofLift>
                     )}
                   </div>
                   {f.mediaCaption && (

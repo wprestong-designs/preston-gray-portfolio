@@ -26,12 +26,14 @@
   align-items: baseline;
 }
 
+/* Masthead accents follow the active flood (spec §1, 400ms) */
 .navbar__brand-dot {
   width: 8px;
   height: 8px;
   margin-inline: 4px;
   border-radius: 2px;
-  background: var(--accent);
+  background: var(--flood-current, var(--accent));
+  transition: background-color 0.4s var(--ease);
   align-self: center;
 }
 
@@ -62,7 +64,8 @@
   right: 0;
   bottom: 0;
   height: 2px;
-  background: var(--accent);
+  background: var(--flood-current, var(--accent));
+  transition: background-color 0.4s var(--ease);
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 0.25s var(--ease);
@@ -161,11 +164,8 @@
   padding-block: clamp(56px, 7vw, 96px) clamp(16px, 2vw, 32px);
 }
 
-.hero__inner {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: clamp(40px, 6vw, 88px);
-  align-items: center;
+.hero__masthead {
+  max-width: 900px;
 }
 
 /* Location stamp */
@@ -226,27 +226,1019 @@
   margin-top: 36px;
 }
 
-/* The oversized proof — bleeds slightly off the right edge */
-.hero__visual {
+/* ------------------------------------------------------------------
+   Composition canvas — fixed 1200×600 stage, scaled as one piece
+------------------------------------------------------------------- */
+.comp {
+  width: min(1200px, 100% - 48px);
+  margin: clamp(32px, 5vw, 52px) auto 0;
+}
+
+.comp__frame {
   position: relative;
 }
 
-.hero-proof {
+/* ------------------------------------------------------------------
+   Poster homepage (R1) — the composition is the page
+------------------------------------------------------------------- */
+.poster {
   position: relative;
-  width: 106%;
-  border: 2px solid var(--ink);
-  border-radius: var(--radius-md);
-  background: var(--bg-card);
-  box-shadow: var(--press-lg);
-  overflow: hidden;
-  transform: rotate(1.2deg);
+  height: 100vh; /* fallback */
+  height: 100dvh;
+  overflow: clip;
 }
 
-.hero-proof__sticker {
+.comp--poster {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+.comp--poster .comp__frame {
+  height: 100%;
+}
+
+.comp--poster .comp__stage-wrap {
   position: absolute;
-  top: 46px;
-  left: -8px;
-  z-index: 2;
+  inset: 0;
+}
+
+.poster__brand {
+  position: absolute;
+  top: 16px;
+  left: clamp(14px, 2.4vw, 26px);
+  z-index: 30;
+  display: inline-flex;
+  align-items: baseline;
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 620;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  /* Corner legibility: paper chip so the wordmark reads over any shape
+     fill beneath (token-derived via color-mix — no new hex) */
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+}
+
+/* X4: the wordmark is the About door — give it door affordances */
+.poster__brand:hover {
+  background: color-mix(in srgb, var(--bg) 96%, transparent);
+}
+
+.poster__brand:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.poster__brand-dot {
+  width: 8px;
+  height: 8px;
+  margin-inline: 4px;
+  border-radius: 2px;
+  background: var(--flood-current, var(--accent));
+  transition: background-color 0.4s var(--ease);
+  align-self: center;
+}
+
+.poster__utils {
+  position: absolute;
+  top: 20px;
+  right: clamp(14px, 2.4vw, 26px);
+  z-index: 30;
+  display: flex;
+  gap: 22px;
+  /* Corner legibility chip — matches the wordmark's */
+  padding: 4px 12px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+}
+
+.poster__util {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: none;
+  border: none;
+  padding: 6px 2px;
+  cursor: pointer;
+  color: var(--flood-current, var(--ink-soft));
+  transition: color 0.4s var(--ease);
+  border-bottom: 1.5px solid transparent;
+}
+
+.poster__util:hover:not(:disabled) {
+  border-bottom-color: var(--flood-current, var(--accent));
+  color: var(--ink);
+}
+
+.poster__util:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* ------------------------------------------------------------------
+   Index layer (R4) — permanently mounted; hidden via visibility+inert
+------------------------------------------------------------------- */
+.index-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--bg);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-bottom: 2px solid var(--ink);
+}
+
+.index-layer__chrome {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px clamp(20px, 3vw, 32px);
+  background: var(--bg-off);
+  border-bottom: 2px solid var(--ink);
+}
+
+.index-layer__mark {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.index-layer__close {
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  background: var(--bg-card);
+  box-shadow: var(--press-xs);
+  color: var(--ink);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.index-layer__close:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: var(--press-sm);
+}
+
+.index-layer__body {
+  padding-bottom: 56px;
+}
+
+/* Quiet About / Contact rows under the proof ledger */
+.index-layer__extra {
+  width: min(1140px, 100% - 48px);
+  margin: 8px auto 0;
+}
+
+.index-extra__row {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 24px;
+  width: 100%;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line-ink-faint);
+  background: none;
+  border-top: 0;
+  border-left: 0;
+  border-right: 0;
+  text-align: left;
+  font-family: var(--font-body);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: color 0.2s var(--ease), padding-left 0.25s var(--ease);
+}
+
+.index-extra__row:hover,
+.index-extra__row:focus-visible {
+  color: var(--ink);
+  padding-left: 10px;
+}
+
+.index-extra__index {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--ink-faint);
+}
+
+.index-extra__tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+/* Label over-layer — shares the stage transform but sits outside the
+   cropped wrapper so labels are never clipped */
+.comp__stage--over {
+  pointer-events: none;
+  z-index: 20;
+}
+
+/* Aspect ratio and stage dimensions are set inline per orientation */
+.comp__stage-wrap {
+  position: relative;
+  overflow: hidden; /* shapes may bleed past the stage and get cropped */
+}
+
+.comp__stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: top left;
+}
+
+.comp-shape {
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* T1: center the baked letterform; clip it to the silhouette. The clip
+     tracks the animated border-radius every frame, and box-shadows (lift,
+     inset focus ring) are unaffected by the element's own overflow. */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  cursor: pointer;
+  transition: background-color 0.25s var(--ease);
+}
+
+/* W1a — invisible morph source: carries the shape's layoutId so layout
+   projection never touches the animated shape itself */
+.comp-morph-source {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Z1a — THE MONUMENTAL TYPE CONTRACT. One spec for the baked letterform
+   layer AND the overlay monument, so a shape fragment and its monument
+   title read as the same word at two zooms (the entire T3 continuity
+   contract). Fraunces is a variable font (opsz 9..144): optical sizing is
+   pinned OFF and the display cut (144) is forced, so neither layer can
+   render a softer optical cut than the other. Uppercase, one weight, one
+   tracking, one line-height — change them HERE only, never per-layer. */
+.comp-type,
+.ov-monument {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 0.8;
+  font-optical-sizing: none;
+  font-variation-settings: 'opsz' 144;
+  white-space: nowrap;
+}
+
+/* T1 — baked letterform layer. Decorative texture (aria-hidden): the
+   accessible name stays on the shape's aria-label. Sized inline from the
+   current layout (fontSize = shape height × per-shape scale knob) — a
+   genuinely large font-size, so the pinned cut renders at native scale. */
+.comp-type {
+  flex: none;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* T2 — echo accent shown while a shape is armed (deep flood fill inline).
+   Silhouette families match their host: daub → circle, arch → quarter-
+   round, bar → pill. */
+.comp-echo {
+  position: absolute;
+  left: 10%;
+  bottom: 10%;
+  width: 20%;
+  max-width: 88px;
+  aspect-ratio: 1;
+  pointer-events: none;
+}
+
+.comp-echo--circle {
+  border-radius: 50%;
+}
+
+.comp-echo--quarter {
+  border-radius: 0 100% 0 0;
+}
+
+.comp-echo--pill {
+  aspect-ratio: auto;
+  width: 32%;
+  max-width: 132px;
+  height: 11%;
+  border-radius: var(--radius-pill);
+}
+
+/* X3: no press/lift shadows on composition shapes — hover/arming is
+   color and geometry only (scale, ink-in, type reveal). */
+
+/* Inset focus ring (F2) — survives the stage crop on bleeding shapes:
+   a white line + ink line drawn INSIDE the shape bounds */
+.comp-shape:focus-visible {
+  outline: none;
+  box-shadow:
+    inset 0 0 0 3px #fff,
+    inset 0 0 0 6px var(--ink);
+}
+
+.comp-shape--static {
+  cursor: default;
+}
+
+.comp-marks {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+
+.comp-label {
+  position: absolute;
+  z-index: 10;
+  pointer-events: none;
+  white-space: nowrap;
+  /* T4: paper chip so the mono label reads over at-rest letterform
+     texture when edge-clamping parks it on top of a shape (token-derived
+     via color-mix — no new hex) */
+  padding: 4px 7px;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+}
+
+.comp-label--flip {
+  transform: translateX(-100%);
+}
+
+.comp-label__text {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--ink);
+}
+
+.comp-label__rule {
+  display: block;
+  height: 1.5px;
+  margin-top: 4px;
+  background: var(--ink);
+  transform-origin: left;
+}
+
+.comp-label--flip .comp-label__rule {
+  transform-origin: right;
+}
+
+/* Composer view — ?compose=1, static art direction of all three states */
+.composer {
+  width: min(1200px, 100% - 48px);
+  margin: 24px auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.composer__block {
+  border: 1.5px dashed var(--line-ink-soft);
+  border-radius: var(--radius-md);
+  padding: 16px;
+}
+
+.composer__title {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 12px;
+}
+
+.composer__id {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  /* T4: keep the debug id readable over same-color letterform texture */
+  text-shadow: 0 0 8px rgb(0 0 0 / 0.45);
+}
+
+.composer__meta {
+  font-weight: 500;
+  color: var(--ink-faint);
+  text-transform: none;
+  letter-spacing: 0.04em;
+}
+
+.composer__bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+}
+
+.composer__toggle {
+  display: flex;
+  gap: 8px;
+}
+
+.composer__toggle button {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 8px 14px;
+  border: 1.5px solid var(--ink);
+  border-radius: 6px;
+  background: var(--bg-card);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.composer__toggle button.is-active {
+  background: var(--ink);
+  color: var(--bg-off);
+}
+
+/* Portrait composer stages shouldn't tower — cap and center them */
+.composer__block--portrait .comp__stage-wrap {
+  max-width: 420px;
+  margin-inline: auto;
+}
+
+/* Debug touch-graph overlay (composer only) */
+.composer__graph {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 40;
+  stroke: var(--coral);
+  stroke-width: 1.5;
+  stroke-dasharray: 6 5;
+  fill: var(--coral);
+}
+
+/* Y1 proposal mock (composer-only): the 39° print-bar hatching from the
+   reference SVG, shown on the strip state. Clipped by the shape's own
+   radius (overflow hidden). Paper-white bars via the --bg token. */
+.comp-hatch {
+  position: absolute;
+  inset: -30%;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    39deg,
+    transparent 0 42px,
+    color-mix(in srgb, var(--bg) 92%, transparent) 42px 54px
+  );
+}
+
+/* T4 scrim — knocks the composition back so graph lines / centers stay
+   legible over at-rest letterform texture (debug-only layer; paper token
+   via color-mix, no new hex) */
+.composer__graph-scrim {
+  fill: color-mix(in srgb, var(--bg) 62%, transparent);
+  stroke: none;
+}
+
+/* ==================================================================
+   Proof lift — the one sticker treatment (spec §3)
+================================================================== */
+.proof-lift {
+  display: block;
+  border-radius: var(--lift-radius, var(--radius-md));
+  translate: 0 0;
+  transition:
+    translate 0.25s ease-out,
+    box-shadow 0.25s ease-out;
+}
+
+.proof-lift:hover,
+.proof-lift:focus-within {
+  translate: -2px -2px;
+  box-shadow: 3px 3px 0 var(--lift-color, var(--ink));
+  transition-duration: 0.15s;
+}
+
+/* The artifact's own press shadow yields to the lift shadow */
+.proof-lift:hover .spread__frame,
+.proof-lift:focus-within .spread__frame {
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .proof-lift:hover,
+  .proof-lift:focus-within {
+    translate: 0 0;
+  }
+}
+
+/* ==================================================================
+   Index of Proofs — typographic ledger + cursor proof card (spec §2)
+================================================================== */
+.proof-index {
+  margin-top: clamp(32px, 5vw, 56px);
+}
+
+.proof-index__inner {
+  position: relative;
+}
+
+.proof-index__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 12px;
+  white-space: nowrap;
+}
+
+.proof-index__label::before {
+  content: '';
+  width: 22px;
+  height: 3px;
+  background: var(--flood-current, var(--accent));
+  transition: background-color 0.4s var(--ease);
+}
+
+.proof-index__list {
+  border-top: 2px solid var(--ink);
+}
+
+.proof-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 24px;
+  padding: 18px 0;
+  border-bottom: 1.5px solid var(--line-ink-soft);
+  transition: padding-left 0.25s var(--ease);
+}
+
+/* Invisible morph source — the row rect the overlay grows out of */
+.proof-row__field {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.proof-row:hover,
+.proof-row:focus-visible {
+  padding-left: 10px;
+}
+
+.proof-row:focus-visible {
+  outline-color: var(--row-color, var(--accent));
+}
+
+.proof-row__index {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--ink-faint);
+}
+
+.proof-row__name {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 560;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+  transition: color 0.25s var(--ease);
+}
+
+.proof-row:hover .proof-row__name,
+.proof-row:focus-visible .proof-row__name {
+  color: var(--row-color);
+}
+
+.proof-row__tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  text-align: right;
+}
+
+/* Inline thumbnail — coarse pointers only (no cursor card on touch) */
+.proof-row__thumb {
+  width: 64px;
+  height: 44px;
+  border: 1.5px solid var(--ink);
+  border-radius: 4px;
+  align-self: center;
+  overflow: hidden;
+}
+
+.proof-row__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  display: block;
+}
+
+/* Cursor proof card — follows the pointer via useSpring */
+.proof-card {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 184px;
+  padding: 7px 7px 5px;
+  background: #fff;
+  border: 1px solid var(--ink);
+  box-shadow: var(--press-xs);
+  pointer-events: none;
+  z-index: 80;
+}
+
+.proof-card img {
+  width: 100%;
+  height: 112px;
+  object-fit: cover;
+  object-position: top;
+}
+
+.proof-card__caption {
+  margin-top: 6px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+/* Pinned variant — keyboard focus and prefers-reduced-motion */
+.proof-card--pinned {
+  position: absolute;
+  top: 40px;
+  right: 8px;
+  transform: rotate(-2deg);
+}
+
+/* ==================================================================
+   Project overlay — full-viewport layer (spec §C)
+================================================================== */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+}
+
+.overlay__backdrop {
+  position: absolute;
+  inset: 0;
+  background: var(--ov);
+  transition: background-color 0.4s var(--ease); /* next-proof hops */
+}
+
+.overlay__content {
+  position: absolute;
+  inset: 0;
+  color: var(--ov-fg);
+}
+
+.overlay__chrome {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px clamp(20px, 3vw, 36px);
+  pointer-events: none;
+}
+
+.overlay__chrome > * {
+  pointer-events: auto;
+}
+
+.overlay__close {
+  width: 44px;
+  height: 44px;
+  border: 2px solid var(--ov-fg);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ov-fg);
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.overlay__close:hover {
+  background: color-mix(in srgb, var(--ov-fg) 16%, transparent);
+}
+
+.overlay__close:focus-visible {
+  outline: 2px solid var(--ov-fg);
+  outline-offset: 3px;
+}
+
+.overlay__scroller {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.overlay__scroller:focus-visible {
+  outline: 2px solid var(--ov-fg);
+  outline-offset: -4px;
+}
+
+.overlay__sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.overlay__track {
+  display: flex;
+  height: 100%;
+  will-change: transform;
+}
+
+/* X1: media/points/end cells are one viewport wide; the statement cell is
+   content-sized — the monument word defines the travel distance */
+.overlay__cell {
+  flex: 0 0 100vw;
+  height: 100%;
+}
+
+.overlay__cell--statement {
+  flex: 0 0 auto;
+  min-width: 150vw; /* even short words (OURCO) earn some travel */
+}
+
+.overlay__cell .ov-panel {
+  height: 100%;
+}
+
+/* Vertical fallback — touch and reduced motion */
+.overlay__stack .ov-panel {
+  min-height: 100vh;
+  width: 100%;
+}
+
+.ov-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 14px;
+  padding: clamp(72px, 10vh, 120px) clamp(24px, 6vw, 110px);
+}
+
+.ov-mono {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ov-fg);
+  opacity: 0.8;
+}
+
+/* X1 — monument statement panel: the title at viewport scale, cropped by
+   the frame like the shape's baked fragment; the word's tail hands off
+   into the first media panel. Meta whispers lower-left of the FIRST
+   viewport (absolute against the wide cell). */
+.ov-panel--statement {
+  position: relative;
+  justify-content: center;
+  padding-right: clamp(60px, 8vw, 140px);
+}
+
+/* Type spec lives in the Z1a shared contract above — only size/color here */
+.ov-monument {
+  font-size: min(76vh, 58vw); /* 70–90% viewport-height letterforms */
+  color: var(--ov-fg);
+}
+
+.ov-meta {
+  position: absolute;
+  left: clamp(24px, 6vw, 110px);
+  bottom: clamp(44px, 9vh, 96px);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 44ch;
+}
+
+.ov-lede {
+  font-size: clamp(16px, 1.7vw, 21px);
+  line-height: 1.5;
+  color: var(--ov-fg);
+}
+
+/* Vertical stack: no travel — the monument reads as the cropped fragment
+   (leading letters, frame-cropped right), meta flows beneath */
+.overlay__stack .ov-panel--statement {
+  overflow: hidden;
+}
+
+.overlay__stack .ov-monument {
+  font-size: min(30vh, 42vw);
+}
+
+.overlay__stack .ov-meta {
+  position: static;
+  margin-top: 6vh;
+}
+
+.ov-statement {
+  font-size: clamp(18px, 2vw, 24px);
+  line-height: 1.5;
+  max-width: 44ch;
+  color: var(--ov-fg);
+  margin-top: 8px;
+}
+
+/* X2 — quiet return panel */
+.ov-return {
+  font-family: var(--font-mono);
+  font-size: clamp(22px, 3.2vw, 42px);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: none;
+  border: none;
+  padding: 8px 0;
+  cursor: pointer;
+  color: var(--ov-fg);
+  border-bottom: 3px solid transparent;
+  transition: border-color 0.2s var(--ease);
+}
+
+.ov-return:hover {
+  border-bottom-color: var(--ov-fg);
+}
+
+.ov-return:focus-visible {
+  outline: 2px solid var(--ov-fg);
+  outline-offset: 4px;
+}
+
+.ov-panel--media {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(20px, 3vw, 40px);
+}
+
+/* ProofMedia frames (G1) — print-shop CSS chrome, no device images */
+.pm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.pm__frame {
+  position: relative;
+  background: #fff;
+  border: 1.5px solid var(--ink);
+  box-shadow: var(--press-md);
+  overflow: hidden;
+}
+
+.pm--browser {
+  max-width: min(560px, 42vw);
+}
+
+.pm--plain {
+  max-width: min(520px, 40vw);
+}
+
+.pm--plain .pm__frame {
+  padding: 8px;
+  border-radius: var(--radius-sm);
+}
+
+.pm--browser .pm__frame {
+  border-radius: var(--radius-sm);
+}
+
+.pm--phone .pm__frame {
+  border-radius: 20px;
+  border-width: 2px;
+  padding: 6px;
+}
+
+.pm--phone {
+  max-width: min(220px, 24vw);
+}
+
+.pm--phone img,
+.pm--phone video {
+  border-radius: 14px;
+}
+
+.overlay__stack .pm--browser,
+.overlay__stack .pm--plain {
+  max-width: min(560px, 88vw);
+}
+
+.overlay__stack .pm--phone {
+  max-width: min(220px, 44vw);
+}
+
+.pm__chrome {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1.5px solid var(--ink);
+  background: var(--bg-off);
+}
+
+.pm__dots {
+  display: flex;
+  gap: 4px;
+}
+
+.pm__dots i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1px solid var(--line-ink-soft);
+}
+
+.pm__url {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pm__frame img,
+.pm__frame video {
+  display: block;
+  width: 100%;
+}
+
+.pm__caption {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ov-fg, var(--ink-soft));
+}
+
+.pm__pending-wrap {
+  position: relative;
+}
+
+.pm__pending {
+  position: absolute;
+  top: 10px;
+  left: 10px;
   padding: 4px 10px;
   border: 1.5px solid var(--ink);
   border-radius: 4px;
@@ -255,41 +1247,113 @@
   font-family: var(--font-mono);
   font-size: 9px;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--ink);
-  white-space: nowrap;
   transform: rotate(-2deg);
 }
 
-.hero-proof__shot {
-  aspect-ratio: 16 / 11;
-  min-height: 300px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background:
-    repeating-linear-gradient(45deg, rgba(23, 59, 47, 0.045) 0 8px, transparent 8px 18px),
-    var(--bg-off);
+/* Reduced-motion play affordance */
+.pm__play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  background: var(--bg-card);
+  box-shadow: var(--press-sm);
+  color: var(--ink);
+  font-size: 16px;
+  cursor: pointer;
 }
 
-.hero-proof__shot img {
+.pm__play:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.ov-points {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: top;
+  max-width: 640px;
 }
 
-.hero-proof__mark {
-  display: block;
-  margin-top: 14px;
-  text-align: right;
+.ov-points li {
   font-family: var(--font-mono);
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
+  font-size: clamp(14px, 1.4vw, 17px);
+  font-weight: 500;
+  color: var(--ov-fg);
+  padding: 16px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--ov-fg) 35%, transparent);
+}
+
+.ov-next {
+  font-family: var(--font-display);
+  font-size: clamp(30px, 4.6vw, 60px);
+  font-weight: 560;
+  text-align: left;
+  background: none;
+  border: none;
+  border-bottom: 3px solid var(--ov-fg);
+  padding: 0 0 6px;
+  color: var(--ov-fg);
+  cursor: pointer;
+}
+
+.ov-next:hover {
+  opacity: 0.85;
+}
+
+.ov-next:focus-visible,
+.ov-close-text:focus-visible {
+  outline: 2px solid var(--ov-fg);
+  outline-offset: 4px;
+}
+
+/* Quiet About link on PG–04's end panel (R5 ring decision) */
+.ov-about-link {
+  margin-top: 18px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(23, 59, 47, 0.45);
+  background: none;
+  border: none;
+  border-bottom: 1.5px solid var(--ov-fg);
+  padding: 0 0 3px;
+  color: var(--ov-fg);
+  cursor: pointer;
+}
+
+.ov-about-link:hover {
+  opacity: 0.85;
+}
+
+.ov-about-link:focus-visible {
+  outline: 2px solid var(--ov-fg);
+  outline-offset: 4px;
+}
+
+.ov-close-text {
+  margin-top: 28px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: none;
+  border: 1.5px solid var(--ov-fg);
+  border-radius: 8px;
+  color: var(--ov-fg);
+  padding: 10px 18px;
+  cursor: pointer;
+}
+
+.ov-close-text:hover {
+  background: color-mix(in srgb, var(--ov-fg) 16%, transparent);
 }
 
 /* ==================================================================
@@ -323,7 +1387,8 @@
   content: '';
   width: 22px;
   height: 3px;
-  background: var(--accent);
+  background: var(--flood-current, var(--accent));
+  transition: background-color 0.4s var(--ease);
 }
 
 .section-header__title {
@@ -365,12 +1430,12 @@
 .spread--sky { --field-deep: var(--sky-deep); --flood: var(--flood-sky); --flood-fg: var(--flood-sky-fg); }
 .spread--purple { --field-deep: var(--purple-deep); --flood: var(--flood-purple); --flood-fg: var(--flood-purple-fg); }
 
-.spread:is(:hover, :focus-within, .is-flooded) {
+.spread.is-flooded {
   background-color: var(--flood);
 }
 
 /* Text inverts to the flood foreground; screenshots/frames do not */
-.spread:is(:hover, :focus-within, .is-flooded) :is(
+.spread.is-flooded :is(
   .spread__title,
   .spread__description,
   .spread__meta,
@@ -386,50 +1451,50 @@
   color: var(--flood-fg);
 }
 
-.spread:is(:hover, :focus-within, .is-flooded) .spread__meta-index {
+.spread.is-flooded .spread__meta-index {
   border-color: var(--flood-fg);
 }
 
-.spread:is(:hover, :focus-within, .is-flooded) .spread__built li::before {
+.spread.is-flooded .spread__built li::before {
   background: var(--flood-fg);
 }
 
-.spread:is(:hover, :focus-within, .is-flooded) .spec__body::before {
+.spread.is-flooded .spec__body::before {
   background: var(--flood-fg);
 }
 
 /* Chips and the spec toggle flip to an inverted style on the flood */
-.spread:is(:hover, :focus-within, .is-flooded) .link-pill {
+.spread.is-flooded .link-pill {
   background: transparent;
   border-color: var(--flood-fg);
   color: var(--flood-fg);
 }
 
-.spread:is(:hover, :focus-within, .is-flooded) a.link-pill:hover {
+.spread.is-flooded a.link-pill:hover {
   background: rgba(255, 255, 255, 0.14);
   box-shadow: none;
 }
 
-.spread:is(:hover, :focus-within, .is-flooded) .link-pill--muted {
+.spread.is-flooded .link-pill--muted {
   border-style: dashed;
   border-color: color-mix(in srgb, var(--flood-fg) 60%, transparent);
   color: color-mix(in srgb, var(--flood-fg) 75%, transparent);
 }
 
-.spread:is(:hover, :focus-within, .is-flooded) .spec-toggle {
+.spread.is-flooded .spec-toggle {
   background: transparent;
   border-color: var(--flood-fg);
   color: var(--flood-fg);
   box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
 }
 
-.spread:is(:hover, :focus-within, .is-flooded) .spec-toggle[aria-expanded='true'] {
+.spread.is-flooded .spec-toggle[aria-expanded='true'] {
   background: var(--flood-fg);
   color: var(--flood);
 }
 
 /* Focus rings must stay visible against the flood */
-.spread:focus-within :focus-visible {
+.spread.is-flooded :focus-visible {
   outline-color: var(--flood-fg);
 }
 
@@ -486,11 +1551,6 @@
     box-shadow 0.2s var(--ease);
 }
 
-.spread:hover .spread__frame,
-.spread:focus-within .spread__frame {
-  transform: translate(-2px, -2px);
-  box-shadow: var(--press-lg);
-}
 
 .spread__shot {
   position: relative;
@@ -522,7 +1582,7 @@
   aspect-ratio: 16 / 12.5;
 }
 
-.spread__frames--dual .spread__frame {
+.spread__frames--dual .proof-lift {
   position: absolute;
   width: 82%;
 }
@@ -554,11 +1614,6 @@
   bottom: 0;
   right: 0;
   transform: rotate(1.2deg);
-}
-
-.spread:hover .spread__frame--b,
-.spread:focus-within .spread__frame--b {
-  transform: rotate(1.2deg) translate(-2px, -2px);
 }
 
 /* Text column */
@@ -1322,25 +2377,6 @@ a.link-pill:hover {
    Responsive — tablet
 ================================================================== */
 @media (max-width: 960px) {
-  .hero__inner {
-    grid-template-columns: 1fr;
-  }
-
-  .hero__visual {
-    max-width: 560px;
-    width: 100%;
-    margin-inline: auto;
-  }
-
-  .hero-proof {
-    width: 100%;
-    transform: rotate(0.8deg);
-  }
-
-  .hero-proof__shot {
-    min-height: 0;
-  }
-
   .spread__inner,
   .spread:nth-child(even) .spread__inner {
     grid-template-columns: 1fr;
@@ -1423,13 +2459,31 @@ a.link-pill:hover {
     flex: 1 1 auto;
   }
 
-  .hero-proof__sticker {
-    top: 40px;
-  }
-
   /* Slightly tighter flood padding on small screens */
   .spread__inner {
     padding-block: clamp(40px, 10vw, 56px);
+  }
+
+  /* Index ledger stacks: tag drops under the name, thumb stays right */
+  .proof-row {
+    grid-template-columns: 40px minmax(0, 1fr) auto;
+    gap: 8px 16px;
+    align-items: center;
+  }
+
+  .proof-row__name {
+    grid-column: 2;
+  }
+
+  .proof-row__tag {
+    grid-column: 2;
+    grid-row: 2;
+    text-align: left;
+  }
+
+  .proof-row__thumb {
+    grid-column: 3;
+    grid-row: 1 / span 2;
   }
 
   .spread__frames--dual {
@@ -1439,7 +2493,7 @@ a.link-pill:hover {
     gap: 14px;
   }
 
-  .spread__frames--dual .spread__frame {
+  .spread__frames--dual .proof-lift {
     position: static;
     width: 100%;
   }
