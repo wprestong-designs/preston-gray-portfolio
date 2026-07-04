@@ -30,10 +30,10 @@ const ROOT = dirname(dirname(fileURLToPath(import.meta.url)))
 const OUT = process.env.OUT || join(ROOT, 'scratchpad', 'visual-matrix')
 
 const STATES = [
-  'registration', 'circles', 'columns', 'triangle', 'pillrhythm',
-  'quarters', 'swatches', 'tiles', 'pinwheel',
+  'registration', 'circles', 'columns', 'pillrhythm', 'quarters',
+  'swatches', 'tiles', 'pinwheel',
+  'blocks', 'proofstrips', 'vortex', 'burst', 'arch',
 ]
-const CLIP_STATES = new Set(['columns', 'triangle', 'pillrhythm'])
 // the palette axis = the 8 data-themes (the 64-color system)
 const THEMES = [
   'memphis', 'cartoon', 'windbreaker', 'techlab',
@@ -45,8 +45,6 @@ const ORIENTS = {
   landscape: { width: 1280, height: 720 },
   portrait: { width: 480, height: 900 },
 }
-const clipFor = (s) => (CLIP_STATES.has(s) ? 1 : 0)
-const clipForPair = (a, b) => (CLIP_STATES.has(a) && CLIP_STATES.has(b) ? 1 : 0)
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 // tiny seeded RNG (mulberry32) so transition-theme picks are reproducible
 function rng(seed) {
@@ -66,9 +64,7 @@ async function passM(page) {
   for (const [orient, vp] of Object.entries(ORIENTS)) {
     await page.setViewportSize(vp)
     for (const state of STATES) {
-      await page.goto(`${BASE}/?harness=1&state=${state}&clip=${clipFor(state)}`, {
-        waitUntil: 'networkidle',
-      })
+      await page.goto(`${BASE}/?harness=1&state=${state}`, { waitUntil: 'networkidle' })
       const comp = await page.waitForSelector('.comp')
       await page.waitForFunction(() => Boolean(window.__comp))
       for (const theme of THEMES) {
@@ -82,28 +78,26 @@ async function passM(page) {
 }
 
 async function passT(page) {
-  // triangle-boundary morph frames — proves the run-2 morph is untouched.
+  // Morph continuity across representative edges (incl. the new T states),
+  // sampled through the ~1s tween. No clip-path — every morph is border-radius
+  // + rotate, so this doubles as a blank-frame check at the edges.
   await mkdir(join(OUT, 'trans'), { recursive: true })
   const SAMPLES = [120, 320, 560, 850]
   const pairs = [
-    ['columns', 'triangle'], ['triangle', 'pillrhythm'],
-    ['triangle', 'columns'], ['pillrhythm', 'triangle'],
+    ['circles', 'blocks'], ['blocks', 'burst'], ['burst', 'vortex'],
+    ['vortex', 'arch'], ['arch', 'proofstrips'], ['proofstrips', 'circles'],
+    ['quarters', 'vortex'], ['swatches', 'blocks'],
   ]
   const rand = rng(SEED)
   for (const orient of ['landscape', 'portrait']) {
     await page.setViewportSize(ORIENTS[orient])
     await page.goto(`${BASE}/?harness=1`, { waitUntil: 'networkidle' })
     await page.waitForFunction(() => Boolean(window.__comp))
-    // deterministic theme for this orientation's transition capture
     const theme = THEMES[Math.floor(rand() * THEMES.length)]
     await setTheme(page, theme)
     const comp = await page.$('.comp')
     for (const [a, b] of pairs) {
-      const clip = clipForPair(a, b)
-      await page.evaluate(([A, c]) => {
-        window.__comp.setClip(Boolean(c))
-        window.__comp.setState(A)
-      }, [a, clip])
+      await page.evaluate(([A]) => window.__comp.setState(A), [a])
       await sleep(1300)
       await page.evaluate(([B]) => window.__comp.setState(B), [b])
       const t0 = Date.now()

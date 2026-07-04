@@ -35,7 +35,6 @@ import { makeRng, makeShuffleBag, makeWalk, THEMES } from './composition-random.
 import { useFloodColor } from '../context/flood-context.js'
 import { useProofOverlay } from '../context/overlay-context.js'
 import {
-  CLIP_STATES,
   CONNECTED_STATES,
   CROP_MARKS,
   FIDELITY_STATES,
@@ -52,7 +51,6 @@ import {
   buildFidelityLayout,
   buildTransitionGraph,
   isOneMass,
-  shapeClipPolygon,
   stageTransform,
   touchEdges,
   useOrientation,
@@ -157,13 +155,6 @@ const ECHO = {
    fidelity spec (moved from the retired strip). Per-state flag so it can
    be reassigned or multiplied without touching render code. */
 const HATCH_STATES = ['columns']
-/* run-2 §5: the triangle clip-morph window arms/disarms this long after the
-   pre/post-triangle neighbour settles — past the ≈1s MORPH settle, before the
-   next 3s tick, so the border-radius↔polygon swap always happens at rest
-   (imperceptible; the polygon is generated from the shape's own radius). */
-const CLIP_ARM_MS = 1400
-/* F1 spec: baked fragments stay OFF the small triangles */
-const TRIANGLE_NO_TYPE = ['pinnacle', 'prosource']
 /* R2: the poster's palette is the data-theme (set on .comp). Shapes read ROLE
    tokens DIRECTLY — not the `:root`-declared `--display-*` tier, whose
    `var(--lead)` resolves once at :root (memphis) and inherits down as a fixed
@@ -489,7 +480,6 @@ export default function CompositionHero({ poster = false }) {
   const harness = import.meta.env.DEV && params.get('harness') === '1'
   const forcedState =
     harness && STATE_ORDER.includes(params.get('state')) ? params.get('state') : null
-  const forcedClip = harness && params.get('clip') === '1'
   const forcedTheme = harness && THEMES.includes(params.get('theme')) ? params.get('theme') : null
 
   // R2 constrained-random engine (seedable, created once). Seed: harness &
@@ -506,8 +496,6 @@ export default function CompositionHero({ poster = false }) {
       walk: makeWalk(buildTransitionGraph(), rng, { start: 'registration' }),
       themeBag: makeShuffleBag(THEMES, rng),
     }
-    // Pre-choose the first successor so the lookahead is primed on tick 1.
-    nextRef.current = engine.current.walk.advance()
   }, [harness, reducedMotion, params])
   // R3: touch is first-class — the cycle runs and shapes are live links
   // everywhere. Only reduced motion pins the static Registration state
@@ -521,16 +509,6 @@ export default function CompositionHero({ poster = false }) {
   // stateRef mirrors stateName for the walk's successor selection (no side
   // effects inside setState updaters).
   const stateRef = useRef(forcedState ?? 'registration')
-  // One-step lookahead: nextRef holds the successor CHOSEN when the current
-  // state was entered, so the clip window can arm DURING the pre-triangle dwell
-  // (the walk makes triangle's neighbour dynamic — columns/quarters/tiles — so
-  // a fixed pre/post pair no longer works). prevRef detects leaving triangle.
-  const nextRef = useRef(null)
-  const prevRef = useRef(null)
-  // Triangle clip-morph window (run-2 §5): clipArmed is the timed flag (set
-  // at the neighbours' REST by the effect below); clipActive derives it off
-  // the static/reduced case, so shapes only ever clip while the cycle is live.
-  const [clipArmed, setClipArmed] = useState(forcedClip)
   // R2: the palette axis is now the DATA-THEME (the 64-color system), scoped to
   // the poster (data-theme on .comp — the rest of the page stays memphis). It
   // advances via an 8-theme shuffle-bag COUPLED to the geometry morph — a shape
@@ -569,8 +547,6 @@ export default function CompositionHero({ poster = false }) {
   }
 
   const displayState = staticLayout ? 'registration' : stateName
-  // Clip only while the cycle is live (never static/reduced).
-  const clipActive = clipArmed && !staticLayout
   const layout = LAYOUTS[displayState][orientation]
   // The poster's active theme — memphis while static/reduced; the walked theme
   // otherwise; ?theme= pins one under the harness. Applied as data-theme on
@@ -598,50 +574,20 @@ export default function CompositionHero({ poster = false }) {
     if (composer || staticLayout || paused || overlayOpen || harness) return undefined
     const t = setInterval(() => {
       // R2 constrained-random walk: the next state is a legal neighbour of the
-      // current one (arrangement differs; triangle only touches rect-family;
-      // min-motion enforced), excluding the last 3 and weighted toward least-
-      // recently-seen. The palette advances via an independent 8-theme shuffle-
-      // bag IN THE SAME TICK, so the re-ink stays coupled to the geometry morph
-      // (a shape re-inks only as it changes silhouette). Both are seeded, so the
-      // choreography is reproducible. Triangle boundary stays a true clip morph.
-      if (!engine.current || nextRef.current === null) return
-      const nxt = nextRef.current
-      prevRef.current = stateRef.current
+      // current one (arrangement differs, min-motion enforced), excluding the
+      // last 3 and weighted toward least-recently-seen. The palette advances via
+      // an independent 8-theme shuffle-bag IN THE SAME TICK, so the re-ink stays
+      // coupled to the geometry morph (a shape re-inks only as it changes
+      // silhouette). Both are seeded, so the choreography is reproducible. Every
+      // silhouette morphs via border-radius + rotate — no clip-path.
+      if (!engine.current) return
+      const nxt = engine.current.walk.advance()
       stateRef.current = nxt
       setStateName(nxt)
-      // Pre-choose the state AFTER this one, so the clip effect (which runs on
-      // the stateName change below) already knows whether triangle is coming.
-      nextRef.current = engine.current.walk.advance()
       setPosterTheme(engine.current.themeBag.next())
     }, CYCLE_MS)
     return () => clearInterval(t)
   }, [composer, staticLayout, paused, overlayOpen, harness])
-
-  // Triangle clip-morph arm/disarm (run-2 §5). ARM at the pre-triangle
-  // neighbour's REST (border-radius → matching polygon, imperceptible because
-  // the polygon is generated FROM that radius and the shape isn't moving),
-  // DISARM at the post-triangle neighbour's REST. Keyed off stateName (not
-  // free timers), so hover-pause and reduced motion can never misfire the
-  // window. CLIP_ARM_MS sits after the morph settles, before the next tick.
-  useEffect(() => {
-    if (staticLayout || harness) return undefined // harness drives clip explicitly
-    // ARM at the pre-triangle neighbour's REST (its successor is triangle), so
-    // the border-radius→polygon swap lands while the shape is still — then the
-    // morph INTO triangle interpolates polygons. DISARM at the post-triangle
-    // neighbour's REST (its predecessor was triangle). Both endpoints are rect-
-    // family (the graph guarantees it). Every non-adjacent state leaves the flag
-    // untouched, so it stays false outside the window. Keyed off stateName so
-    // hover-pause / reduced-motion can never misfire it.
-    if (nextRef.current === 'triangle') {
-      const t = setTimeout(() => setClipArmed(true), CLIP_ARM_MS)
-      return () => clearTimeout(t)
-    }
-    if (prevRef.current === 'triangle') {
-      const t = setTimeout(() => setClipArmed(false), CLIP_ARM_MS)
-      return () => clearTimeout(t)
-    }
-    return undefined
-  }, [stateName, staticLayout, harness])
 
   // Grammar check while art-directing + cycle-motion validator (dev warn if
   // any adjacent pair fails the §5 minimum-motion threshold).
@@ -698,13 +644,11 @@ export default function CompositionHero({ poster = false }) {
     window.__comp = {
       states: STATE_ORDER,
       themes: THEMES,
-      clipStates: [...CLIP_STATES],
       setState: (n) => {
         stateRef.current = n
         setStateName(n)
       },
       setTheme: (t) => setPosterTheme(t),
-      setClip: (v) => setClipArmed(Boolean(v)),
       getState: () => stateRef.current,
     }
     return () => {
@@ -843,7 +787,6 @@ export default function CompositionHero({ poster = false }) {
       className={`comp${poster ? ' comp--poster' : ''}`}
       data-theme={displayTheme}
       data-state={displayState}
-      data-clip={clipActive ? '1' : '0'}
       aria-label="Project composition — each shape opens its proof"
     >
       {/* T2: taps that land outside every shape disarm */}
@@ -867,11 +810,8 @@ export default function CompositionHero({ poster = false }) {
           // V1a: the settle gate now covers REVEALED type too — with
           // at-rest letterforms off, hover/arm early in a state morph was
           // the remaining smear path; the reveal simply waits out the tween.
-          // F1: fragments stay OFF the small triangles (spec note).
           const typeVisible =
-            (isActive || showsTypeAtRest(shape.id, typeMode)) &&
-            typeSettled &&
-            !(displayState === 'triangle' && TRIANGLE_NO_TYPE.includes(shape.id))
+            (isActive || showsTypeAtRest(shape.id, typeMode)) && typeSettled
           const staggerDelay = staticLayout
             ? 0
             : (STAGGER_ORDER.indexOf(shape.id) * STAGGER_MS) / 1000
@@ -915,13 +855,9 @@ export default function CompositionHero({ poster = false }) {
                 // color-only under reduced motion.
                 borderRadius:
                   isHovered && !reducedMotion ? HOVER_R[shape.id] : l.r,
-                // run-2 §5: across the triangle window the silhouette is a
-                // matched-vertex clip polygon (columns→triangle→pillrhythm
-                // interpolate continuously); elsewhere clip is off and
-                // border-radius governs. The none↔polygon flips happen only
-                // at the armed/disarmed REST edges (imperceptible). clip-path
-                // clips the shape AND its children (letterform, echo).
-                clipPath: clipActive ? shapeClipPolygon(l) : 'none',
+                // Every silhouette morphs via border-radius + rotate — circles,
+                // pills, quarter-rounds, sharp blocks, diamonds (rotate), domes.
+                // No clip-path (its matched-vertex morph self-intersected).
                 scale: isHovered && !reducedMotion ? 1.04 : 1,
                 opacity: isDimmed && dimMode === 'opacity' ? DIM_OPACITY : 1,
                 filter: isDimmed && dimMode === 'filter' ? DIM_FILTER : 'saturate(1) brightness(1)',
@@ -929,10 +865,6 @@ export default function CompositionHero({ poster = false }) {
               transition={{
                 ...MORPH,
                 delay: staggerDelay,
-                // clip morph rides the same spring + ripple as geometry; the
-                // none↔polygon arm/disarm flips are non-interpolable so framer
-                // snaps them, but only ever at rest, so they read as nothing.
-                clipPath: { ...MORPH, delay: staggerDelay },
                 ...(isHovered ? { borderRadius: { ...HOVER_MORPH, delay: 0 } } : {}),
                 scale: { ...HOVER_MORPH, delay: 0 },
                 opacity: { duration: 0.25, delay: 0 },
@@ -1068,13 +1000,10 @@ export default function CompositionHero({ poster = false }) {
                     width: o.w,
                     height: o.h,
                     borderRadius: o.r,
-                    // §5: ornaments clip-morph with the shapes across the window
-                    clipPath: clipActive ? shapeClipPolygon(o) : 'none',
                   }}
                   transition={{
                     ...MORPH,
                     delay: staggerDelay,
-                    clipPath: { ...MORPH, delay: staggerDelay },
                     opacity: { duration: 0.2, delay: 0 },
                   }}
                 >

@@ -27,12 +27,21 @@ export const STATE_ORDER = [
   'registration',
   'circles',
   'columns',
-  'triangle',
   'pillrhythm',
   'quarters',
   'swatches',
   'tiles',
   'pinwheel',
+  // T (from Preston's ornament designs) — all border-radius + rotate, no
+  // clip-path (the literal-triangle state was retired: its matched-vertex
+  // clip-morph self-intersected mid-tween → blank frames, and undershot the
+  // border-radius → the "double morph" on arm. Angular energy now comes from
+  // rotated squares/diamonds + sharp corners, which morph flawlessly).
+  'blocks',
+  'proofstrips',
+  'vortex',
+  'burst',
+  'arch',
 ]
 
 /* Successor in the fixed cycle (wraps). The poster advances with this. */
@@ -56,6 +65,9 @@ export const CLIP_STATES = new Set(['triangle', ...TRIANGLE_NEIGHBORS])
    (svg-fidelity-spec.md is authoritative; geometry is numerically
    extracted, never re-composed). */
 export const FIDELITY_STATES = ['pinwheel', 'triangle', 'pillrhythm', 'columns']
+/* T states — direct art-directed cast layouts (not numeric SVG fidelity);
+   grammar rules 1/2/6 are waived, their composed mass is the design. */
+export const ART_STATES = ['blocks', 'proofstrips', 'vortex', 'burst', 'arch']
 /* States that enter/exit via the 150ms crossfade instead of the radius
    tween (the documented polygon-state mechanism). Pinwheel may be added
    here if its %-radius snap offends in the composer. */
@@ -474,6 +486,105 @@ export const LAYOUTS = {
     landscape: buildFidelityLayout('pinwheel', STAGES.landscape),
     portrait: buildFidelityLayout('pinwheel', STAGES.portrait),
   },
+  /* ===== T — Preston's ornament designs as cast states (border-radius +
+     rotate only; art-directed likeness, expect composer tuning). ===== */
+  // blocks → sharp-cornered rect mosaic (tessellating, bleeding edges)
+  blocks: {
+    landscape: {
+      fieldintel: { x: -20, y: -20, w: 600, h: 400, r: '0px 0px 0px 0px', rot: 0 },
+      summit: { x: 580, y: -20, w: 640, h: 230, r: '0px 0px 0px 0px', rot: 0 },
+      ourco: { x: 580, y: 210, w: 330, h: 410, r: '0px 0px 0px 0px', rot: 0 },
+      bristol: { x: 910, y: 210, w: 310, h: 410, r: '0px 0px 0px 0px', rot: 0 },
+      pinnacle: { x: -20, y: 380, w: 350, h: 240, r: '0px 0px 0px 0px', rot: 0 },
+      prosource: { x: 330, y: 356, w: 250, h: 264, r: '0px 0px 0px 0px', rot: 0 },
+    },
+    portrait: {
+      fieldintel: { x: -20, y: -20, w: 640, h: 380, r: '0px 0px 0px 0px', rot: 0 },
+      summit: { x: -20, y: 360, w: 330, h: 340, r: '0px 0px 0px 0px', rot: 0 },
+      ourco: { x: 310, y: 360, w: 310, h: 340, r: '0px 0px 0px 0px', rot: 0 },
+      bristol: { x: -20, y: 700, w: 640, h: 200, r: '0px 0px 0px 0px', rot: 0 },
+      pinnacle: { x: -20, y: 880, w: 380, h: 180, r: '0px 0px 0px 0px', rot: 0 },
+      prosource: { x: 360, y: 856, w: 260, h: 204, r: '0px 0px 0px 0px', rot: 0 },
+    },
+  },
+  // proofstrips → horizontal pill strips, stacked (rounded ends, bleed left)
+  proofstrips: {
+    landscape: {
+      fieldintel: { x: -40, y: 8, w: 1060, h: 104, r: '52px 52px 52px 52px', rot: 0 },
+      summit: { x: -40, y: 128, w: 880, h: 82, r: '41px 41px 41px 41px', rot: 0 },
+      bristol: { x: -40, y: 226, w: 980, h: 92, r: '46px 46px 46px 46px', rot: 0 },
+      ourco: { x: -40, y: 334, w: 820, h: 84, r: '42px 42px 42px 42px', rot: 0 },
+      pinnacle: { x: -40, y: 434, w: 700, h: 76, r: '38px 38px 38px 38px', rot: 0 },
+      prosource: { x: -40, y: 526, w: 540, h: 70, r: '35px 35px 35px 35px', rot: 0 },
+    },
+    portrait: {
+      fieldintel: { x: -40, y: 30, w: 680, h: 150, r: '75px 75px 75px 75px', rot: 0 },
+      summit: { x: -40, y: 205, w: 560, h: 120, r: '60px 60px 60px 60px', rot: 0 },
+      bristol: { x: -40, y: 350, w: 620, h: 130, r: '65px 65px 65px 65px', rot: 0 },
+      ourco: { x: -40, y: 505, w: 540, h: 120, r: '60px 60px 60px 60px', rot: 0 },
+      pinnacle: { x: -40, y: 650, w: 470, h: 110, r: '55px 55px 55px 55px', rot: 0 },
+      prosource: { x: -40, y: 785, w: 390, h: 100, r: '50px 50px 50px 50px', rot: 0 },
+    },
+  },
+  // vortex → rotated-square (diamond) progression, decreasing along a spiral
+  vortex: {
+    landscape: {
+      fieldintel: { x: 340, y: 80, w: 440, h: 440, r: '0px 0px 0px 0px', rot: 45 },
+      summit: { x: 450, y: 90, w: 340, h: 340, r: '0px 0px 0px 0px', rot: 60 },
+      bristol: { x: 535, y: 110, w: 260, h: 260, r: '0px 0px 0px 0px', rot: 30 },
+      ourco: { x: 597, y: 157, w: 195, h: 195, r: '0px 0px 0px 0px', rot: 15 },
+      pinnacle: { x: 645, y: 215, w: 140, h: 140, r: '0px 0px 0px 0px', rot: 45 },
+      prosource: { x: 672, y: 267, w: 95, h: 95, r: '0px 0px 0px 0px', rot: 30 },
+    },
+    portrait: {
+      fieldintel: { x: 100, y: 140, w: 400, h: 400, r: '0px 0px 0px 0px', rot: 45 },
+      summit: { x: 170, y: 270, w: 320, h: 320, r: '0px 0px 0px 0px', rot: 60 },
+      bristol: { x: 175, y: 415, w: 250, h: 250, r: '0px 0px 0px 0px', rot: 30 },
+      ourco: { x: 177, y: 537, w: 185, h: 185, r: '0px 0px 0px 0px', rot: 15 },
+      pinnacle: { x: 232, y: 642, w: 135, h: 135, r: '0px 0px 0px 0px', rot: 45 },
+      prosource: { x: 284, y: 724, w: 92, h: 92, r: '0px 0px 0px 0px', rot: 30 },
+    },
+  },
+  // burst → nested rounded plates, concentric (target/burst). Sizes DECREASE in
+  // paint order (Z: fieldintel→bristol→summit→ourco→pinnacle→prosource) so every
+  // ring stays visible — a larger shape painted later would swallow a smaller one.
+  burst: {
+    landscape: {
+      fieldintel: { x: 330, y: 30, w: 540, h: 540, r: '110px 110px 110px 110px', rot: 0 },
+      bristol: { x: 385, y: 85, w: 430, h: 430, r: '88px 88px 88px 88px', rot: 0 },
+      summit: { x: 440, y: 140, w: 320, h: 320, r: '66px 66px 66px 66px', rot: 0 },
+      ourco: { x: 492, y: 192, w: 215, h: 215, r: '48px 48px 48px 48px', rot: 0 },
+      pinnacle: { x: 530, y: 230, w: 140, h: 140, r: '34px 34px 34px 34px', rot: 0 },
+      prosource: { x: 560, y: 260, w: 80, h: 80, r: '22px 22px 22px 22px', rot: 0 },
+    },
+    portrait: {
+      fieldintel: { x: 20, y: 240, w: 560, h: 560, r: '115px 115px 115px 115px', rot: 0 },
+      bristol: { x: 85, y: 305, w: 430, h: 430, r: '88px 88px 88px 88px', rot: 0 },
+      summit: { x: 140, y: 360, w: 320, h: 320, r: '66px 66px 66px 66px', rot: 0 },
+      ourco: { x: 190, y: 410, w: 220, h: 220, r: '48px 48px 48px 48px', rot: 0 },
+      pinnacle: { x: 230, y: 450, w: 140, h: 140, r: '34px 34px 34px 34px', rot: 0 },
+      prosource: { x: 260, y: 480, w: 80, h: 80, r: '22px 22px 22px 22px', rot: 0 },
+    },
+  },
+  // arch → dome (rounded-top) + diamonds + bars
+  arch: {
+    landscape: {
+      fieldintel: { x: -20, y: -20, w: 540, h: 640, r: '270px 270px 0px 0px', rot: 0 },
+      summit: { x: 540, y: -20, w: 680, h: 190, r: '0px 0px 0px 0px', rot: 0 },
+      ourco: { x: 650, y: 210, w: 290, h: 290, r: '0px 0px 0px 0px', rot: 45 },
+      bristol: { x: 540, y: 430, w: 680, h: 190, r: '0px 0px 0px 0px', rot: 0 },
+      pinnacle: { x: 950, y: 210, w: 270, h: 270, r: '135px 135px 0px 0px', rot: 0 },
+      prosource: { x: 560, y: 430, w: 150, h: 150, r: '0px 0px 0px 0px', rot: 45 },
+    },
+    portrait: {
+      fieldintel: { x: -20, y: -20, w: 640, h: 480, r: '320px 320px 0px 0px', rot: 0 },
+      summit: { x: -20, y: 500, w: 400, h: 150, r: '0px 0px 0px 0px', rot: 0 },
+      ourco: { x: 300, y: 640, w: 300, h: 300, r: '0px 0px 0px 0px', rot: 45 },
+      bristol: { x: -20, y: 670, w: 340, h: 150, r: '0px 0px 0px 0px', rot: 0 },
+      pinnacle: { x: -20, y: 840, w: 280, h: 220, r: '140px 140px 0px 0px', rot: 0 },
+      prosource: { x: 20, y: 640, w: 150, h: 150, r: '0px 0px 0px 0px', rot: 45 },
+    },
+  },
 }
 
 /*
@@ -605,16 +716,17 @@ export const STATE_CLASS = {
   registration: { fine: 'mixed', arr: 'grid' },
   circles: { fine: 'circle', arr: 'scatter' },
   columns: { fine: 'bar', arr: 'row' },
-  triangle: { fine: 'triangle', arr: 'pinwheel' },
   pillrhythm: { fine: 'pill', arr: 'stagger' },
   quarters: { fine: 'quarter', arr: 'grid' },
   swatches: { fine: 'blob', arr: 'scatter' },
   tiles: { fine: 'tile', arr: 'grid' },
   pinwheel: { fine: 'plate', arr: 'pinwheel' },
+  blocks: { fine: 'block', arr: 'mosaic' },
+  proofstrips: { fine: 'strip', arr: 'stack' },
+  vortex: { fine: 'diamond', arr: 'spiral' },
+  burst: { fine: 'ring', arr: 'nested' },
+  arch: { fine: 'arch', arr: 'composed' },
 }
-/* Angular / rect-family states — the only silhouettes a triangle can morph
-   to and from without a corner-pop (all border-radius-driven rectangles). */
-export const RECT_FAMILY = new Set(['columns', 'quarters', 'tiles'])
 
 function pairMotionOK(a, b) {
   return ['landscape', 'portrait'].every((o) => {
@@ -629,11 +741,11 @@ function pairMotionOK(a, b) {
 
 export function legalEdge(a, b) {
   if (a === b) return false
+  // Arrangement must differ (no two same-arrangement states adjacent) and the
+  // pair must clear the minimum-motion threshold in both orientations. Every
+  // silhouette now morphs via border-radius + rotate, so the old triangle↔rect
+  // clip-compat constraint is gone.
   if (STATE_CLASS[a].arr === STATE_CLASS[b].arr) return false
-  if (a === 'triangle' || b === 'triangle') {
-    const other = a === 'triangle' ? b : a
-    if (!RECT_FAMILY.has(other)) return false
-  }
   return pairMotionOK(a, b)
 }
 
@@ -691,7 +803,10 @@ export function validateGrammar() {
       // fidelity checker (±0.5% vs the spec tables) — rules 1/2/6 are
       // waived there (source mass distribution governs). Ornaments are
       // exempt from project rules everywhere (amendment A).
-      const isFidelity = FIDELITY_STATES.includes(state)
+      // Fidelity states AND the T art-directed states (blocks/proofstrips/
+      // vortex/burst/arch) are exempt from rules 1/2/6 — their mass
+      // distribution is the design (e.g. stacked strips don't overlap).
+      const isFidelity = FIDELITY_STATES.includes(state) || ART_STATES.includes(state)
       const projectEntries = Object.entries(layout).filter(
         ([, s]) => s.kind !== 'ornament',
       )
