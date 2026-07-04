@@ -35,6 +35,7 @@ import {
 import { useFloodColor } from '../context/flood-context.js'
 import { useProofOverlay } from '../context/overlay-context.js'
 import {
+  CLIP_STATES,
   CONNECTED_STATES,
   CROP_MARKS,
   FIDELITY_STATES,
@@ -468,6 +469,16 @@ export default function CompositionHero({ poster = false }) {
   const pinnedColorway = isValidColorway(params.get('colorway'))
     ? params.get('colorway')
     : null
+  // R0 VISUAL HARNESS (dev only). ?harness=1 freezes the auto-cycle and the
+  // clip arm/disarm timers, and exposes window.__comp so scripts/visual-
+  // matrix.mjs can force any (state, colorway, clip) — the permanent
+  // motion-verification surface. ?state=/?clip= seed the FIRST paint, so a
+  // per-frame reload renders the target statically (initial={false} → no
+  // intro morph) for the state×palette matrix. Stripped from prod builds.
+  const harness = import.meta.env.DEV && params.get('harness') === '1'
+  const forcedState =
+    harness && STATE_ORDER.includes(params.get('state')) ? params.get('state') : null
+  const forcedClip = harness && params.get('clip') === '1'
   // R3: touch is first-class — the cycle runs and shapes are live links
   // everywhere. Only reduced motion pins the static Registration state
   // (shapes stay tappable).
@@ -476,14 +487,14 @@ export default function CompositionHero({ poster = false }) {
   const orientation = useOrientation()
   const stage = STAGES[orientation]
   const [wrapRef, fit] = useStageFit(stage)
-  const [stateName, setStateName] = useState('registration')
+  const [stateName, setStateName] = useState(forcedState ?? 'registration')
   // stateRef mirrors stateName for the interval's fixed-cycle successor
   // (no side effects inside setState updaters).
-  const stateRef = useRef('registration')
+  const stateRef = useRef(forcedState ?? 'registration')
   // Triangle clip-morph window (run-2 §5): clipArmed is the timed flag (set
   // at the neighbours' REST by the effect below); clipActive derives it off
   // the static/reduced case, so shapes only ever clip while the cycle is live.
-  const [clipArmed, setClipArmed] = useState(false)
+  const [clipArmed, setClipArmed] = useState(forcedClip)
   // U1: the colorway axis. First paint is CANONICAL (brand-stable); the
   // cycle then moves through the eight named colorways, shuffled without
   // repeat and COUPLED to the geometry morph — a shape re-inks only as it
@@ -548,7 +559,7 @@ export default function CompositionHero({ poster = false }) {
   // resumes 1.5s after leave / on overlay close.
   const overlayOpen = openId !== null
   useEffect(() => {
-    if (composer || staticLayout || paused || overlayOpen) return undefined
+    if (composer || staticLayout || paused || overlayOpen || harness) return undefined
     const t = setInterval(() => {
       // Fixed cycle (run-2 §5): advance in STATE_ORDER — no shuffle. The
       // choreography is a designed, watched sequence (arrangement differs
@@ -565,7 +576,7 @@ export default function CompositionHero({ poster = false }) {
       })
     }, CYCLE_MS)
     return () => clearInterval(t)
-  }, [composer, staticLayout, paused, overlayOpen])
+  }, [composer, staticLayout, paused, overlayOpen, harness])
 
   // Triangle clip-morph arm/disarm (run-2 §5). ARM at the pre-triangle
   // neighbour's REST (border-radius → matching polygon, imperceptible because
@@ -574,7 +585,7 @@ export default function CompositionHero({ poster = false }) {
   // free timers), so hover-pause and reduced motion can never misfire the
   // window. CLIP_ARM_MS sits after the morph settles, before the next tick.
   useEffect(() => {
-    if (staticLayout) return undefined // derived clipActive is already false
+    if (staticLayout || harness) return undefined // harness drives clip explicitly
     const [pre, post] = TRIANGLE_NEIGHBORS
     if (stateName === pre) {
       const t = setTimeout(() => setClipArmed(true), CLIP_ARM_MS)
@@ -585,7 +596,7 @@ export default function CompositionHero({ poster = false }) {
       return () => clearTimeout(t)
     }
     return undefined
-  }, [stateName, staticLayout])
+  }, [stateName, staticLayout, harness])
 
   // Grammar check while art-directing + cycle-motion validator (dev warn if
   // any adjacent pair fails the §5 minimum-motion threshold).
@@ -617,6 +628,28 @@ export default function CompositionHero({ poster = false }) {
     },
     [],
   )
+
+  // R0 harness control surface — dev only, torn down on unmount. Lets
+  // scripts/visual-matrix.mjs drive live transitions (setState → real
+  // framer morph) and clip arming without a page reload.
+  useEffect(() => {
+    if (!harness) return undefined
+    window.__comp = {
+      states: STATE_ORDER,
+      colorways: ['canonical', ...COLORWAY_ORDER],
+      clipStates: [...CLIP_STATES],
+      setState: (n) => {
+        stateRef.current = n
+        setStateName(n)
+      },
+      setColorway: (c) => setColorwayName(c),
+      setClip: (v) => setClipArmed(Boolean(v)),
+      getState: () => stateRef.current,
+    }
+    return () => {
+      delete window.__comp
+    }
+  }, [harness])
 
   if (composer) return <ComposerView cast={cast} />
 
