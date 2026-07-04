@@ -479,8 +479,9 @@ export default function CompositionHero({ poster = false }) {
   const xfadeTimers = useRef([])
   // U1: the colorway axis. First paint is CANONICAL (brand-stable); the
   // cycle then moves through the eight named colorways, shuffled without
-  // repeat INDEPENDENTLY of the geometry axis. Reduced motion pins
-  // canonical; ?colorway= pins any.
+  // repeat and COUPLED to the geometry morph — a shape re-inks only as it
+  // changes silhouette, never at rest. Reduced motion pins canonical;
+  // ?colorway= pins any.
   const [colorwayName, setColorwayName] = useState('canonical')
   // B1a: hover is SINGLE-OWNER, flood-context semantics. hoveredId is the
   // one source of truth for label, sibling dim, ink-in fill, and (when T1
@@ -539,7 +540,6 @@ export default function CompositionHero({ poster = false }) {
   const overlayOpen = openId !== null
   useEffect(() => {
     if (composer || staticLayout || paused || overlayOpen) return undefined
-    let colorwayTimer
     const t = setInterval(() => {
       // F1: pick via the ref mirror (shuffle-no-repeat over the 9-state
       // pool). Crossing a triangle boundary runs the crossfade: fade out
@@ -547,12 +547,26 @@ export default function CompositionHero({ poster = false }) {
       const current = stateRef.current
       const others = STATE_ORDER.filter((s) => s !== current)
       const next = others[Math.floor(Math.random() * others.length)]
+      // U1 (revised): the colorway is COUPLED to the geometry morph — a
+      // shape only re-inks as it changes silhouette, never while at rest.
+      // This supersedes the P6 half-cycle offset, which recolored the
+      // static composition mid-dwell and read as a color-only glitch
+      // (a shape "just changing color for no reason"). Same no-repeat
+      // shuffle over the 8 named ways; the re-ink now fires INSIDE the
+      // same morph event (under the crossfade cover for triangle states),
+      // so the repaint and the shape change are one gesture.
+      const advanceColorway = () =>
+        setColorwayName((c) => {
+          const pool = COLORWAY_ORDER.filter((x) => x !== c)
+          return pool[Math.floor(Math.random() * pool.length)]
+        })
       if (XFADE_STATES.includes(next) || XFADE_STATES.includes(current)) {
         setXfadePhase('out')
         xfadeTimers.current.push(
           setTimeout(() => {
             stateRef.current = next
             setStateName(next)
+            advanceColorway() // re-ink under the opacity cover, with the snap
             setXfadePhase('in')
             xfadeTimers.current.push(
               setTimeout(
@@ -565,22 +579,11 @@ export default function CompositionHero({ poster = false }) {
       } else {
         stateRef.current = next
         setStateName(next)
+        advanceColorway() // re-ink rides the morph
       }
-      // U1: colorway advances each cycle with its own no-repeat shuffle —
-      // OFFSET half a cycle (P6 review): the background-color transition
-      // repaint no longer stacks onto the morph's heaviest frames, and
-      // the between-morphs re-ink reads like a fresh press pass.
-      clearTimeout(colorwayTimer)
-      colorwayTimer = setTimeout(() => {
-        setColorwayName((current2) => {
-          const others2 = COLORWAY_ORDER.filter((c) => c !== current2)
-          return others2[Math.floor(Math.random() * others2.length)]
-        })
-      }, CYCLE_MS / 2)
     }, CYCLE_MS)
     return () => {
       clearInterval(t)
-      clearTimeout(colorwayTimer)
       xfadeTimers.current.forEach(clearTimeout)
       xfadeTimers.current = []
     }
