@@ -548,6 +548,16 @@ section[id],
 }
 
 /* ------------------------------------------------------------------
+   Ornament tiles (Workstream S) — decorative, aria-hidden. The inlined
+   SVG fills the sized wrapper; fills are theme roles.
+------------------------------------------------------------------- */
+.ornament > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ------------------------------------------------------------------
    Reduced motion
 ------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {

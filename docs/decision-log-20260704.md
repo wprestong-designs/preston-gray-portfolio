@@ -51,4 +51,25 @@ Every judgment call, its reasoning, and how to reverse it. Reviewed once at end.
 - **JSX wiring of these sets depends on the M1 responsive component (§4)** — assets
   + decisions are ready; wiring status is in the close-out.
 
+## Section 6 — Ornament tiles (S-pre, S0, S1, S2)
+- **S-pre:** `git mv` 5 root SVGs → `src/components/shapes/ornaments/` (6→blocks,
+  7→vortex, 8→burst, 9→arch, long-name→proofstrips). No svgr in the project → tiles
+  inline via Vite `?raw` + `dangerouslySetInnerHTML`.
+- **S0 hex→role map** (by hue; light purples → --lead to stay distinct from deep
+  wildcard, so internal contrast survives): yellow `#ffde59`→--flash · greens/lime
+  `#c1ff72 #8fff00 #00bf63`→--pop-1 · teals `#0097b2 #51efff`→--support · purples
+  `#5e17eb #7e00b2 #1800ad`→--wildcard · light purples `#e2a9f1 #ecc4ff`→--lead ·
+  reds `#ff5757 #ff7a7a`→--signal · oranges `#ff751f #ff914d`→--pop-2 · white→--paper.
+  Root width/height stripped (viewBox kept); IDs namespaced `${tile}-…` at build +
+  uniquified per instance via useId (multi-inline safe). 0 raw hex remain.
+  **COULD NOT auto-remap contrast-collapse pairs** — needs rendering (no browser); the
+  per-tile cross-theme contrast is on the QA checklist. Same-hue collisions exist by
+  design (3 greens→pop-1, 3 purples→wildcard) and are intentional (system uses few roles).
+  proofstrips had no white FILL in source — its "white bars" read as ground gaps.
+- **S1:** `Ornament` component (decorative, aria-hidden, non-interactive, no handlers);
+  styleguide "Ornament tiles" per theme, all 5 at two scales (110/190px).
+- **S2 proposals (styleguide preview ONLY, never live):** proofstrips → section divider
+  (recommended); burst → corner accent; arch → quiet backdrop. vortex intentionally
+  omitted (most dominant, needs caution). Reverse: delete the S2 styleguide section.
+
 ## Decisions (appended as I go)

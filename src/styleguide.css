@@ -191,6 +191,49 @@
   max-width: 160px;
 }
 
+/* Ornament tiles (S1) + placement proposals (S2) */
+.sg-ornaments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.sg-orn {
+  margin: 0;
+  border: 2px solid var(--edge);
+  padding: 12px;
+}
+.sg-orn__row {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+}
+.sg-orn figcaption {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  margin-top: 8px;
+  color: var(--ink);
+}
+.sg-orn-demo {
+  position: relative;
+  border: 2px solid var(--edge);
+  min-height: 120px;
+  margin-bottom: 20px;
+}
+.sg-orn-demo--clip {
+  overflow: hidden;
+}
+.sg-orn-demo--divider {
+  min-height: 0;
+  overflow: hidden;
+}
+.sg-orn-demo__text,
+.sg-orn-demo__heading {
+  position: relative;
+  margin: 0;
+  padding: 24px;
+}
+
 /* Pinned proof tokens — governance doc */
 .sg-proof {
   background: var(--paper);

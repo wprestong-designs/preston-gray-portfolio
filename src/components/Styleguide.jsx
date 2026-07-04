@@ -17,6 +17,9 @@ import {
 import PatternField from './shapes/PatternField.jsx'
 import Specimens from './Specimens.jsx'
 import TriMorphProto from './TriMorphProto.jsx'
+import { Ornament } from './shapes/ornaments/Ornaments.jsx'
+
+const ORNAMENT_TILES = ['blocks', 'vortex', 'burst', 'arch', 'proofstrips']
 
 const THEME_LABEL = {
   memphis: 'Memphis Playroom',
@@ -164,6 +167,19 @@ function ThemeSection({ theme }) {
 
         <h3 className="sg-subhead">Components</h3>
         <Specimens />
+
+        <h3 className="sg-subhead">Ornament tiles</h3>
+        <div className="sg-ornaments">
+          {ORNAMENT_TILES.map((t) => (
+            <figure key={t} className="sg-orn">
+              <div className="sg-orn__row">
+                <Ornament tile={t} size={110} />
+                <Ornament tile={t} size={190} />
+              </div>
+              <figcaption>{t}</figcaption>
+            </figure>
+          ))}
+        </div>
       </ShapeThemeContext.Provider>
     </section>
   )
@@ -192,6 +208,46 @@ export default function Styleguide() {
         <TriMorphProto />
       </section>
       <ProofTokens />
+      <section className="sg-proof" data-theme="memphis">
+        <header className="sg-theme__head">
+          <h2 className="sg-theme__name">S2 — ornament placement proposals</h2>
+          <p className="sg-theme__meta">
+            Preview only — NOT applied to any live page. Preston art-directs these at review.
+            Never place an ornament inside a client proof surface.
+          </p>
+        </header>
+
+        <h3 className="sg-subhead">proofstrips — section divider (recommended)</h3>
+        <div className="sg-orn-demo sg-orn-demo--divider">
+          <Ornament tile="proofstrips" size="100%" style={{ width: '100%', height: 220 }} />
+        </div>
+
+        <h3 className="sg-subhead">burst — section-corner accent</h3>
+        <div className="sg-orn-demo">
+          <Ornament
+            tile="burst"
+            size={130}
+            style={{ position: 'absolute', top: -22, right: -22 }}
+          />
+          <p className="sg-orn-demo__text">A section heading with a burst tucked into the corner.</p>
+        </div>
+
+        <h3 className="sg-subhead">arch — quiet backdrop behind a heading</h3>
+        <div className="sg-orn-demo sg-orn-demo--clip">
+          <Ornament
+            tile="arch"
+            size={280}
+            style={{ position: 'absolute', bottom: -60, left: -40, opacity: 0.55 }}
+          />
+          <h3 className="sg-orn-demo__heading">Heading over an arch backdrop</h3>
+        </div>
+
+        <p className="sg-theme__meta">
+          <b>vortex</b> is omitted from the proposals on purpose — it&rsquo;s the most visually
+          dominant tile and needs the most caution; it earns a placement only where it can own the
+          whole field.
+        </p>
+      </section>
       {THEMES.map((t) => (
         <ThemeSection key={t} theme={t} />
       ))}
