@@ -149,6 +149,7 @@ export const projects = [
       },
       {
         type: 'media',
+        wipe: 'diagonal', // U2: seam geometry INTO this panel (data-declared)
         body: 'Summit is an independent compounding pharmacy in Centennial, Colorado. The site rebuild gave it a front door to match the counter: calm type, honest copy, and navigation that gets a patient or a provider where they’re going in one move.',
         bodyDraft: true,
         verify: ['Centennial, Colorado — public description'],
@@ -166,6 +167,7 @@ export const projects = [
       },
       {
         type: 'media',
+        wipe: 'half-circle',
         body: 'Refills and status checks used to mean a phone call. Now they’re a short form that routes straight to the pharmacy team — built to be filled out one-handed, on a phone, in under a minute.',
         bodyDraft: true,
         items: [
@@ -198,6 +200,7 @@ export const projects = [
       },
       {
         type: 'media',
+        wipe: 'quarter-round',
         body: 'Dermatology, ophthalmology, women’s health, general Rx: each specialty got its own page, written for the providers who prescribe and the patients who ask. Same system, different doors.',
         bodyDraft: true,
         items: [

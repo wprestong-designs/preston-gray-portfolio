@@ -144,3 +144,20 @@ export function memberBodyFg(family, step) {
 export function isValidColorway(name) {
   return Object.prototype.hasOwnProperty.call(COLORWAYS, name)
 }
+
+/** Raw member token — U2 panel surfaces pick ramp members directly. */
+export function memberToken(family, step) {
+  return STEP_TOKEN(family, step)
+}
+
+/* U2: ramp members allowed BEHIND TEXT, per family, in step order —
+   the art-only members (green/deep, sky/deep, red/vivid, purple/vivid)
+   are excluded here and must stay excluded (matrix law). */
+export const TEXT_SAFE_STEPS = {
+  green: ['tint', 'soft', 'vivid'],
+  orange: ['tint', 'soft', 'vivid', 'deep'],
+  sage: ['tint', 'soft', 'vivid', 'deep'],
+  sky: ['tint', 'soft', 'vivid'],
+  red: ['tint', 'soft'],
+  purple: ['tint', 'soft', 'deep'],
+}

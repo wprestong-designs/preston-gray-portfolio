@@ -26,6 +26,12 @@ import {
   useTransform,
 } from 'motion/react'
 import { aboutOverlay, getProof } from '../data/projects.js'
+import {
+  PROJECT_FAMILY,
+  TEXT_SAFE_STEPS,
+  memberBodyFg,
+  memberToken,
+} from '../data/colorways.js'
 import { useProofOverlay } from '../context/overlay-context.js'
 import ProofMedia from './ProofMedia.jsx'
 
@@ -42,6 +48,90 @@ const EXPAND_FALLBACK_MS = 900
    vocabulary enters as accents, not a polygon state (see the stub in
    composition-geometry.js). Reversible: set to 'none'. */
 const MONUMENT_DECO = 'triangle' // 'triangle' | 'none'
+
+/* U2/P4 — scroll-scrubbed geometric wipes between panels.
+   'clip' = clip-path front scrubbed by inter-panel progress (reversible,
+   no timed animation). 'fade' = the profiled fallback: same element,
+   opacity scrub instead of clip (flip this knob if clip janks on weak
+   CPUs — see audit-report for the profile). */
+const WIPE_MODE = 'clip' // 'clip' | 'fade'
+/* Default seam rotation when a panel doesn't declare `wipe:` in data —
+   the three geometries echo the composition vocabulary. */
+const WIPE_ROTATION = ['diagonal', 'half-circle', 'quarter-round']
+/* How far (in vw) a wipe front sweeps back over the outgoing panel */
+const WIPE_BLEED_VW = 40
+
+/* Per-panel surface: which ramp member paints the panel background and
+   which fgBody colors its text — statement keeps the DEEP FLOOD (the
+   brand anchor), later panels step through the family's TEXT-SAFE ramp
+   members (matrix law: art-only members never sit behind text). About
+   has no family → stays cream end to end. */
+function computeSurfaces(proof) {
+  const family = PROJECT_FAMILY[proof.id]
+  if (!family) return proof.panels.map(() => null)
+  const safe = TEXT_SAFE_STEPS[family]
+  let k = 0
+  return proof.panels.map((panel, i) => {
+    if (i === 0 || panel.type === 'statement') return null
+    const step = safe[k % safe.length]
+    const surface = {
+      bg: memberToken(family, step),
+      fg: memberBodyFg(family, step),
+      wipe: panel.wipe ?? WIPE_ROTATION[k % WIPE_ROTATION.length],
+    }
+    k += 1
+    return surface
+  })
+}
+
+/* The wipe front, as a clip-path string. Element box = one cell plus the
+   left bleed; p ∈ [0,1] is the seam's viewport crossing. All arithmetic
+   lives here so geometries stay declarative in data. */
+function clipFor(geometry, p) {
+  const vw = window.innerWidth
+  const vh = window.innerHeight
+  const bleed = (WIPE_BLEED_VW / 100) * vw
+  const width = bleed + vw
+  const seamPct = (bleed / width) * 100
+  const f = seamPct * (1 - p) // front position, % of element
+  if (geometry === 'half-circle') {
+    const frontX = (f / 100) * width
+    const r = vh * 0.28
+    const cy = vh / 2
+    return `path('M ${frontX} 0 L ${frontX} ${cy - r} A ${r} ${r} 0 0 0 ${frontX} ${cy + r} L ${frontX} ${vh} L ${width} ${vh} L ${width} 0 Z')`
+  }
+  if (geometry === 'quarter-round') {
+    return `inset(0% 0% 0% ${f}% round ${vh * 0.45}px 0 0 0)`
+  }
+  // diagonal — the 39° print-bar angle family
+  return `polygon(${f + 7}% 0%, 100% 0%, 100% 100%, ${f - 7}% 100%)`
+}
+
+/* One wipe layer per surfaced cell (a component so the derived motion
+   value hook stays out of the render loop). Reads the measured cell
+   offset lazily — offsets settle after the track measurement effect. */
+function WipeBg({ scrollYProgress, travel, getOffset, surface, mode }) {
+  const clipPath = useTransform(scrollYProgress, (v) => {
+    if (mode !== 'clip') return 'none'
+    const vwPx = window.innerWidth
+    const translate = v * travel
+    const p = Math.min(1, Math.max(0, (translate - (getOffset() - vwPx)) / vwPx))
+    return clipFor(surface.wipe, p)
+  })
+  const opacity = useTransform(scrollYProgress, (v) => {
+    if (mode !== 'fade') return 1
+    const vwPx = window.innerWidth
+    const translate = v * travel
+    return Math.min(1, Math.max(0, (translate - (getOffset() - vwPx)) / vwPx))
+  })
+  return (
+    <motion.div
+      className="ov-wipe"
+      aria-hidden="true"
+      style={{ background: surface.bg, clipPath, opacity }}
+    />
+  )
+}
 
 export default function ProjectOverlay() {
   const { openId, originKey, scrollYRef, typeRectRef, originElRef, close, jumpTo } =
@@ -242,6 +332,10 @@ export default function ProjectOverlay() {
   useEffect(() => {
     if (scrollerRef.current) scrollerRef.current.scrollTop = 0
   }, [displayId])
+
+  // U2: panel surfaces (bg ramp member + matrix fg + seam geometry).
+  // Hook order: must precede the no-proof early return.
+  const surfaces = useMemo(() => (proof ? computeSurfaces(proof) : []), [proof])
 
   if (!proof) return null
 
@@ -494,7 +588,19 @@ export default function ProjectOverlay() {
                             panel.type === 'statement' ? ' overlay__cell--statement' : ''
                           }`}
                           key={`${panel.type}-${i}`}
+                          style={surfaces[i] ? { '--ov-fg': surfaces[i].fg } : undefined}
                         >
+                          {/* U2: the geometric wipe — next surface sweeps
+                              back over the seam, scrubbed by scroll */}
+                          {surfaces[i] && (
+                            <WipeBg
+                              scrollYProgress={scrollYProgress}
+                              travel={travel}
+                              getOffset={() => cellOffsets.current[i] ?? 0}
+                              surface={surfaces[i]}
+                              mode={WIPE_MODE}
+                            />
+                          )}
                           {renderPanel(panel, i)}
                         </div>
                       ))}
@@ -503,6 +609,8 @@ export default function ProjectOverlay() {
                 </div>
               ) : (
                 <div className="overlay__stack">
+                  {/* U2 fallback: touch + reduced-motion stacks take the
+                      SOLID surface blocks — no wipes, per spec */}
                   {proof.panels.map((panel, i) => (
                     <div
                       key={`${panel.type}-${i}`}
@@ -510,6 +618,11 @@ export default function ProjectOverlay() {
                       ref={(el) => {
                         stackRefs.current[i] = el
                       }}
+                      style={
+                        surfaces[i]
+                          ? { background: surfaces[i].bg, '--ov-fg': surfaces[i].fg }
+                          : undefined
+                      }
                     >
                       {renderPanel(panel, i)}
                     </div>

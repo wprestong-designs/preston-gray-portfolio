@@ -1020,8 +1020,26 @@
 /* X1: media/points/end cells are one viewport wide; the statement cell is
    content-sized — the monument word defines the travel distance */
 .overlay__cell {
+  position: relative; /* U2: hosts the wipe layer */
   flex: 0 0 100vw;
   height: 100%;
+}
+
+/* U2 — the wipe layer: the cell's surface color, extended one bleed-width
+   back over the outgoing panel; its leading edge is the clip-path front
+   scrubbed by scroll (see WipeBg). Content sits above. */
+.ov-wipe {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -40vw;
+  right: 0;
+  pointer-events: none;
+}
+
+.overlay__cell .ov-panel {
+  position: relative;
+  z-index: 1;
 }
 
 .overlay__cell--statement {
