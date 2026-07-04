@@ -25,50 +25,56 @@ export default function Poster() {
         I help small businesses look as good as the work they do.
       </h1>
 
-      {/* X4: the wordmark IS the About door — it morphs into the About
-          overlay like the shapes do (static morph-source child, same
-          pattern as the composition). Real href for AT/new-tab. */}
-      <a
-        className="poster__brand"
-        href="/#proof-about"
-        aria-label="About Preston"
-        onClick={(e) => {
-          e.preventDefault()
-          open('about', 'brand:about', e.currentTarget)
-        }}
-      >
-        <motion.span
-          className="comp-morph-source"
-          aria-hidden="true"
-          layoutId="proof-brand-about"
-        />
-        Preston
-        <span className="poster__brand-dot" aria-hidden="true" />
-        Gray
-      </a>
-
-      <nav className="poster__utils" aria-label="Site utilities">
-        <button
-          ref={indexBtnRef}
-          id="index-util"
-          type="button"
-          className="poster__util"
-          aria-haspopup="dialog"
-          aria-expanded={layerOpen}
-          aria-controls="index-layer"
-          onClick={() => setLayerOpen(true)}
+      {/* U1: one header wrapper. Desktop: display:contents — the brand
+          and utils keep their absolute corner positions. Mobile (≤700px):
+          the wrapper becomes a real two-row paper band above the stage,
+          so the corners can never collide at narrow widths. */}
+      <header className="poster__chrome">
+        {/* X4: the wordmark IS the About door — it morphs into the About
+            overlay like the shapes do (static morph-source child, same
+            pattern as the composition). Real href for AT/new-tab. */}
+        <a
+          className="poster__brand"
+          href="/#proof-about"
+          aria-label="About Preston"
+          onClick={(e) => {
+            e.preventDefault()
+            open('about', 'brand:about', e.currentTarget)
+          }}
         >
-          Index
-        </button>
-        {/* P7: the owner-facing services page gets a front-door util —
-            same label as the IndexLayer row and /work/ nav on purpose */}
-        <a className="poster__util" href="/small-business/">
-          For business owners
+          <motion.span
+            className="comp-morph-source"
+            aria-hidden="true"
+            layoutId="proof-brand-about"
+          />
+          Preston
+          <span className="poster__brand-dot" aria-hidden="true" />
+          Gray
         </a>
-        <a className="poster__util" href="mailto:hello@preston-gray.com">
-          Contact
-        </a>
-      </nav>
+
+        <nav className="poster__utils" aria-label="Site utilities">
+          <button
+            ref={indexBtnRef}
+            id="index-util"
+            type="button"
+            className="poster__util"
+            aria-haspopup="dialog"
+            aria-expanded={layerOpen}
+            aria-controls="index-layer"
+            onClick={() => setLayerOpen(true)}
+          >
+            Index
+          </button>
+          {/* P7: the owner-facing services page gets a front-door util —
+              same label as the IndexLayer row and /work/ nav on purpose */}
+          <a className="poster__util" href="/small-business/">
+            For business owners
+          </a>
+          <a className="poster__util" href="mailto:hello@preston-gray.com">
+            Contact
+          </a>
+        </nav>
+      </header>
 
       <CompositionHero poster />
     </section>

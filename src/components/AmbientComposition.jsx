@@ -116,6 +116,9 @@ export default function AmbientComposition() {
       >
         {cast.map((shape) => {
           const l = layout[shape.id]
+          // G1 (shared with the poster): the ambient re-ink rides each
+          // shape's own morph stagger instead of repainting at rest
+          const inkDelay = (STAGGER_ORDER.indexOf(shape.id) * STAGGER_MS) / 1000
           return (
             <motion.div
               key={shape.id}
@@ -123,6 +126,7 @@ export default function AmbientComposition() {
               style={{
                 zIndex: Z[shape.id],
                 background: resolveFill(displayColorway, shape.id),
+                transition: `background-color 0.5s var(--ease) ${inkDelay}s`,
                 border: shape.outline ?? undefined,
                 clipPath: l.clip ?? 'none',
               }}

@@ -784,8 +784,18 @@ export default function CompositionHero({ poster = false }) {
                 zIndex: Z[shape.id],
                 // Active fill is a CSS transition (framer can't tween var()
                 // strings); reduced motion keeps the color change (spec §B).
-                // Colorway changes ride the same transition (U1).
                 background: isActive ? shape.colorHover ?? fill : fill,
+                // G1: the cycle re-ink rides THIS shape's own morph — same
+                // stagger delay as its geometry, duration matched to the
+                // spring's main travel — so a repaint can never land on a
+                // resting shape ahead of its movement (the "second color
+                // mid-step" glitch, G0-measured). Hover/arm ink-in stays
+                // snappy and undelayed, and because it re-renders with a
+                // zero-delay transition it always beats an in-flight cycle
+                // repaint on an armed shape.
+                transition: isActive
+                  ? 'background-color 0.25s var(--ease)'
+                  : `background-color 0.5s var(--ease) ${staggerDelay}s`,
                 border: shape.outline ?? undefined,
                 '--shape-color': shape.outline ? 'var(--ink)' : fill,
                 // F1: triangle state clips to its polygon (children —
