@@ -21,8 +21,10 @@ Screenshots/
 
 # Raw media captures — NEVER committed (V2 hygiene). Only processed
 # outputs (mp4/webm/poster triplets) enter src/assets/media/.
-Media/
-media-raw/
+# Root-anchored: an unanchored "Media/" also matched src/assets/media/
+# case-insensitively on Windows and silently ignored the processed files.
+/Media/
+/media-raw/
 
 # Editor directories and files
 .vscode/*
