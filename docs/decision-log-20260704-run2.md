@@ -57,3 +57,19 @@ passes iff ≥4/6 shapes move ≥8% short-side OR ≥25% area OR ≥15°.
 + prosource-navigation are webm-first. Payload note: `prosource-homepage-scroll` mp4
 is 1.52MB (largest new file). Pinnacle native portrait `homepage-scroll` REPLACES the
 letterboxed `pinnacle-homepage-mobile` (retired in §4 wiring). Wiring → §4.
+
+## §4 — media component (M1) + lightbox (M2)
+- **M1:** ProofMedia images render a `<picture>` — a `(max-width:700px)` `<source>`
+  serves the approved mobile CROP (real asset + srcset 480w/native), the desktop
+  still otherwise. Never a scaled-down desktop file on mobile. Video source order
+  already smaller-first (mp4First).
+- **M2 lightbox:** `.lb__stage` has `touch-action:none` + pointer-event pinch/pan so
+  a pinch can NEVER leak to page-zoom (the CRM-map trap). Visible ≥44px close,
+  swipe-down dismiss (>110px), ESC, double-tap reset, `role=dialog`+`aria-modal`,
+  focus trap + restore, body scroll lock, mono caption, reduced-motion instant.
+  Portaled to body at z-300 (above the z-200 overlay). Pure gesture math extracted
+  to `lightbox-context.js` — **unit-tested in Node (6/6 pass)**.
+- **Self-verified:** build + lint clean; gesture math unit tests; dialog/focus wiring
+  by code review. Gesture FEEL (pinch smoothness, momentum) → watch-list.
+- **M3 wiring status:** the component consumes `item.mobile` (crop srcset) + opens any
+  image in the lightbox — mechanism complete. Per-proof set wiring below.

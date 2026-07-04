@@ -19,9 +19,11 @@
  */
 import { useEffect, useRef, useState } from 'react'
 import { useReducedMotion } from 'motion/react'
+import { useLightbox } from './lightbox-context.js'
 
 export default function ProofMedia({ item, active = false, near = false }) {
   const reducedMotion = useReducedMotion()
+  const { open: openLightbox } = useLightbox()
   const videoRef = useRef(null)
   const [tapPlay, setTapPlay] = useState(false)
   const [mounted, setMounted] = useState(false)
@@ -63,7 +65,22 @@ export default function ProofMedia({ item, active = false, near = false }) {
         )}
 
         {item.kind === 'image' && (
-          <img src={item.src} alt={item.alt ?? item.caption ?? ''} loading="lazy" />
+          // M1: a <picture> serves the approved mobile CROP under 700px (real
+          // asset + srcset, never a scaled desktop file) and the desktop still
+          // otherwise. Tap/enter opens the full image in the lightbox (M2).
+          <button
+            type="button"
+            className="pm__open"
+            aria-label={`Expand: ${item.caption ?? item.alt ?? 'image'}`}
+            onClick={(e) => openLightbox({ ...item, lightboxSrc: item.src }, e.currentTarget)}
+          >
+            <picture>
+              {item.mobile && (
+                <source media="(max-width: 700px)" srcSet={item.mobile.srcSet} sizes="100vw" />
+              )}
+              <img src={item.src} alt={item.alt ?? item.caption ?? ''} loading="lazy" />
+            </picture>
+          </button>
         )}
 
         {item.kind === 'video' && !hasVideo && (

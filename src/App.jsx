@@ -8,6 +8,7 @@ import ProjectOverlay from './components/ProjectOverlay.jsx'
 import { FloodProvider } from './context/FloodColor.jsx'
 import { OverlayProvider } from './context/OverlayProvider.jsx'
 import { useProofOverlay } from './context/overlay-context.js'
+import { LightboxProvider } from './components/Lightbox.jsx'
 import './App.css'
 
 /*
@@ -74,7 +75,9 @@ function App() {
     <LayoutGroup>
       <FloodProvider>
         <OverlayProvider>
-          <PageChrome />
+          <LightboxProvider>
+            <PageChrome />
+          </LightboxProvider>
         </OverlayProvider>
       </FloodProvider>
     </LayoutGroup>
