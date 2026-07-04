@@ -84,17 +84,16 @@ import pinnacleAboutPoster from '../assets/media/pinnacle-about-desktop-poster.j
  * pages (/work/ and /small-business/) mirror these hrefs by hand —
  * update them together when a URL changes.
  *
- * `.example` hosts are placeholders — TODO(Preston): swap in the real
- * domains. `null` = no link renders ANYWHERE (Prosource stays null
- * until launch per the standing never-a-live-link constraint;
- * Field Intel is an internal tool with no public URL).
+ * Live client domains. `null` = no link renders ANYWHERE (ProSource stays
+ * null until launch per the standing never-a-live-link constraint; Ourco
+ * is still in build; Field Intel is an internal tool with no public URL).
  * ============================================================
  */
 export const LIVE_URLS = {
-  summit: 'https://www.summitpharmacy.example', // TODO(Preston): real URL
+  summit: 'https://summitpharmacycolorado.com',
   ourco: null, // build in progress — flip when the site ships
-  bristol: 'https://www.bristolpharmacy.example', // TODO(Preston): real URL
-  pinnacle: 'https://www.pinnaclerx.example', // TODO(Preston): real URL
+  bristol: 'https://rxbristolokc.com',
+  pinnacle: 'https://pinnacle-rx.com',
   prosource: null, // standing constraint: never a live link until launch
   fieldintel: null, // internal tool — no public URL
 }
@@ -203,7 +202,7 @@ export const projects = [
       {
         type: 'statement',
         statement:
-          'A pharmacy site that finally looks the way the pharmacists care.',
+          'A pharmacy site that finally shows how much the pharmacists care.',
       },
       {
         type: 'media',
@@ -259,7 +258,7 @@ export const projects = [
       {
         type: 'media',
         wipe: 'quarter-round',
-        body: 'Dermatology, ophthalmology, women’s health, general Rx: each specialty got its own page, written for the providers who prescribe and the patients who ask. Same system, different doors.',
+        body: 'Dermatology, ophthalmology, women’s health, general Rx: each specialty got its own page, written for the providers who prescribe and the patients who ask.',
         bodyDraft: true,
         items: [
           {
@@ -289,7 +288,7 @@ export const projects = [
       },
       {
         type: 'media',
-        body: 'Trust is a pharmacy’s real product, so the site treats it that way: patient reviews pulled forward, the ethics statement in plain language, and the fine print rewritten until a person in a hurry can actually read it.',
+        body: 'Patient reviews sit up front, the ethics statement is in plain language, and the fine print is rewritten until a person in a hurry can read it.',
         bodyDraft: true,
         items: [
           {
@@ -308,7 +307,7 @@ export const projects = [
         points: [
           'Design, build, and copy — one hand',
           'Built on the pharmacy’s real workflows',
-          'Refill form routes to the team, not an inbox',
+          'Refill form routes straight to the pharmacy team',
         ],
       },
       { type: 'end' },
@@ -348,7 +347,7 @@ export const projects = [
         // the draft file's lede here — decision logged in oneshot-report.
         type: 'statement',
         statement:
-          'Bold on purpose — built around how this company actually wins work.',
+          'Bold on purpose — built around how this company wins work.',
       },
       {
         type: 'media',
@@ -374,7 +373,7 @@ export const projects = [
       },
       {
         type: 'media',
-        body: 'The build runs brand-first: identity system, then pages — so every page that ships already knows how it should look and sound. More proofs land here as the site comes off the press.',
+        body: 'The build runs brand-first: identity system, then pages. Every page that ships already knows how it should look and sound. More proofs land here as the site comes off the press.',
         bodyDraft: true,
         items: [
           {
@@ -466,7 +465,7 @@ export const projects = [
       },
       {
         type: 'media',
-        body: 'The about page carries the real pitch: the pharmacists, the techs, and the years behind the counter. On a phone — where most patients will meet it — the team shows up before the second scroll.',
+        body: 'The about page carries the real pitch: the pharmacists, the techs, and the years behind the counter. On a phone, where most patients will meet it, the team shows up before the second scroll.',
         bodyDraft: true,
         items: [
           {
@@ -527,11 +526,11 @@ export const projects = [
       {
         type: 'statement',
         statement:
-          'Same pharmacy, clearer story — the people put front and center.',
+          'Same pharmacy, told through its people.',
       },
       {
         type: 'media',
-        body: 'Pinnacle’s site said “locally owned”; the truth was better — locally operated, by a team patients actually know. The copy pass rebuilt the story around them: who’s behind the counter, what they handle, and why that matters in a town where the pharmacist knows your name.',
+        body: 'Pinnacle’s site said “locally owned.” The accurate claim is “locally operated” — by a team patients know.',
         bodyDraft: true,
         verify: ['Arkansas / copy-pass framing'],
         items: [
@@ -548,7 +547,7 @@ export const projects = [
       },
       {
         type: 'media',
-        body: 'The about page does the selling a homepage can’t: names, faces, and plain answers about transfers, refills, and delivery — written so a first-time patient knows exactly what happens next.',
+        body: 'The about page does the selling a homepage can’t: names, faces, and plain answers about transfers, refills, and delivery. A first-time patient knows exactly what happens next.',
         bodyDraft: true,
         items: [
           {
@@ -610,7 +609,7 @@ export const projects = [
     panels: [
       {
         type: 'statement',
-        statement: 'A refill request that takes a minute, not a phone call.',
+        statement: 'The refill phone call is now a one-minute form.',
       },
       {
         type: 'media',
@@ -622,7 +621,7 @@ export const projects = [
             kind: 'image',
             src: prosourceHome,
             frame: 'browser',
-            caption: 'Homepage — red, and not sorry',
+            caption: 'Homepage — ProSource red',
             alt: 'ProSource Pharmacy homepage in brand red',
           },
         ],
@@ -684,11 +683,11 @@ export const projects = [
     panels: [
       {
         type: 'statement',
-        statement: 'A CRM designed from the passenger seat of the job it serves.',
+        statement: 'Field Intel is the CRM I built for my own provider-relations work — days spent between dermatology offices.',
       },
       {
         type: 'media',
-        body: 'Field Intel is the CRM I built for my own provider-relations work — because nothing off the shelf understood a day spent between dermatology offices. The Today dashboard is the whole job at a glance: visits, follow-ups, and what’s moving.',
+        body: 'Nothing off the shelf understood a day spent between dermatology offices. The Today dashboard shows the whole day in one view: visits, follow-ups, and what’s moving.',
         bodyDraft: true,
         items: [
           {
@@ -705,7 +704,7 @@ export const projects = [
       },
       {
         type: 'media',
-        body: 'The real interface is a phone in a parking lot. Field notes sync between visits, account profiles load in a tap, and the map knows the territory — Denver to Colorado Springs — better than I do.',
+        body: 'The real interface is a phone in a parking lot. Field notes sync between visits, account profiles load in a tap, and the map knows the territory, Denver to Colorado Springs, better than I do.',
         bodyDraft: true,
         items: [
           {
@@ -745,7 +744,7 @@ export const projects = [
             srcWebm: crmMapWebm,
             poster: crmMapPoster,
             frame: 'browser',
-            caption: 'Territory, mapped',
+            caption: 'Territory, up close',
             alt: 'Zooming a territory map of provider accounts in Field Intel (demo data)',
             crmVerified: false,
           },
@@ -755,7 +754,7 @@ export const projects = [
             srcWebm: crmAnalyticsWebm,
             poster: crmAnalyticsPoster,
             frame: 'browser',
-            caption: 'Analytics — windshield time, measured',
+            caption: 'Analytics — a season, measured',
             alt: 'Field Intel analytics charts of visit activity (demo data)',
             crmVerified: false,
           },
@@ -806,7 +805,7 @@ export const aboutOverlay = {
     {
       type: 'statement',
       statement:
-        'I’m Preston Gray — a designer and builder in Denver. Days, I grow a pharmacy’s business face to face: provider visits, reporting, follow-up. Nights and weekends, I design and build the websites, brands, and tools that make small businesses easier to find, easier to trust, and easier to choose.',
+        'I’m Preston Gray — a designer and builder in Denver. Days, I grow a pharmacy’s business face to face. Nights and weekends, I design and build the websites, brands, and tools that make small businesses easier to find, easier to trust, and easier to choose.',
       bodyDraft: true,
     },
     {
@@ -827,7 +826,7 @@ export const aboutOverlay = {
       points: [
         'I write the copy myself — words first, layout second',
         'Business development for a pharmacy — outreach, reporting, growth',
-        'Marketing for real storefronts, not case studies',
+        'Marketing for real storefronts',
         'I use the tools I build — including my own CRM, daily',
       ],
       bodyDraft: true,
@@ -845,7 +844,7 @@ export const aboutOverlay = {
     {
       type: 'contact',
       statement:
-        'Have a business that deserves better materials? Tell me what you’re trying to fix — a plain description in your own words is the perfect starting point.',
+        'If your business needs better materials, tell me what you’re trying to fix. A plain description in your own words is the perfect starting point.',
       bodyDraft: true,
     },
   ],

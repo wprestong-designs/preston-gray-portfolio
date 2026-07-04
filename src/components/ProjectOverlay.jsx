@@ -434,7 +434,7 @@ export default function ProjectOverlay() {
                   className="ov-live"
                   href={proof.liveUrl}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                 >
                   View live site <span aria-hidden="true">&#8599;</span>
                 </a>
@@ -504,7 +504,7 @@ export default function ProjectOverlay() {
                 className="ov-next ov-next--live"
                 href={proof.liveUrl}
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
               >
                 Visit the live site <span aria-hidden="true">&#8599;</span>
               </a>
