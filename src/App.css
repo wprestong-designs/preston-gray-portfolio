@@ -1068,6 +1068,51 @@
   padding-right: clamp(60px, 8vw, 140px);
 }
 
+/* U1/P3.4 — the OFF-REGISTER print theme. Registered ghost offsets so the
+   slide-in can transition (Chrome/Safari/FF-128+; unsupported browsers
+   simply snap — acceptable degradation). */
+@property --ghost-dx {
+  syntax: '<length>';
+  initial-value: 0px;
+  inherits: false;
+}
+
+@property --ghost-dy {
+  syntax: '<length>';
+  initial-value: 0px;
+  inherits: false;
+}
+
+/* Applies ONLY to monuments, statement eyebrows, and the return line —
+   never reading text, never corner wayfinding. WONK 1 selects Fraunces'
+   wonky alternates (axis added to the font load); the ghost is an
+   accent-colored misregistration BEHIND the fill (text-shadow), purely
+   decorative — measured ratios 1.54–2.73 on the floods, none vanishing.
+   Ghost color arrives via --ghost-color (set per overlay from the
+   project's display tone); no color set = no ghost. */
+.misregister {
+  font-variation-settings: 'opsz' 144, 'WONK' 1;
+  text-shadow: var(--ghost-dx, 0px) var(--ghost-dy, 0px) 0 var(--ghost-color, transparent);
+  transition:
+    --ghost-dx 0.3s var(--ease),
+    --ghost-dy 0.3s var(--ease);
+}
+
+/* Spec ghost is 6px (monument scale). At mono-eyebrow scale a 6px ghost
+   overwhelms 12px glyphs, so small display strings take a 2px register —
+   reversible knob, logged in oneshot-report. */
+.ov-mono.misregister,
+.ov-return.misregister {
+  --ghost-dx: 2px;
+  --ghost-dy: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .misregister {
+    transition: none;
+  }
+}
+
 /* Type spec lives in the Z1a shared contract above — only size/color here */
 .ov-monument {
   font-size: min(76vh, 58vw); /* 70–90% viewport-height letterforms */

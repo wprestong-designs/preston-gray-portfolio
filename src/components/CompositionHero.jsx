@@ -26,6 +26,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { projects } from '../data/projects.js'
+import {
+  COLORWAYS,
+  COLORWAY_ORDER,
+  isValidColorway,
+  resolveFill,
+} from '../data/colorways.js'
 import { useFloodColor } from '../context/flood-context.js'
 import { useProofOverlay } from '../context/overlay-context.js'
 import {
@@ -187,7 +193,7 @@ function Stage({ wrapRef, fit, stage, aspect = true, children }) {
    ?compose=1 — static art-direction view of all six states, with an
    orientation toggle (also honors ?orient=portrait for deep links)
 ------------------------------------------------------------------- */
-function ComposerStage({ stateName, cast, orientation, typeMode, scrim, hatch }) {
+function ComposerStage({ stateName, cast, orientation, typeMode, scrim, hatch, colorway }) {
   const stage = STAGES[orientation]
   const [wrapRef, fit] = useStageFit(stage)
   const layout = LAYOUTS[stateName][orientation]
@@ -215,7 +221,7 @@ function ComposerStage({ stateName, cast, orientation, typeMode, scrim, hatch })
               className="comp-shape comp-shape--static"
               style={{
                 zIndex: Z[shape.id],
-                background: shape.color,
+                background: resolveFill(colorway, shape.id),
                 border: shape.outline ?? undefined,
                 transform: `translate(${l.x}px, ${l.y}px) rotate(${l.rot}deg)`,
                 width: l.w,
@@ -296,6 +302,11 @@ function ComposerView({ cast }) {
   const [scrim, setScrim] = useState(false)
   // Y1 proposal mock: 39° hatching on the strip state (composer-only)
   const [hatch, setHatch] = useState(true)
+  // U1: preview any colorway across all states (?colorway= sets the start)
+  const [colorway, setColorway] = useState(() => {
+    const forced = new URLSearchParams(window.location.search).get('colorway')
+    return isValidColorway(forced) ? forced : 'canonical'
+  })
   return (
     <div className="composer">
       <div className="composer__bar">
@@ -339,6 +350,18 @@ function ComposerView({ cast }) {
             hatch
           </button>
         </div>
+        <div className="composer__toggle" role="group" aria-label="Colorway">
+          {Object.entries(COLORWAYS).map(([key, cw]) => (
+            <button
+              key={key}
+              type="button"
+              className={key === colorway ? 'is-active' : ''}
+              onClick={() => setColorway(key)}
+            >
+              {cw.label}
+            </button>
+          ))}
+        </div>
       </div>
       {STATE_ORDER.map((name) => (
         <ComposerStage
@@ -349,6 +372,7 @@ function ComposerView({ cast }) {
           typeMode={typeMode}
           scrim={scrim}
           hatch={hatch}
+          colorway={colorway}
         />
       ))}
     </div>
@@ -372,6 +396,10 @@ export default function CompositionHero({ poster = false }) {
   const typeMode = TYPE_MODES.includes(params.get('type'))
     ? params.get('type')
     : AT_REST_MODE
+  // U1: ?colorway= pins one colorway (geometry keeps cycling)
+  const pinnedColorway = isValidColorway(params.get('colorway'))
+    ? params.get('colorway')
+    : null
   // R3: touch is first-class — the cycle runs and shapes are live links
   // everywhere. Only reduced motion pins the static Registration state
   // (shapes stay tappable).
@@ -381,6 +409,11 @@ export default function CompositionHero({ poster = false }) {
   const stage = STAGES[orientation]
   const [wrapRef, fit] = useStageFit(stage)
   const [stateName, setStateName] = useState('swatches')
+  // U1: the colorway axis. First paint is CANONICAL (brand-stable); the
+  // cycle then moves through the eight named colorways, shuffled without
+  // repeat INDEPENDENTLY of the geometry axis. Reduced motion pins
+  // canonical; ?colorway= pins any.
+  const [colorwayName, setColorwayName] = useState('canonical')
   // B1a: hover is SINGLE-OWNER, flood-context semantics. hoveredId is the
   // one source of truth for label, sibling dim, ink-in fill, and (when T1
   // lands) the type-reveal. The ref mirrors it for event-time ownership
@@ -412,6 +445,11 @@ export default function CompositionHero({ poster = false }) {
 
   const displayState = staticLayout ? 'registration' : stateName
   const layout = LAYOUTS[displayState][orientation]
+  // U1: resolved colorway — reduced-motion statics wear canonical; a
+  // ?colorway= pin wins over the cycle.
+  const displayColorway = staticLayout
+    ? 'canonical'
+    : pinnedColorway ?? colorwayName
 
   // U0b: at-rest letterforms hide while the comp is morphing. The flag
   // drops in the same render the layout target changes (state cycle OR
@@ -435,6 +473,11 @@ export default function CompositionHero({ poster = false }) {
     const t = setInterval(() => {
       setStateName((current) => {
         const others = STATE_ORDER.filter((s) => s !== current)
+        return others[Math.floor(Math.random() * others.length)]
+      })
+      // U1: colorway advances WITH the geometry, its own no-repeat shuffle
+      setColorwayName((current) => {
+        const others = COLORWAY_ORDER.filter((c) => c !== current)
         return others[Math.floor(Math.random() * others.length)]
       })
     }, CYCLE_MS)
@@ -599,6 +642,10 @@ export default function CompositionHero({ poster = false }) {
         {cast.map((shape) => {
           const l = layout[shape.id]
           const lf = LETTERFORMS[shape.id]?.[orientation]
+          // U1: the at-rest fill comes from the current colorway's ramp
+          // member for this project's family; ink-in still lands on the
+          // DEEP FLOOD (identity anchor — never colorway-driven).
+          const fill = resolveFill(displayColorway, shape.id)
           const isHovered = hoveredShape?.id === shape.id
           const isArmed = armedId === shape.id
           // isActive unions the two preview owners (mouse hover / touch
@@ -629,9 +676,10 @@ export default function CompositionHero({ poster = false }) {
                 zIndex: Z[shape.id],
                 // Active fill is a CSS transition (framer can't tween var()
                 // strings); reduced motion keeps the color change (spec §B).
-                background: isActive ? shape.colorHover ?? shape.color : shape.color,
+                // Colorway changes ride the same transition (U1).
+                background: isActive ? shape.colorHover ?? fill : fill,
                 border: shape.outline ?? undefined,
-                '--shape-color': shape.outline ? 'var(--ink)' : shape.color,
+                '--shape-color': shape.outline ? 'var(--ink)' : fill,
               }}
               initial={false}
               animate={{

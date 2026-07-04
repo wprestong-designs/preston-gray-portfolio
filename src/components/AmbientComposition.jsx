@@ -15,6 +15,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
 import { projects } from '../data/projects.js'
+import { CALM_COLORWAYS, resolveFill } from '../data/colorways.js'
 import {
   CROP_MARKS,
   LAYOUTS,
@@ -46,6 +47,10 @@ export default function AmbientComposition() {
   const reducedMotion = useReducedMotion()
   const [wrapRef, fit] = useStageFit(STAGE)
   const [stateName, setStateName] = useState('registration')
+  // U1 scope bound: /work/ whispers — the ambient art cycles through only
+  // the three calmest colorways. First paint stays canonical to match the
+  // static pre-hydration placeholder exactly.
+  const [colorwayName, setColorwayName] = useState('canonical')
   const [visible, setVisible] = useState(false)
   const [settled, setSettled] = useState(false)
   const changesRef = useRef(0)
@@ -77,10 +82,15 @@ export default function AmbientComposition() {
       if (changesRef.current >= AMBIENT_SETTLE_CHANGES) {
         setSettled(true)
         setStateName('registration')
+        setColorwayName('canonical') // settle back to the placeholder look
         return
       }
       setStateName((current) => {
         const others = STATE_ORDER.filter((s) => s !== current)
+        return others[Math.floor(Math.random() * others.length)]
+      })
+      setColorwayName((current) => {
+        const others = CALM_COLORWAYS.filter((c) => c !== current)
         return others[Math.floor(Math.random() * others.length)]
       })
     }, AMBIENT_CYCLE_MS)
@@ -88,6 +98,7 @@ export default function AmbientComposition() {
   }, [reducedMotion, visible, settled])
 
   const displayState = reducedMotion ? 'registration' : stateName
+  const displayColorway = reducedMotion || settled ? 'canonical' : colorwayName
   const layout = LAYOUTS[displayState].landscape
 
   return (
@@ -104,7 +115,7 @@ export default function AmbientComposition() {
               className="comp-shape comp-shape--static"
               style={{
                 zIndex: Z[shape.id],
-                background: shape.color,
+                background: resolveFill(displayColorway, shape.id),
                 border: shape.outline ?? undefined,
               }}
               initial={false}

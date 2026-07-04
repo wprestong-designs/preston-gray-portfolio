@@ -129,6 +129,74 @@
      ink-in), so both ratios matter. Letterforms are aria-hidden decorative
      texture (accessible names live on the shape labels) — these ratios are
      a legibility bar we choose to hold, not a WCAG gate. */
+  /* ================================================================
+     U1 RAMPS — four members per family, candy-tint → soft-bright →
+     vivid → deep-bright. Deep = the family's canonical display value
+     (nothing darker enters a ramp). All SOLID hex — opaque fills only.
+     Measured matrix (scripts/color-matrix.mjs — rerun after tuning):
+       fgBody rule: white only where L(bg) ≤ 0.1833 (AA 4.5 threshold),
+       otherwise ink #173b2f. "ART-ONLY" = neither passes: the member may
+       fill shapes but must NEVER sit behind text (U2 panels skip it).
+       family/step  hex      fgBody      passing fgAccents (≥3.0 AA-large)
+       green/tint   #b8f0cf  ink 9.63    plum 7.02 · burnt 4.49 · steel 5.91
+       green/soft   #5fd68f  ink 6.75    plum 4.92 · burnt 3.15 · steel 4.14
+       green/vivid  #00bf63  ink 5.07    plum 3.69 · steel 3.11 · press-red 3.17
+       green/deep   #059669  ART-ONLY    lime 3.20
+       orange/tint  #ffd6b3  ink 9.11    plum 6.64 · spruce 5.81 · steel 5.59
+       orange/soft  #ffb37a  ink 7.04    plum 5.12 · spruce 4.49 · steel 4.31
+       orange/vivid #ff914d  ink 5.52    plum 4.02 · spruce 3.52 · steel 3.39
+       orange/deep  #f79245  ink 5.37    plum 3.91 · spruce 3.43 · steel 3.30
+       sage/tint    #d9ecc8  ink 9.85    plum 7.18 · spruce 6.29 · burnt 4.60
+       sage/soft    #b5d698  ink 7.65    plum 5.58 · spruce 4.88 · burnt 3.57
+       sage/vivid   #9ccc70  ink 6.63    plum 4.83 · spruce 4.23 · burnt 3.09
+       sage/deep    #87b06a  ink 4.96    plum 3.61 · spruce 3.16 · steel 3.04
+       sky/tint     #bdeaff  ink 9.62    plum 7.01 · spruce 6.13 · burnt 4.49
+       sky/soft     #5fd0f5  ink 6.94    plum 5.06 · spruce 4.43 · burnt 3.24
+       sky/vivid    #22c8e6  ink 6.15    plum 4.48 · spruce 3.92 · press-red 3.85
+       sky/deep     #0ea5e9  ART-ONLY    plum 3.24
+       red/tint     #ffc2cf  ink 8.14    plum 5.93 · spruce 5.19 · burnt 3.80
+       red/soft     #ff7a7a  ink 4.88    plum 3.56 · spruce 3.11 · steel 3.00
+       red/vivid    #ff5757  ART-ONLY    (no cross-hue accent reaches 3.0)
+       red/deep     #d42b2b  white 5.02  lime 4.26 · citrus 3.79
+       purple/tint  #ecc4ff  ink 8.17    spruce 5.21 · burnt 3.81 · steel 5.01
+       purple/soft  #e2a9f1  ink 6.56    spruce 4.19 · burnt 3.06 · steel 4.03
+       purple/vivid #c353f0  ART-ONLY    lime 3.06
+       purple/deep  #7c3aed  white 5.70  lime 4.83 · citrus 4.30
+     90s drift stays in-family: green leans lime at vivid (#00bf63, SVG),
+     orange runs peach→citrus (#ff914d, SVG), sky reaches aqua (#22c8e6),
+     red spans bubblegum→hot coral (#ff7a7a/#ff5757, SVG), purple carries
+     the SVG lavenders and a magenta-violet vivid.
+     ================================================================ */
+  --ramp-green-tint: #b8f0cf;
+  --ramp-green-soft: #5fd68f;
+  --ramp-green-vivid: #00bf63;
+  --ramp-green-deep: var(--display-green);
+  --ramp-orange-tint: #ffd6b3;
+  --ramp-orange-soft: #ffb37a;
+  --ramp-orange-vivid: #ff914d;
+  --ramp-orange-deep: var(--display-orange);
+  --ramp-sage-tint: #d9ecc8;
+  --ramp-sage-soft: #b5d698;
+  --ramp-sage-vivid: #9ccc70;
+  --ramp-sage-deep: var(--display-sage);
+  --ramp-sky-tint: #bdeaff;
+  --ramp-sky-soft: #5fd0f5;
+  --ramp-sky-vivid: #22c8e6;
+  --ramp-sky-deep: var(--display-sky);
+  --ramp-red-tint: #ffc2cf;
+  --ramp-red-soft: #ff7a7a;
+  --ramp-red-vivid: #ff5757;
+  --ramp-red-deep: var(--display-red);
+  --ramp-purple-tint: #ecc4ff;
+  --ramp-purple-soft: #e2a9f1;
+  --ramp-purple-vivid: #c353f0;
+  --ramp-purple-deep: var(--display-purple);
+
+  /* U1 fgAccent-only colors — the hue-identity rule keeps these OUT of
+     shape ramps; display text only, per the matrix above. */
+  --accent-lime: #c1ff72;
+  --accent-citrus: #ffde59;
+
   --display-green-fg: var(--flood-green-fg); /* cream · 3.19 on display · 6.65 on flood */
   --display-orange-fg: #ffffff; /* 2.29 on display (ALL-mode caveat) · 5.75 on flood */
   --display-sky-fg: #ffffff; /* 2.77 on display (ALL-mode caveat) · 7.56 on flood */

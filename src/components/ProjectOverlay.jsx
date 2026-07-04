@@ -262,7 +262,7 @@ export default function ProjectOverlay() {
                 block above for why props can't do this here). */}
             <motion.h2
               ref={monumentRef}
-              className={`ov-monument${Array.isArray(proof.monument) ? ' ov-monument--multi' : ''}`}
+              className={`ov-monument misregister${Array.isArray(proof.monument) ? ' ov-monument--multi' : ''}`}
               aria-label={proof.name}
               style={{
                 x: monX,
@@ -271,6 +271,10 @@ export default function ProjectOverlay() {
                 opacity: monOpacity,
                 transformOrigin: 'top left',
                 visibility: flipFrom === undefined ? 'hidden' : 'visible',
+                // P3.4: ghost slides in (~300ms CSS transition on the
+                // registered props) once the expansion lands
+                '--ghost-dx': expanded ? '6px' : '0px',
+                '--ghost-dy': expanded ? '6px' : '0px',
               }}
               exit={
                 monumentFlip
@@ -306,7 +310,7 @@ export default function ProjectOverlay() {
               exit={{ opacity: 0, transition: { duration: 0.15 } }}
               transition={{ duration: 0.3 }}
             >
-              <p className="ov-mono">
+              <p className="ov-mono misregister">
                 {isAbout ? proof.tag : `Proof ${proof.index} · ${proof.tag}`}
               </p>
               <p className="ov-lede">{panel.statement}</p>
@@ -350,7 +354,7 @@ export default function ProjectOverlay() {
               hello@preston-gray.com <span aria-hidden="true">&rarr;</span>
             </a>
             {/* X2: same quiet return as the end panel */}
-            <button type="button" className="ov-return" onClick={close}>
+            <button type="button" className="ov-return misregister" onClick={close}>
               <span aria-hidden="true">&larr;&nbsp;</span>Return to the catalog
             </button>
           </section>
@@ -360,7 +364,7 @@ export default function ProjectOverlay() {
         // as the X, same focus/scroll restoration.
         return (
           <section className="ov-panel ov-panel--end" key={`e-${i}`}>
-            <button type="button" className="ov-return" onClick={close}>
+            <button type="button" className="ov-return misregister" onClick={close}>
               <span aria-hidden="true">&larr;&nbsp;</span>Return to the catalog
             </button>
             {proof.id === 'fieldintel' && (
@@ -381,7 +385,14 @@ export default function ProjectOverlay() {
       role="dialog"
       aria-modal="true"
       aria-label={isAbout ? proof.name : `Proof ${proof.index} — ${proof.name}`}
-      style={{ '--ov': proof.color, '--ov-fg': proof.colorFg }}
+      style={{
+        '--ov': proof.color,
+        '--ov-fg': proof.colorFg,
+        // P3.4: misregistration ghost = the project's display tone on its
+        // flood (measured 1.54–2.73, decorative). About has no display
+        // tone → no ghost, by design.
+        '--ghost-color': proof.colorDisplay ?? 'transparent',
+      }}
     >
       {morph ? (
         <>
