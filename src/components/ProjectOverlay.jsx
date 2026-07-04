@@ -39,7 +39,10 @@ import ProofMedia from './ProofMedia.jsx'
    calmer than the default spring for a viewport-scale morph; swap in a
    spring by replacing the object (e.g. { type: 'spring', stiffness: 140,
    damping: 26 }). Drives the backdrop's shared-element travel AND its
-   border-radius interpolation (same element — spec W1b-3). */
+   border-radius interpolation (same element — spec W1b-3).
+   D0 note: deliberately NOT slowed with the composition's 1s pacing —
+   opening answers a click and stays snappy. This is the knob if Preston
+   disagrees after feeling it. */
 const EXPAND_TRANSITION = { type: 'tween', duration: 0.5, ease: [0.32, 0.72, 0, 1] }
 /* Content never waits forever if a layout-completion callback is missed
    (belt over braces — e.g. a zero-distance morph). */

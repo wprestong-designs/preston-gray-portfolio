@@ -59,7 +59,11 @@ import {
 } from './composition-geometry.js'
 
 /* --- Poster tuning knobs (art-direct by feel) ------------------------- */
-const CYCLE_MS = 2000 // time per state. Guardrail: don't chase the reference to 1s.
+/* D0 pacing: 3000ms per state against the ≈1s MORPH settle keeps
+   dwell:motion ≈ 2:1 (2s at rest, 1s in motion). Retune BOTH knobs
+   together — the ratio is the design. Guardrail: never chase the
+   reference toward a literal 1s cycle. */
+const CYCLE_MS = 3000
 const HOVER_MORPH = { type: 'spring', stiffness: 300, damping: 24 } // hover radius/scale
 /* Sibling dim (F4 A/B, resolved by Z1b): STANDING RULE — composition
    shape fills are OPAQUE in every state and colorway; overlap reads as
@@ -89,9 +93,10 @@ const TYPE_REVEAL_MS = 250
 /* U0b: at-rest type hides while the composition is mid-morph (huge type
    smears into a white gash otherwise). Fade out/in duration, and how long
    after a layout change the comp counts as morphing — sized to outlast
-   the MORPH spring plus the full ripple stagger. */
+   the MORPH spring plus the full ripple stagger (D0: ≈1.05s settle +
+   8×45ms stagger → 1500). */
 const TYPE_MORPH_FADE_MS = 150
-const TYPE_SETTLE_MS = 900
+const TYPE_SETTLE_MS = 1500
 /* P1.6 (oneshot): decisive uppercase crops — best-effort art direction
    targeting 30–50% letterform mass visible per shape; every value stays
    composer-editable for Preston's pass. */
@@ -149,8 +154,9 @@ const ECHO = {
    be reassigned or multiplied without touching render code. */
 const HATCH_STATES = ['columns']
 /* F1: the triangle crossfade — fade out, snap geometry while invisible,
-   fade/scale back in with the standard stagger. */
-const TRIANGLE_XFADE_MS = 150
+   fade/scale back in with the standard stagger. D0: 300ms per side,
+   scaled with the 1s morph pacing. */
+const TRIANGLE_XFADE_MS = 300
 /* F1 spec: baked fragments stay OFF the small triangles */
 const TRIANGLE_NO_TYPE = ['pinnacle', 'prosource']
 /* --------------------------------------------------------------------- */

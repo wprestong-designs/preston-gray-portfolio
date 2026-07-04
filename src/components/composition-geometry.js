@@ -48,9 +48,14 @@ export const ORNAMENT_IDS = ['orn-a', 'orn-b']
    px radii of neighboring states. Reversal knob per the F1 brief. */
 export const PINWHEEL_RADIUS = 'elliptical' // 'elliptical' | 'circular'
 
-/* Shared motion feel (per-surface cycle speeds live with each surface) */
-export const MORPH = { type: 'spring', stiffness: 120, damping: 20 } // ~0.4–0.6s settle
-export const STAGGER_MS = 30 // summit→fieldintel ripple
+/* Shared motion feel (per-surface cycle speeds live with each surface).
+   D0 pacing: retuned from {120, 20} (~0.45s settle, ζ≈0.91 with a hint
+   of overshoot) to {50, 17} — slightly overdamped (ζ≈1.2), slowest pole
+   ≈3.8/s → ≈1.05s settle: a calm glide with no float and no bounce,
+   probe-verified single-settle. If Preston wants the old snap back:
+   restore {120, 20} and CYCLE_MS 2000 / STAGGER_MS 30 together. */
+export const MORPH = { type: 'spring', stiffness: 50, damping: 17 } // ≈1s settle
+export const STAGGER_MS = 45 // summit→fieldintel ripple (D0: scaled with MORPH)
 
 export const STAGGER_ORDER = [
   'summit',
