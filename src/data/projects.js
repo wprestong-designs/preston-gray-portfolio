@@ -20,6 +20,9 @@ import ourcoAbout from '../assets/ourco-about.jpg'
 import bristolPreview from '../assets/bristol-home.jpg'
 import pinnacleHome from '../assets/pinnacle-home.jpg'
 import prosourceHome from '../assets/prosource-home.jpg'
+// M1: mobile CROP (hero headline + CTA) for the ProSource homepage still.
+import prosourceHomeCropSm from '../assets/mobile/prosource-home-480w.jpg'
+import prosourceHomeCropLg from '../assets/mobile/prosource-home.jpg'
 import fieldIntelPreview from '../assets/crm-analytics-desktop.jpg'
 import crmFieldnotesDesktop from '../assets/crm-fieldnotes-desktop.jpg'
 // crm-territorymap-mobile + analytics-explorer imports removed — CRM data-safety unwire (2026-07-04)
@@ -53,9 +56,11 @@ import bristolHomePoster from '../assets/media/bristol-homepage-desktop-poster.j
 import bristolAboutMp4 from '../assets/media/bristol-about-mobile.mp4'
 import bristolAboutWebm from '../assets/media/bristol-about-mobile.webm'
 import bristolAboutPoster from '../assets/media/bristol-about-mobile-poster.jpg'
-import pinnacleHomeMp4 from '../assets/media/pinnacle-homepage-mobile.mp4'
-import pinnacleHomeWebm from '../assets/media/pinnacle-homepage-mobile.webm'
-import pinnacleHomePoster from '../assets/media/pinnacle-homepage-mobile-poster.jpg'
+// §1.2: the letterboxed pinnacle-homepage-mobile is retired for the native
+// PORTRAIT capture (cropped 520×1080 from the new push).
+import pinnacleHomeMp4 from '../assets/media/pinnacle-homepage-scroll-mobile.mp4'
+import pinnacleHomeWebm from '../assets/media/pinnacle-homepage-scroll-mobile.webm'
+import pinnacleHomePoster from '../assets/media/pinnacle-homepage-scroll-mobile-poster.jpg'
 import pinnacleAboutMp4 from '../assets/media/pinnacle-about-desktop.mp4'
 import pinnacleAboutWebm from '../assets/media/pinnacle-about-desktop.webm'
 import pinnacleAboutPoster from '../assets/media/pinnacle-about-desktop-poster.jpg'
@@ -616,6 +621,7 @@ export const projects = [
           {
             kind: 'image',
             src: prosourceHome,
+            mobile: { srcSet: `${prosourceHomeCropSm} 480w, ${prosourceHomeCropLg} 640w` },
             frame: 'browser',
             caption: 'Homepage — ProSource red',
             alt: 'ProSource Pharmacy homepage in brand red',

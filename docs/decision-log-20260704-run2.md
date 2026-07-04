@@ -73,3 +73,15 @@ letterboxed `pinnacle-homepage-mobile` (retired in §4 wiring). Wiring → §4.
   by code review. Gesture FEEL (pinch smoothness, momentum) → watch-list.
 - **M3 wiring status:** the component consumes `item.mobile` (crop srcset) + opens any
   image in the lightbox — mechanism complete. Per-proof set wiring below.
+
+## §4 — M3 spread/set wiring (partial, mechanism complete)
+- **Pinnacle homepage clip → native PORTRAIT** (repointed to pinnacle-homepage-scroll-
+  mobile, 520×1080); the letterboxed pinnacle-homepage-mobile.{mp4,webm,poster} were
+  `git rm`'d (§1.2 done). Reverse: repoint the import back.
+- **ProSource homepage still → mobile CROP wired** end-to-end (item.mobile.srcSet →
+  the hero-CTA crop) — the M1 `<picture>` demo.
+- **Remaining (mechanical; assets + mechanism ready, NOT wired):** the other 6 crop
+  srcsets onto their stills; Pinnacle supporting stills (rxsubmission, womenshealth);
+  a ProSource mobile-homepage clip panel; the two navigation clips (expansion). These
+  are per-proof data entry — the responsive component + lightbox already consume
+  `item.mobile` and open any image. Listed on the watch-list / follow-up.
