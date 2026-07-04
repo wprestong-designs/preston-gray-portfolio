@@ -1,0 +1,161 @@
+/*
+ * styleguide.css — layout for the dev /styleguide/ route only.
+ * Role tokens exclusively (no hex — tokens.css stays the sole hex home).
+ * Obeys the shape grammar it documents: hard offset shadows (zero blur),
+ * zero-radius corners. Keylines that sit on a THEMED ground use --edge (it
+ * flips to white in the dark registers, where --anchor == --paper); the
+ * outer card border/shadow + masthead sit on the white page, so they keep
+ * --anchor (always dark, always visible there).
+ */
+.sg {
+  max-width: 1200px;
+  margin-inline: auto;
+  padding: 0 clamp(16px, 4vw, 48px) 96px;
+}
+
+.sg-masthead {
+  padding: 56px 0 40px;
+  border-bottom: 4px solid var(--anchor);
+  margin-bottom: 48px;
+}
+.sg-kicker {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.sg-title {
+  font-size: clamp(40px, 8vw, 88px);
+  line-height: 0.95;
+  margin: 8px 0 12px;
+}
+.sg-lede {
+  max-width: 60ch;
+  color: var(--ink);
+  font-size: 17px;
+}
+
+/* Each theme is one surface (Rule 1): its own data-theme, its own ground.
+   Outer border + hard shadow fall on the white page → --anchor. */
+.sg-theme {
+  background: var(--paper);
+  color: var(--ink);
+  border: 4px solid var(--anchor);
+  box-shadow: 6px 6px 0 var(--anchor);
+  padding: clamp(20px, 3vw, 40px);
+  margin-bottom: 64px; /* ≥64px white gutter between palette surfaces (§3.11) */
+}
+
+.sg-theme__head {
+  border-bottom: 2px solid var(--edge);
+  padding-bottom: 16px;
+  margin-bottom: 24px;
+}
+.sg-theme__name {
+  font-size: clamp(26px, 4vw, 40px);
+}
+.sg-theme__meta {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  margin-top: 6px;
+}
+.sg-theme__meta code {
+  background: var(--ground-tint);
+  padding: 1px 5px;
+}
+
+.sg-subhead {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin: 32px 0 14px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--edge);
+}
+
+/* Role swatches */
+.sg-roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+.sg-role {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sg-role__chip {
+  width: 34px;
+  height: 34px;
+  border: 2px solid var(--edge);
+}
+.sg-role__name {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+}
+
+/* Shape grid */
+.sg-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  gap: 14px;
+}
+.sg-cell {
+  margin: 0;
+  border: 2px solid var(--edge);
+  background: var(--paper);
+}
+.sg-cell--signature {
+  box-shadow: 4px 4px 0 var(--lead); /* the signature move: colored hard shadow */
+}
+.sg-cell__art {
+  height: 108px;
+  display: grid;
+  place-items: center;
+  padding: 12px;
+  overflow: hidden;
+}
+.sg-lock {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+  opacity: 0.5;
+  text-align: center;
+  border: 2px dashed var(--edge);
+  padding: 8px 10px;
+}
+.sg-cell__cap {
+  border-top: 2px solid var(--edge);
+  padding: 7px 9px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  color: var(--ink);
+}
+.sg-tagline {
+  color: var(--wildcard);
+}
+.sg-tagline--excl {
+  color: var(--signal-text);
+}
+
+/* Pattern density row */
+.sg-patterns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.sg-pattern {
+  border: 2px solid var(--edge);
+}
+.sg-pattern .pattern-field {
+  display: block;
+}
