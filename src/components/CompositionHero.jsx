@@ -169,7 +169,10 @@ function useCast() {
         color: p.colorDisplay ?? p.color,
         colorHover: p.colorHover,
         displayFg: p.displayFg,
-        echoColor: p.color, // echo accent wears the deep flood register
+        // Poster is site-owned → themed. The echo uses the themed display
+        // color, not the pinned brand (p.color), so no brand leaks onto the
+        // composition. Brand appears only when the proof opens.
+        echoColor: p.colorDisplay ?? p.color,
         outline: null,
         // B1b: real URLs — the S1 deep-link format, so middle-click /
         // copy-link / AT link lists resolve. Click still preventDefaults

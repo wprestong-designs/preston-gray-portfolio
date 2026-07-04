@@ -30,12 +30,15 @@
   border-radius: 0;
 }
 
+/* Decorative brand-line highlights follow the THEME (Q3), not pinned brand —
+   these are site marketing, not proof surfaces. The client dots below stay
+   pinned. */
 .sb-hero__word--find {
-  background: var(--summit-surface-1);
+  background: var(--orange-tint);
 }
 
 .sb-hero__word--trust {
-  background: var(--pinnacle-surface-1);
+  background: var(--sky-tint);
 }
 
 .sb-hero__word--choose {
@@ -88,10 +91,10 @@
   width: 12px;
   height: 12px;
   border-radius: 0;
-  background: var(--accent);
+  background: var(--summit-flood); /* dot 1 = Summit (pinned brand) */
 }
 
-/* A little of the poster's color system, in order */
+/* Client dots pin each client's real brand (Q3), in order */
 .sb-who li:nth-child(2)::before { background: var(--bristol-flood); }
 .sb-who li:nth-child(3)::before { background: var(--ourco-flood); }
 .sb-who li:nth-child(4)::before { background: var(--pinnacle-flood); }

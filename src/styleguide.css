@@ -160,6 +160,62 @@
   display: block;
 }
 
+/* Pinned proof tokens — governance doc */
+.sg-proof {
+  background: var(--paper);
+  color: var(--ink);
+  border: 4px solid var(--anchor);
+  box-shadow: 6px 6px 0 var(--anchor);
+  padding: clamp(20px, 3vw, 40px);
+  margin-bottom: 64px;
+}
+.sg-proof-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+.sg-proof-set {
+  border: 2px solid var(--edge);
+  padding: 14px;
+}
+.sg-proof-name {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.sg-proof-name span {
+  font-weight: 500;
+  opacity: 0.6;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.sg-proof-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.sg-proof-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.sg-proof-swatch {
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--edge);
+}
+.sg-proof-slot {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+}
+
 /* Component specimens */
 .sg-specimens {
   display: flex;

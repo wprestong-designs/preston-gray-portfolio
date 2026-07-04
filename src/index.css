@@ -133,63 +133,66 @@
   --accent-lime: var(--pop-1);
   --accent-citrus: var(--flash);
 
-  /* ==== PER-PROJECT PALETTES (legacy) → roles ====
-     Each project rides its mapped role; -accent-ink is a darkened,
-     hue-preserving step readable as small text on white. */
+  /* ==== PER-PROJECT PALETTES → PINNED PROOF BRAND (hybrid governance) ====
+     These map to the fixed --proof-* tokens (tokens.css), NOT theme roles,
+     so proof surfaces (overlay flood/surfaces/ghost, /work/ card accents,
+     the small-business client dots) evidence the client's real brand and do
+     NOT re-theme. Site-owned consumers read the themed display tier and role
+     tokens instead (see colorDisplay in projects.js). */
 
-  /* Summit → Lead */
-  --summit-flood: var(--lead);            --summit-flood-fg: var(--ink);
-  --summit-accent: var(--flash);
-  --summit-accent-ink: color-mix(in srgb, var(--lead) 42%, var(--anchor));
-  --summit-ghost: var(--lead);
-  --summit-surface-1: color-mix(in srgb, var(--lead) 16%, var(--paper)); --summit-surface-1-fg: var(--ink);
-  --summit-surface-2: color-mix(in srgb, var(--lead) 40%, var(--paper)); --summit-surface-2-fg: var(--ink);
-  --summit-surface-3: color-mix(in srgb, var(--lead) 66%, var(--paper)); --summit-surface-3-fg: var(--ink);
+  /* Summit → Deep Spruce */
+  --summit-flood: var(--proof-summit-primary);      --summit-flood-fg: var(--proof-summit-on);
+  --summit-accent: var(--proof-summit-accent);
+  --summit-accent-ink: var(--proof-summit-accent-ink);
+  --summit-ghost: var(--proof-summit-ghost);
+  --summit-surface-1: var(--proof-summit-s1); --summit-surface-1-fg: var(--proof-summit-s-fg);
+  --summit-surface-2: var(--proof-summit-s2); --summit-surface-2-fg: var(--proof-summit-s-fg);
+  --summit-surface-3: var(--proof-summit-s3); --summit-surface-3-fg: var(--proof-summit-s-fg);
 
-  /* Ourco → Pop-2 */
-  --ourco-flood: var(--pop-2);            --ourco-flood-fg: var(--ink);
-  --ourco-accent: var(--pop-2);
-  --ourco-accent-ink: color-mix(in srgb, var(--pop-2) 42%, var(--anchor));
-  --ourco-ghost: var(--pop-2);
-  --ourco-surface-1: color-mix(in srgb, var(--pop-2) 16%, var(--paper)); --ourco-surface-1-fg: var(--ink);
-  --ourco-surface-2: color-mix(in srgb, var(--pop-2) 40%, var(--paper)); --ourco-surface-2-fg: var(--ink);
-  --ourco-surface-3: color-mix(in srgb, var(--pop-2) 66%, var(--paper)); --ourco-surface-3-fg: var(--ink);
+  /* Ourco → Weld Orange */
+  --ourco-flood: var(--proof-ourco-primary);        --ourco-flood-fg: var(--proof-ourco-on);
+  --ourco-accent: var(--proof-ourco-accent);
+  --ourco-accent-ink: var(--proof-ourco-accent-ink);
+  --ourco-ghost: var(--proof-ourco-ghost);
+  --ourco-surface-1: var(--proof-ourco-s1); --ourco-surface-1-fg: var(--proof-ourco-s-fg);
+  --ourco-surface-2: var(--proof-ourco-s2); --ourco-surface-2-fg: var(--proof-ourco-s-fg);
+  --ourco-surface-3: var(--proof-ourco-s3); --ourco-surface-3-fg: var(--proof-ourco-s-fg);
 
-  /* Bristol → Pop-1 */
-  --bristol-flood: var(--pop-1);          --bristol-flood-fg: var(--ink);
-  --bristol-accent: var(--pop-1);
-  --bristol-accent-ink: color-mix(in srgb, var(--pop-1) 40%, var(--anchor));
-  --bristol-ghost: var(--pop-1);
-  --bristol-ink: var(--ink);
-  --bristol-surface-1: color-mix(in srgb, var(--pop-1) 16%, var(--paper)); --bristol-surface-1-fg: var(--ink);
-  --bristol-surface-2: color-mix(in srgb, var(--pop-1) 40%, var(--paper)); --bristol-surface-2-fg: var(--ink);
-  --bristol-surface-3: color-mix(in srgb, var(--pop-1) 66%, var(--paper)); --bristol-surface-3-fg: var(--ink);
+  /* Bristol → Warm Brick */
+  --bristol-flood: var(--proof-bristol-primary);    --bristol-flood-fg: var(--proof-bristol-on);
+  --bristol-accent: var(--proof-bristol-accent);
+  --bristol-accent-ink: var(--proof-bristol-accent-ink);
+  --bristol-ghost: var(--proof-bristol-ghost);
+  --bristol-ink: var(--proof-bristol-ink);
+  --bristol-surface-1: var(--proof-bristol-s1); --bristol-surface-1-fg: var(--proof-bristol-s-fg);
+  --bristol-surface-2: var(--proof-bristol-s2); --bristol-surface-2-fg: var(--proof-bristol-s-fg);
+  --bristol-surface-3: var(--proof-bristol-s3); --bristol-surface-3-fg: var(--proof-bristol-s-fg);
 
-  /* Pinnacle → Support */
-  --pinnacle-flood: var(--support);       --pinnacle-flood-fg: var(--ink);
-  --pinnacle-accent: var(--support);
-  --pinnacle-accent-ink: color-mix(in srgb, var(--support) 40%, var(--anchor));
-  --pinnacle-ghost: var(--support);
-  --pinnacle-black: var(--ink);
-  --pinnacle-surface-1: color-mix(in srgb, var(--support) 16%, var(--paper)); --pinnacle-surface-1-fg: var(--ink);
-  --pinnacle-surface-2: color-mix(in srgb, var(--support) 40%, var(--paper)); --pinnacle-surface-2-fg: var(--ink);
-  --pinnacle-surface-3: color-mix(in srgb, var(--support) 66%, var(--paper)); --pinnacle-surface-3-fg: var(--ink);
+  /* Pinnacle → Razorback Red */
+  --pinnacle-flood: var(--proof-pinnacle-primary);  --pinnacle-flood-fg: var(--proof-pinnacle-on);
+  --pinnacle-accent: var(--proof-pinnacle-accent);
+  --pinnacle-accent-ink: var(--proof-pinnacle-accent-ink);
+  --pinnacle-ghost: var(--proof-pinnacle-ghost);
+  --pinnacle-black: var(--proof-pinnacle-black);
+  --pinnacle-surface-1: var(--proof-pinnacle-s1); --pinnacle-surface-1-fg: var(--proof-pinnacle-s-fg);
+  --pinnacle-surface-2: var(--proof-pinnacle-s2); --pinnacle-surface-2-fg: var(--proof-pinnacle-s-fg);
+  --pinnacle-surface-3: var(--proof-pinnacle-s3); --pinnacle-surface-3-fg: var(--proof-pinnacle-s-fg);
 
-  /* ProSource → Signal (industrial red + anchor black) */
-  --prosource-flood: var(--signal);       --prosource-flood-fg: var(--ink);
-  --prosource-accent: var(--signal);
-  --prosource-accent-ink: color-mix(in srgb, var(--signal) 42%, var(--anchor));
-  --prosource-ghost: var(--anchor);
-  --prosource-surface-1: var(--signal);   --prosource-surface-1-fg: var(--ink);
-  --prosource-surface-2: var(--anchor);   --prosource-surface-2-fg: var(--anchor-fg);
+  /* ProSource → Industrial Red */
+  --prosource-flood: var(--proof-prosource-primary); --prosource-flood-fg: var(--proof-prosource-on);
+  --prosource-accent: var(--proof-prosource-accent);
+  --prosource-accent-ink: var(--proof-prosource-accent-ink);
+  --prosource-ghost: var(--proof-prosource-ghost);
+  --prosource-surface-1: var(--proof-prosource-s1); --prosource-surface-1-fg: var(--proof-prosource-s-fg);
+  --prosource-surface-2: var(--proof-prosource-s2); --prosource-surface-2-fg: var(--proof-prosource-s-fg);
 
-  /* Field Intel → Wildcard (grape) */
-  --fieldintel-flood: var(--wildcard);    --fieldintel-flood-fg: var(--anchor-fg);
-  --fieldintel-accent: var(--wildcard);
-  --fieldintel-accent-ink: var(--wildcard);
-  --fieldintel-ghost: var(--wildcard);
-  --fieldintel-surface-1: color-mix(in srgb, var(--wildcard) 16%, var(--paper)); --fieldintel-surface-1-fg: var(--ink);
-  --fieldintel-surface-2: color-mix(in srgb, var(--wildcard) 40%, var(--paper)); --fieldintel-surface-2-fg: var(--ink);
+  /* Field Intel → CRM Plum */
+  --fieldintel-flood: var(--proof-fieldintel-primary); --fieldintel-flood-fg: var(--proof-fieldintel-on);
+  --fieldintel-accent: var(--proof-fieldintel-accent);
+  --fieldintel-accent-ink: var(--proof-fieldintel-accent-ink);
+  --fieldintel-ghost: var(--proof-fieldintel-ghost);
+  --fieldintel-surface-1: var(--proof-fieldintel-s1); --fieldintel-surface-1-fg: var(--proof-fieldintel-s-fg);
+  --fieldintel-surface-2: var(--proof-fieldintel-s2); --fieldintel-surface-2-fg: var(--proof-fieldintel-s-fg);
 }
 
 /* ------------------------------------------------------------------

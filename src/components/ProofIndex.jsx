@@ -96,7 +96,10 @@ export default function ProofIndex() {
               <a
                 href={`/#proof-${proof.id}`}
                 className="proof-row"
-                style={{ '--row-color': proof.color }}
+                // Row hover/focus text follows the theme (Index = site-owned);
+                // the cursor-card + thumb below keep proof.color (pinned) —
+                // they frame the client's real preview art.
+                style={{ '--row-color': proof.colorDisplay }}
                 aria-label={`Proof ${proof.index} — ${proof.name}, ${proof.tag}`}
                 // R3 parity with the composition: iOS tap synthesizes
                 // mouseenter — only true mouse pointers drive hover.

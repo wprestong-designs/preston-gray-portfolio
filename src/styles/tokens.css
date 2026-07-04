@@ -192,3 +192,69 @@
   --pop-1: var(--splash-aqua);   --pop-2: var(--splash-bubble);
   --signal: var(--splash-orange); --wildcard: var(--splash-blueberry);
 }
+
+/* ==================================================================
+   PINNED PROOF BRAND TOKENS — the clients' REAL brand colors.
+   Governance (hybrid): these are FIXED. They NEVER live in a
+   [data-theme] block, so theme roles never reach a proof surface and
+   proof brand never leaks onto site chrome. AA pairs are the ones the
+   pre-migration brand system verified (contrast vs the on-color noted).
+   Consumed only through the per-project --{project}-* map in index.css.
+   ================================================================== */
+:root {
+  /* Summit — Deep Spruce pharmacy + sunset surface ramp */
+  --proof-summit-primary: #1f5c43;    /* flood · cream 6.65 / white 7.86 */
+  --proof-summit-on: #f6ecc9;         /* warm cream */
+  --proof-summit-accent: #ffce4f;     /* sunny yellow · 5.32 large on flood */
+  --proof-summit-accent-ink: #1f5c43; /* spruce, work-card accent */
+  --proof-summit-ghost: #ffce4f;
+  --proof-summit-s1: #ffe9a8;  --proof-summit-s2: #ffce4f;  --proof-summit-s3: #ff9d3d;
+  --proof-summit-s-fg: #173b2f;
+
+  /* Ourco — Weld Orange */
+  --proof-ourco-primary: #a84a0c;     /* white 5.75 */
+  --proof-ourco-on: #ffffff;
+  --proof-ourco-accent: #f79245;
+  --proof-ourco-accent-ink: #8a3c09;  /* 7.55 on white / 5.68 on tint */
+  --proof-ourco-ghost: #f79245;
+  --proof-ourco-s1: #ffd6b3;  --proof-ourco-s2: #ffb37a;  --proof-ourco-s3: #ff914d;
+  --proof-ourco-s-fg: #171717;
+
+  /* Bristol — Warm Brick + tan */
+  --proof-bristol-primary: #b03a2e;   /* tan 5.45 */
+  --proof-bristol-on: #faf3e7;        /* tan */
+  --proof-bristol-accent: #b03a2e;
+  --proof-bristol-accent-ink: #b03a2e;
+  --proof-bristol-ghost: #e7d6bb;
+  --proof-bristol-ink: #33201b;       /* warm near-black on the tans · 13.97 */
+  --proof-bristol-s1: #f2e7d5;  --proof-bristol-s2: #faf3e7;  --proof-bristol-s3: #e7d6bb;
+  --proof-bristol-s-fg: #33201b;
+
+  /* Pinnacle Rx — Razorback Red · Apple Blossom · Neutral Black */
+  --proof-pinnacle-primary: #9d2235;  /* white 7.74 */
+  --proof-pinnacle-on: #ffffff;
+  --proof-pinnacle-accent: #9d2235;
+  --proof-pinnacle-accent-ink: #9d2235;
+  --proof-pinnacle-ghost: #c4586a;    /* rose misregister */
+  --proof-pinnacle-black: #222222;
+  --proof-pinnacle-s1: #f6e3e6;  --proof-pinnacle-s2: #ffffff;  --proof-pinnacle-s3: #efd7dc;
+  --proof-pinnacle-s-fg: #222222;
+
+  /* ProSource — industrial red / near-black (white fg on both) */
+  --proof-prosource-primary: #a11e1e; /* white 7.72 */
+  --proof-prosource-on: #ffffff;
+  --proof-prosource-accent: #d42b2b;
+  --proof-prosource-accent-ink: #a11e1e;
+  --proof-prosource-ghost: #1a1a1a;
+  --proof-prosource-s1: #d42b2b;  --proof-prosource-s2: #1a1a1a;
+  --proof-prosource-s-fg: #ffffff;
+
+  /* Field Intel — CRM plum (brand IS the system purple) */
+  --proof-fieldintel-primary: #5b21b6; /* white 8.98 */
+  --proof-fieldintel-on: #ffffff;
+  --proof-fieldintel-accent: #7c3aed;
+  --proof-fieldintel-accent-ink: #5b21b6;
+  --proof-fieldintel-ghost: #7c3aed;
+  --proof-fieldintel-s1: #ecc4ff;  --proof-fieldintel-s2: #e2a9f1;  --proof-fieldintel-s3: #c353f0;
+  --proof-fieldintel-s-fg: #171717;
+}

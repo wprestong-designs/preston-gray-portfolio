@@ -54,6 +54,51 @@ const SHAPE_LABEL = {
 const ROLES = ['anchor', 'lead', 'support', 'flash', 'pop-1', 'pop-2', 'signal', 'wildcard']
 const SHAPE_NAMES = Object.keys(SHAPES)
 
+/* Pinned proof brand tokens (fixed; never re-theme) — governance doc. */
+const PROOF_SETS = [
+  { id: 'summit', name: 'Summit', tag: 'Deep Spruce · pharmacy', slots: ['primary', 'on', 'accent', 'ghost', 's1', 's2', 's3'] },
+  { id: 'ourco', name: 'Ourco', tag: 'Weld Orange', slots: ['primary', 'on', 'accent', 's1', 's2', 's3'] },
+  { id: 'bristol', name: 'Bristol', tag: 'Warm Brick + tan', slots: ['primary', 'on', 'ghost', 's1', 's2', 's3'] },
+  { id: 'pinnacle', name: 'Pinnacle', tag: 'Razorback Red', slots: ['primary', 'on', 'ghost', 'black', 's1', 's3'] },
+  { id: 'prosource', name: 'ProSource', tag: 'Industrial Red', slots: ['primary', 'accent', 'ghost', 's1', 's2'] },
+  { id: 'fieldintel', name: 'Field Intel', tag: 'CRM Plum', slots: ['primary', 'accent', 's1', 's2', 's3'] },
+]
+
+function ProofTokens() {
+  return (
+    <section className="sg-proof" data-theme="memphis">
+      <header className="sg-theme__head">
+        <h2 className="sg-theme__name">Pinned proof tokens</h2>
+        <p className="sg-theme__meta">
+          The clients&rsquo; real brand colors — FIXED, never inside a <code>[data-theme]</code>{' '}
+          block. Rule: theme roles never reach inside a proof; proof brand never leaks onto site
+          chrome. The frame is site-owned; the work inside is the client&rsquo;s.
+        </p>
+      </header>
+      <div className="sg-proof-grid">
+        {PROOF_SETS.map((p) => (
+          <div key={p.id} className="sg-proof-set">
+            <p className="sg-proof-name">
+              {p.name} <span>{p.tag}</span>
+            </p>
+            <div className="sg-proof-chips">
+              {p.slots.map((s) => (
+                <div key={s} className="sg-proof-chip">
+                  <span
+                    className="sg-proof-swatch"
+                    style={{ background: `var(--proof-${p.id}-${s})` }}
+                  />
+                  <span className="sg-proof-slot">{s}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
 function ShapeCell({ name, theme }) {
   const Shape = SHAPES[name]
   const allowed = isShapeAllowed(name, theme)
@@ -134,6 +179,7 @@ export default function Styleguide() {
           the variable.
         </p>
       </header>
+      <ProofTokens />
       {THEMES.map((t) => (
         <ThemeSection key={t} theme={t} />
       ))}

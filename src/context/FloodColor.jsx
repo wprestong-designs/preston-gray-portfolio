@@ -27,8 +27,11 @@ export function FloodProvider({ children }) {
     const root = document.documentElement
     const proof = activeId ? getProof(activeId) : null
     if (proof) {
-      root.style.setProperty('--flood-current', proof.color)
-      root.style.setProperty('--flood-current-fg', proof.colorFg)
+      // Governance: the flood tints SITE CHROME (masthead/index labels/hero
+      // eyebrows), so it follows the theme via colorDisplay — never the
+      // pinned brand (proof.color). The brand appears when the proof opens.
+      root.style.setProperty('--flood-current', proof.colorDisplay)
+      root.style.setProperty('--flood-current-fg', proof.displayFg)
       root.dataset.flood = proof.id
     } else {
       root.style.removeProperty('--flood-current')

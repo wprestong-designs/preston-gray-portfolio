@@ -173,8 +173,8 @@ export const projects = [
     index: '01',
     name: 'Summit Pharmacy',
     tag: 'Website & marketing system',
-    color: 'var(--accent)',
-    colorFg: 'var(--flood-green-fg)',
+    color: 'var(--summit-flood)', // PINNED brand (proof surfaces); composition uses colorDisplay
+    colorFg: 'var(--summit-flood-fg)',
     colorInk: 'var(--accent-deep)',
     colorDisplay: 'var(--display-green)',
     colorHover: 'var(--accent)',
@@ -319,8 +319,8 @@ export const projects = [
     index: '02',
     name: 'Ourco',
     tag: 'Houston industrial',
-    color: 'var(--flood-orange)',
-    colorFg: 'var(--flood-orange-fg)',
+    color: 'var(--ourco-flood)', // PINNED brand
+    colorFg: 'var(--ourco-flood-fg)',
     colorInk: 'var(--orange-deep)',
     colorDisplay: 'var(--display-orange)',
     colorHover: 'var(--flood-orange)',
@@ -583,8 +583,8 @@ export const projects = [
     // Standing constraint outranks the draft tag: Prosource is not live —
     // 'in progress', NEVER a live link anywhere on the site.
     tag: 'Las Vegas · in progress',
-    color: 'var(--flood-red)',
-    colorFg: 'var(--flood-red-fg)',
+    color: 'var(--prosource-flood)', // PINNED brand
+    colorFg: 'var(--prosource-flood-fg)',
     colorInk: 'var(--red-deep)',
     colorDisplay: 'var(--display-red)',
     colorHover: 'var(--flood-red)',
@@ -658,8 +658,8 @@ export const projects = [
     index: '06',
     name: 'Summit Field Intel',
     tag: 'Custom CRM, designed & built',
-    color: 'var(--flood-purple)',
-    colorFg: 'var(--flood-purple-fg)',
+    color: 'var(--fieldintel-flood)', // PINNED brand
+    colorFg: 'var(--fieldintel-flood-fg)',
     colorInk: 'var(--purple-deep)',
     colorDisplay: 'var(--display-purple)',
     colorHover: 'var(--flood-purple)',
