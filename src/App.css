@@ -3282,3 +3282,29 @@ a.link-pill:hover {
 @media (prefers-reduced-motion: reduce) {
   .about-photo--portrait, .about-photo--machu { transform: none; }
 }
+
+/* §2 — dev-only close-feel tuner (?tune=1). */
+.tune {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  z-index: 400;
+  width: 268px;
+  padding: 14px 14px 12px;
+  background: #171717;
+  color: #f5f5f5;
+  border: 2px solid #f72585;
+  border-radius: 0;
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.5);
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 12px;
+}
+.tune__title { margin: 0 0 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #f72585; }
+.tune__row { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+.tune__row span { display: flex; justify-content: space-between; }
+.tune__row b { color: #ffe156; }
+.tune__row input[type='range'] { width: 100%; accent-color: #f72585; }
+.tune__row select { background: #262626; color: #f5f5f5; border: 1px solid #525252; padding: 4px; font-family: inherit; font-size: 12px; }
+.tune__note { margin: 4px 0 8px; color: #a3a3a3; font-size: 11px; line-height: 1.4; }
+.tune__values { margin: 0 0 8px; padding: 8px; background: #0a0a0a; color: #86efac; font-size: 11px; line-height: 1.4; overflow-x: auto; }
+.tune__copy { width: 100%; padding: 8px; background: #f72585; color: #fff; border: 0; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; }

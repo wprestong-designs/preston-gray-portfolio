@@ -108,3 +108,17 @@ portal clone, and transform-scaling the clone blurs text — three strikes vs th
   orphan comment; ONE ruleset now, single `@media (min-width:900px)` split. No
   wins-by-source-order. · verified 1440/1024 (row cluster) + 768/390 (column), axe 0.
 - The img chain keeps min-width:0 + max-width:100% (the grid/flex intrinsic-size trap).
+
+## §2 — close-feel tuning system
+- **Dev-only tuner** `?tune=1` on the poster (bottom-right panel). Controls: closeDuration
+  (0.4–1.0), closeEase (presets incl. strong-decel `cubic-bezier(0.2,0,0.1,1)`),
+  contentFadeOut, overlap (geometryDelay), resumeHold (0–400ms). Live JSON readout +
+  Copy Values. · Drives the REAL close via a `motion-tune` store read at close time
+  (backdrop exit transition + title-reverse animate + content fade + finalizeClose delay).
+- **resumeHold** = pause after the shape LANDS (exit complete) before closingId clears
+  (colour releases + cycle resumes) — implemented in OverlayProvider.finalizeClose.
+- **Open stays fixed** at the 0.5s DELIBERATE register (EXPAND_TRANSITION). Only the
+  RETURN is tunable. Defaults = starting values (close 0.7s / strong-decel / fade 0.2 /
+  resumeHold 200ms). · Panel is DEV-gated (stripped from prod — confirmed).
+- Preston: `?tune=1`, arm→open→close, tune by feel, Copy Values, reply — I bake them
+  into motion-tune defaults + CLAUDE.md and keep the panel dev-flagged.

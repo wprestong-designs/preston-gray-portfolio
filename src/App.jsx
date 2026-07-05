@@ -5,6 +5,7 @@ import { getProof } from './data/projects.js'
 import Poster from './components/Poster.jsx'
 import IndexLayer from './components/IndexLayer.jsx'
 import ContactLayer from './components/ContactLayer.jsx'
+import MotionTunePanel from './components/MotionTunePanel.jsx'
 import ProjectOverlay from './components/ProjectOverlay.jsx'
 import { FloodProvider } from './context/FloodColor.jsx'
 import { OverlayProvider } from './context/OverlayProvider.jsx'
@@ -81,6 +82,11 @@ function PageChrome() {
         }}
       />
       <OverlayRoot />
+      {/* §2 dev-only close-feel tuner (?tune=1). */}
+      {import.meta.env.DEV &&
+        new URLSearchParams(window.location.search).get('tune') === '1' && (
+          <MotionTunePanel />
+        )}
     </>
   )
 }

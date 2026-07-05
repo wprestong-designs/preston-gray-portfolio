@@ -29,6 +29,7 @@ import { aboutOverlay, getProof } from '../data/projects.js'
 import { useProofOverlay } from '../context/overlay-context.js'
 import ProofMedia from './ProofMedia.jsx'
 import Quote from './Quote.jsx'
+import { motionTune, closeTransition } from './motion-tune.js'
 // N2/Phase B: About photos — taped-photo treatment (.about-portrait CSS).
 import prestonPortrait from '../assets/preston-portrait.jpg'
 import prestonPortraitSm from '../assets/preston-portrait-300.jpg'
@@ -264,11 +265,13 @@ export default function ProjectOverlay() {
   // the fragment as the panel contracts into the shape. Same values, reversed.
   useEffect(() => {
     if (closingId !== displayId || !flipFrom) return undefined
+    // §2: the RETURN reads the live tuning store (closeDuration/ease/delay).
+    const ct = closeTransition()
     const controls = [
-      animate(monX, flipFrom.x, EXPAND_TRANSITION),
-      animate(monY, flipFrom.y, EXPAND_TRANSITION),
-      animate(monScale, flipFrom.scale, EXPAND_TRANSITION),
-      animate(monOpacity, 0, { ...EXPAND_TRANSITION, duration: 0.34 }),
+      animate(monX, flipFrom.x, ct),
+      animate(monY, flipFrom.y, ct),
+      animate(monScale, flipFrom.scale, ct),
+      animate(monOpacity, 0, { duration: motionTune.contentFadeOut }),
     ]
     return () => controls.forEach((c) => c.stop())
   }, [closingId, displayId, flipFrom, monX, monY, monScale, monOpacity])
@@ -437,7 +440,7 @@ export default function ProjectOverlay() {
               initial={{ opacity: 0 }}
               animate={{ opacity: expanded && !isClosing ? 1 : 0 }}
               exit={{ opacity: 0, transition: { duration: 0.15 } }}
-              transition={{ duration: isClosing ? 0.2 : 0.3 }}
+              transition={{ duration: isClosing ? motionTune.contentFadeOut : 0.3 }}
             >
               <p className="ov-mono misregister">
                 {isAbout ? proof.tag : `Proof ${proof.index} · ${proof.tag}`}
@@ -644,9 +647,15 @@ export default function ProjectOverlay() {
             className="overlay__backdrop"
             layoutId={originLayoutId}
             style={{ borderRadius: 0 }}
-            // Reduced motion: instant grow/shrink, still colour- + position-
-            // truthful (brand ground snaps to the panel and back to the shape).
-            transition={reducedMotion ? { duration: 0 } : EXPAND_TRANSITION}
+            // Open = fixed 0.5s DELIBERATE; close (isClosing) reads the tuning
+            // store (§2). Reduced motion: instant, still colour/position-truthful.
+            transition={
+              reducedMotion
+                ? { duration: 0 }
+                : isClosing
+                  ? closeTransition()
+                  : EXPAND_TRANSITION
+            }
             onLayoutAnimationComplete={() => setExpanded(true)}
           />
         </>

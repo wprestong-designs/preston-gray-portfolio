@@ -11,6 +11,7 @@
  */
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { OverlayContext } from './overlay-context.js'
+import { motionTune } from '../components/motion-tune.js'
 
 export function OverlayProvider({ children }) {
   const [openId, setOpenId] = useState(null)
@@ -57,7 +58,11 @@ export function OverlayProvider({ children }) {
   }, [])
 
   const finalizeClose = useCallback(() => {
-    setClosingId(null)
+    // §2 resumeHold: the shape has LANDED (exit animation done). Hold its brand
+    // + the paused cycle for resumeHold ms, THEN release colour + resume.
+    const hold = Math.max(0, motionTune.resumeHold)
+    if (hold > 0) setTimeout(() => setClosingId(null), hold)
+    else setClosingId(null)
     setOriginKey(null)
     window.scrollTo(0, scrollYRef.current)
     // B1c: hash-arrival overlays have no origin element — land focus on
