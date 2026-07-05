@@ -1,4 +1,39 @@
-# Release notes — v2.0.0
+# Release notes — v2 line
+
+## v2.1.0 — Cloudflare Pages hosting, Web3Forms, video diet, About polish
+2026-07-05 · merged `b68a6b0` → `main`. Production now builds + serves from **Cloudflare
+Pages** (Netlify stopped). Verified live: `preston-gray.com` + `www` Active on Cloudflare.
+
+### Hosting → Cloudflare Pages
+- Production builds + serves from **Cloudflare Pages** (project `preston-gray-portfolio`,
+  custom domain `preston-gray.com` + `www`, auto-SSL). Nameservers moved WordPress.com →
+  Cloudflare; apex served via CNAME-flattening. Netlify builds stopped (site pending
+  decommission). `public/_headers` adds security headers + immutable `/assets` caching;
+  `_redirects` intentionally omitted (root `404.html` + directory-index cover it).
+  Runbook: `docs/cloudflare-migration.md`.
+
+### Contact form → Web3Forms
+- Swapped Netlify Forms → **Web3Forms** (client-side POST, env `VITE_WEB3FORMS_KEY`). The
+  old prod form silently failed because Netlify's build-time form *registration* never ran
+  (auto-detect off by default) — the code and built HTML were correct. New backend is
+  host-agnostic with a graceful mailto fallback preserved. `hello@preston-gray.com` routes
+  to Preston's Gmail via **Cloudflare Email Routing** (delivery stays on that inbox).
+
+### Video diet
+- Re-encoded the 8 shipped scroll clips (audio stripped, downscaled to displayed width,
+  VP9/H.264 capped) — **~35% off the shipped video payload** — and pruned 5 orphaned
+  unwired clips (~9 MB off the repo). `mp4First` flipped on 4 clips whose mp4 now wins.
+  `docs/video-diet-20260705.md`.
+
+### About polish
+- Reflowed: statement → THE THREAD (narrative) → **What I make** stamp cards (ink keyline,
+  hard shadow, geometric green marks + a supporting line) → **photo board on green
+  (`--pop-1`) plates** → contact. "Off the press" cut; the taped-photo tapes + the
+  redundant caption removed. axe 0 across 1440/1024/768/390; visual harness green.
+
+---
+
+## v2.0.0 — shared element, About narrative, 90s color system
 
 Everything since the last production deploy (`c2f4981`). Shipped by merging
 `feature/shared-element-and-about` (the full stack) → `main`.

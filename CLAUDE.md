@@ -9,22 +9,28 @@ Index, and Contact are layers/overlays, not pages.
 - **Canonical domain:** https://preston-gray.com
 - **Commands:** `npm run dev` · `npm run build` · `npm run lint`
 
-## Branch workflow — NEVER TOUCH MAIN
-All work on **feature branches**; push them to origin freely. **NEVER push, merge, or
-fast-forward `main`** — Netlify auto-deploys `main` to production; merging is
-**Preston's** action after review. If you think main must change, log it and STOP that item.
+## Branch workflow — main IS production (Cloudflare Pages), merge only on Preston's say-so
+`main` builds + deploys to production via **Cloudflare Pages** (project
+`preston-gray-portfolio`, domain `preston-gray.com` + `www`, auto-SSL). Do all work on
+**feature branches**, push them to origin freely, and **merge to `main` ONLY when Preston
+explicitly says so** — the merge is his call, not yours. If you think main must change,
+log it and STOP that item.
 
+- **Netlify is STOPPED** (builds disabled; the old site is pending §8 decommission —
+  `docs/cloudflare-migration.md`). **Never re-enable Netlify builds** — a second host on
+  `main` would fight Cloudflare and burn the exhausted credits.
+- **Gate-1 (env before build):** any change to `VITE_WEB3FORMS_KEY` (contact form) must
+  be set in the Cloudflare Pages env vars BEFORE the build that ships it — Vite inlines it
+  at build time, so a late var means the live form silently falls back to mailto.
 - **REVIEW SURFACE = LOCALHOST.** Preston reviews every branch with `git checkout <branch>`
-  then `npm run dev`. **Deploy previews are NOT part of this workflow** — never flag a
-  "missing deploy-preview URL" again. **End every handoff** with those two commands +
-  the exact routes/interactions to look at.
+  then `npm run dev`. Cloudflare **branch/preview builds are free** if ever needed, but are
+  NOT the review path — never gate a handoff on a preview URL. **End every handoff** with
+  those two commands + the exact routes/interactions to look at.
 - **Main drifts via GitHub web uploads** (Preston uploads raw assets straight to main —
   they land as "Add files via upload" commits). **Every run starts with `git fetch` and
   reconciles `origin/main` into the branch** (merge, not rebase) before reporting state,
   so stacked merges stay conflict-free. Raw uploaded assets live in `Media/`; the
   processed web derivatives live in `src/assets/`.
-- Reference (not the review path): Netlify site `preston-gray-portfolio.netlify.app` /
-  `preston-gray.com`.
 
 ## Color governance (the ruling)
 - **Site-owned surfaces** (poster, index, chrome, headers) wear the **Memphis 8-theme
@@ -85,16 +91,16 @@ Two registers by intent, three shared micro-timings:
   (duration 0) but colour/position-truthful.
 Rule: new motion picks ONE of these; don't introduce a fourth duration/ease.
 
-## Backlog (post-v2.0.0)
+## Backlog (post-v2.1.0)
+- **CRM recaptures (list + capture protocol)** — CRM assets stay unwired until reshot
+  WITH a visible **DEMO / SAMPLE-DATA** badge in-frame (hard rule), then re-wired and
+  flipped to `crmVerified:true` only after badge-verification. Several source clips were
+  pruned 2026-07-05 (territory-map zoom, field/analytics mobiles), so these need FRESH
+  captures, not just re-wiring. List/protocol: `docs/recapture-list-*` / projects.js
+  unwire comment.
+- **Copy pass (awaiting Preston's worksheet)** — `/work/` + all proof copy stay FROZEN
+  until Preston's copy-session worksheet lands; scope includes the **Field Intel CRM
+  rename**. Rulebook/drafts: `site-copy-draft-v1.md`.
 - **Phase C** — 5 new original compositions (roster 13→18). SVGs in `~/Downloads/
   Geometric sequence graphics (1)/`; method: T-pass (border-radius+rotate, validator +
   transition graph + coverage + contact sheet).
-- **CRM recaptures** — the badge-less assets unwired 2026-07-04 (territory-map zoom,
-  field/territory/analytics-explorer mobiles) need reshoots WITH a visible DEMO badge
-  before re-wiring. See `docs/recapture-list-*` / projects.js unwire comment.
-- **Testimonials** — `<Quote>` component + per-proof slot ship dormant; no real quotes
-  exist (`docs/testimonial-candidates.md`). Wire when Preston has them + permission.
-- **Analytics** — Plausible stub is OFF; needs a Plausible account for preston-gray.com
-  then `VITE_ANALYTICS=plausible` in Netlify env (`src/analytics.js`).
-- **Payload/video** — mobile stills done (7.2M→4.4M); the ~25M of lazy-loaded videos
-  are un-re-encoded (biggest: summit-crm-zoom 4.2M).
