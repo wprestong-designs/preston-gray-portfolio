@@ -69,9 +69,13 @@ touch rendering.**
 
 ## Motion scale (one instrument — everything conforms)
 Two registers by intent, three shared micro-timings:
-- **DELIBERATE** — the shared-element open/close (poster shape ↔ overlay): **0.5s**
+- **DELIBERATE — OPEN**: the shared-element grow (poster shape → overlay): **0.5s**
   tween, ease **`cubic-bezier(0.32, 0.72, 0, 1)`** (`EXPAND_TRANSITION`). The signature
-  grow; the title FLIP + panel share it. This is the "one object" beat.
+  grow; the title FLIP + panel share it. The "one object" beat.
+- **DELIBERATE — RETURN (close)**: locked 2026-07-05 via the `?tune=1` panel →
+  **closeDuration 1.0s · linear · contentFadeOut 0.16s · geometryDelay 100ms ·
+  resumeHold 200ms** (in `motion-tune.js`; the dev panel stays for re-tuning). The
+  close is the open reversed but slower + linear — a deliberate, unhurried retreat.
 - **AMBIENT** — the idle cycle geometry morph: spring **`{stiffness:50, damping:17}`**
   (≈1s settle), **45ms** ripple stagger, **3s** dwell (`MORPH`/`STAGGER_MS`/`CYCLE_MS`).
   A calm glide — deliberately slower/springier than the open (a click is decisive; the

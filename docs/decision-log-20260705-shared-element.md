@@ -122,3 +122,10 @@ portal clone, and transform-scaling the clone blurs text — three strikes vs th
   resumeHold 200ms). · Panel is DEV-gated (stripped from prod — confirmed).
 - Preston: `?tune=1`, arm→open→close, tune by feel, Copy Values, reply — I bake them
   into motion-tune defaults + CLAUDE.md and keep the panel dev-flagged.
+
+## §2 values LOCKED (Preston, via ?tune=1) → baked
+- `{ closeDuration: 1, closeEase: "linear", contentFadeOut: 0.16, geometryDelay: 100,
+  resumeHold: 200 }` — baked verbatim into motion-tune.js defaults + CLAUDE.md motion
+  scale (DELIBERATE-RETURN). Panel stays dev-flagged for re-tuning. §1 approved as-built.
+
+## SHIP — authorized by Preston: merge full stack → main, deploy, tag v2.0.0.

@@ -13,11 +13,12 @@ export const CLOSE_EASE_PRESETS = {
   linear: [0, 0, 1, 1],
 }
 
+// Locked by Preston 2026-07-05 (via the ?tune=1 panel) — the shipped close feel.
 export const motionTune = {
-  closeDuration: 0.7, // s (0.4–1.0)
-  closeEaseName: 'strong-decel',
-  contentFadeOut: 0.2, // s — meta/ghost fade
-  geometryDelay: 0, // ms — overlap: geometry waits this long while content fades
+  closeDuration: 1, // s
+  closeEaseName: 'linear',
+  contentFadeOut: 0.16, // s — meta/ghost fade
+  geometryDelay: 100, // ms — overlap: geometry waits this long while content fades
   resumeHold: 200, // ms — pause after the shape lands before colour releases + cycle resumes
 }
 
