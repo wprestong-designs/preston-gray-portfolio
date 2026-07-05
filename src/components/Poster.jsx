@@ -65,6 +65,18 @@ export default function Poster() {
           >
             Index
           </button>
+          {/* N2: About promoted to the header on all viewports (was wordmark-
+              only). Order INDEX · ABOUT · FOR BUSINESS OWNERS · CONTACT —
+              identity before offer before intake. Opens the same overlay; no
+              layoutId here, so it arrives via the no-origin fade. */}
+          <button
+            type="button"
+            className="poster__util"
+            aria-haspopup="dialog"
+            onClick={(e) => open('about', 'util:about', e.currentTarget)}
+          >
+            About
+          </button>
           {/* P7: the owner-facing services page gets a front-door util —
               same label as the IndexLayer row and /work/ nav on purpose */}
           <a className="poster__util" href="/small-business/">

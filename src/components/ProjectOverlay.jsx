@@ -28,6 +28,9 @@ import {
 import { aboutOverlay, getProof } from '../data/projects.js'
 import { useProofOverlay } from '../context/overlay-context.js'
 import ProofMedia from './ProofMedia.jsx'
+// N2: Preston's portrait — taped-photo treatment lives in .about-portrait CSS.
+import prestonPortrait from '../assets/preston-portrait.jpg'
+import prestonPortraitSm from '../assets/preston-portrait-300.jpg'
 
 /* W1b — expand/collapse pacing knob. A deliberate ~500ms ease reads
    calmer than the default spring for a viewport-scale morph; swap in a
@@ -428,6 +431,25 @@ export default function ProjectOverlay() {
                 {isAbout ? proof.tag : `Proof ${proof.index} · ${proof.tag}`}
               </p>
               <p className="ov-lede">{panel.statement}</p>
+              {/* N2: the taped portrait — About only ("see portrait" in copy). */}
+              {isAbout && (
+                <figure className="about-portrait">
+                  <span className="about-portrait__frame">
+                    <span className="about-portrait__tape about-portrait__tape--left" aria-hidden="true" />
+                    <span className="about-portrait__tape about-portrait__tape--right" aria-hidden="true" />
+                    <img
+                      className="about-portrait__photo"
+                      src={prestonPortrait}
+                      srcSet={`${prestonPortraitSm} 300w, ${prestonPortrait} 600w`}
+                      sizes="300px"
+                      width="600"
+                      height="750"
+                      loading="lazy"
+                      alt="Preston Gray — the designer and builder behind this studio, in Denver."
+                    />
+                  </span>
+                </figure>
+              )}
               {/* P7: the live-site door, right where the story starts */}
               {proof.liveUrl && (
                 <a

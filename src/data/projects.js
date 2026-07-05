@@ -765,7 +765,10 @@ export const aboutOverlay = {
   name: 'About Preston',
   tag: 'Denver, Colorado',
   monument: 'About',
-  color: 'var(--flood-green-fg)',
+  // N2 fix: `color` is the overlay ground (--ov). The migration left it as
+  // --flood-green-fg (= --ink = black), so About rendered black-on-black. About
+  // is a site-owned paper document: light ground, ink text (AA 10.4:1).
+  color: 'var(--paper)',
   colorFg: 'var(--ink)',
   // P5: reconciled to site-copy-draft-v1.md (draft priority). Lines where
   // the draft left an open [VERIFY] hole (RuneScape year, dog's name)
