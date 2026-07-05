@@ -35,3 +35,27 @@ Branch `feature/overnight-polish` (from `feature/identity-and-roster`). Format:
   mobile wraps to brand + 2 util rows (CONTACT orphaned) because "For business
   owners" is long — shorten that label or drop it from the header (it's also in the
   Index) to get back to a 2-row band. All targets ≥44px, labels visible.
+
+## §B — SEO / sharing
+- Per-route title/description/canonical/og already existed for the 3 static
+  entries; /work/ + /small-business/ are static-content HTML (crawlable). Left copy
+  as-is (freeze); descriptions are already plain-voice. · nothing to add there.
+- **OG image regenerated FROM the poster** (harness, 1200×630): chose
+  **registration × memphis** — the signature print-registration composition, bold
+  shapes, dark wordmark legible on white. · high contrast + recognizable. · KNOB:
+  `scripts/og-capture.mjs` renders alternates (burst/foodcourt, arch/cartoon,
+  circles/windbreaker) — swap the copy line to change.
+- **Crawlable skeleton** added to index.html #root (h1 + description + nav; React
+  replaces on mount). · homepage is an SPA with no static content; /work/ +
+  /small-business/ already have real HTML. · GAP: not true prerender (no rendered
+  poster HTML for crawlers) — static meta + skeleton is the tonight-safe version.
+- sitemap.xml + robots.txt + canonical already correct (→ preston-gray.com).
+
+## §D — 404 + icons
+- **Designed 404** `public/404.html` — standalone (no SPA/JS), print-shop "PROOF
+  NOT FOUND" stamp + "Back to the index", reduced-motion safe. · Netlify serves
+  /404.html for unmatched paths; there is NO catch-all redirect (a `/* /index 200`
+  would BREAK it), so bad paths resolve correctly as-is. · no redirects config needed.
+- **Icons + manifest** from the mark (favicon.svg): rendered apple-touch-icon (180),
+  icon-192, icon-512; site.webmanifest (theme #171717); linked in all 3 entries. ·
+  the mark's ink ground works light/dark.

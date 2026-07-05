@@ -3,6 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <!-- U2: viewport-fit=cover so env(safe-area-inset-*) resolves on iOS -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#171717" />
@@ -50,7 +52,25 @@
       <textarea name="message"></textarea>
       <input type="text" name="bot-field" />
     </form>
-    <div id="root"></div>
+    <div id="root">
+      <!-- §B crawlable skeleton: real HTML for crawlers/unfurlers that don't run
+           JS (the poster is an SPA). React's createRoot REPLACES this on mount,
+           so users never see it. Copy is the existing approved h1 + description.
+           True prerender gap for the homepage is logged. -->
+      <main>
+        <h1>I help small businesses look as good as the work they do.</h1>
+        <p>
+          Preston Gray — websites, customer materials, social posts, brand
+          basics, and simple systems that make small businesses easier to find
+          and choose. Denver, Colorado.
+        </p>
+        <nav>
+          <a href="/work/">Selected work</a>
+          <a href="/small-business/">For business owners</a>
+          <a href="mailto:hello@preston-gray.com">Contact</a>
+        </nav>
+      </main>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
