@@ -1,7 +1,22 @@
-# Release notes — v2.0.0 (DRAFT, for Preston to tag after merge)
+# Release notes — v2.0.0
 
-Everything since the last production deploy. Tag `v2.0.0` after reviewing +
-merging `feature/overnight-polish` → `main`.
+Everything since the last production deploy (`c2f4981`). Shipped by merging
+`feature/shared-element-and-about` (the full stack) → `main`.
+
+## Shared-element open/close (the flagship)
+- Tapping a shape now **grows one rounded brand object** into the overlay — the
+  silhouette relaxes into the panel, the title settles into the masthead, the flood
+  becomes the panel ground — and **close is the open played backward** (the panel
+  contracts back into the shape), via a framer `layoutId` handoff + a `closingId`
+  freeze. No separate collapse animation.
+- **Motion scale** codified (CLAUDE.md): OPEN 0.5s deliberate; RETURN 1.0s linear +
+  `resumeHold` 200ms; a dev-only `?tune=1` panel for re-tuning the close.
+
+## About — narrative
+- Rebuilt as a story: intro → **THE THREAD** (English-lit → design → Summit → building
+  the CRM → now Ourco) → a **pasted-up photo board** (taped portrait + Machu Picchu,
+  offset/rotated) → What I make → Off the press → contact. Desktop two-region cluster;
+  mobile stack.
 
 ## Design system
 - **90s Geometric color system** — 8 Memphis themes × role tokens, `tokens.css` the
