@@ -609,7 +609,9 @@ export default function ProjectOverlay() {
             className="overlay__backdrop"
             layoutId={originLayoutId}
             style={{ borderRadius: 0 }}
-            transition={EXPAND_TRANSITION}
+            // Reduced motion: instant grow/shrink, still colour- + position-
+            // truthful (brand ground snaps to the panel and back to the shape).
+            transition={reducedMotion ? { duration: 0 } : EXPAND_TRANSITION}
             onLayoutAnimationComplete={() => setExpanded(true)}
           />
         </>
