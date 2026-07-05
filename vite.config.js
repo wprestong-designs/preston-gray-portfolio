@@ -18,6 +18,8 @@ export default defineConfig({
         smallBusiness: fileURLToPath(
           new URL('./small-business/index.html', import.meta.url),
         ),
+        // §H colophon — static print-shop "how it's made" route.
+        colophon: fileURLToPath(new URL('./colophon/index.html', import.meta.url)),
         styleguide: fileURLToPath(
           new URL('./styleguide/index.html', import.meta.url),
         ),

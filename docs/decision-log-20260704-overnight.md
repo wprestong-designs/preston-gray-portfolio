@@ -82,3 +82,27 @@ Branch `feature/overnight-polish` (from `feature/identity-and-roster`). Format:
   no-starvation (states 62–83 / theme 112–113 over 900 steps).
 - Internal routes + og/manifest/icons/404 all resolve 200 (dev). Keyboard/VoiceOver
   full walk + Lighthouse-on-preview → human/deploy watch-list.
+
+## §H — Tier 2/3 (built dormant / prep artifacts)
+- **Colophon** `/colophon/` — static print-shop route (Archivo/Inter/Plex Mono, color
+  system, Vite+React+Framer+Netlify, shape system). Added to vite inputs + sitemap +
+  a small About-overlay link. · DRAFT COPY — every line flagged for review (see the
+  page; note it says Archivo, not Fraunces — Fraunces was retired). · REVERSAL: drop
+  the vite input + the About link.
+- **Testimonial infra** — `<Quote>` (pull-quote / proof-annotation treatment) +
+  dormant per-proof slot (`{!isAbout && <Quote {...proof.quote} />}`, renders nothing
+  until wired). Repo swept: **NO real client quotes exist** → docs/testimonial-
+  candidates.md (publish none, don't fabricate).
+- **Analytics stub** — Plausible behind `VITE_ANALYTICS=plausible`, DEFAULT OFF (no-op).
+  Setup note in src/analytics.js. · privacy-friendly, no account yet.
+- **Release notes** drafted → docs/release-notes-v2.md (for the v2.0.0 tag after merge).
+- **Music toggle: deliberately SKIPPED** (future phase, needs the mix asset).
+
+## §A / N3 — DEFERRED (logged, not silently skipped)
+- The 5 *additional* original compositions (roster 13→18) are **not built** tonight —
+  time went to the broadly shippability-critical items (N2, SEO, 404/icons, payload,
+  a11y). Roster is 13 & fully validated; 5 more is additive and is itself a gate item
+  needing art-direction review. · TO COMPLETE: reuse the T-pass method — add 5 LAYOUTS
+  (both orientations) + STATE_CLASS entries with NEW arrangement types (the roster
+  lacks e.g. diagonal, orbit, masonry), run buildTransitionGraph (≥2 neighbours each)
+  + the coverage proof + the matrix contact sheet. Border-radius+rotate only.

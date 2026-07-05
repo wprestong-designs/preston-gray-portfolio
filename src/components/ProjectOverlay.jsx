@@ -28,6 +28,7 @@ import {
 import { aboutOverlay, getProof } from '../data/projects.js'
 import { useProofOverlay } from '../context/overlay-context.js'
 import ProofMedia from './ProofMedia.jsx'
+import Quote from './Quote.jsx'
 // N2: Preston's portrait — taped-photo treatment lives in .about-portrait CSS.
 import prestonPortrait from '../assets/preston-portrait.jpg'
 import prestonPortraitSm from '../assets/preston-portrait-300.jpg'
@@ -450,6 +451,9 @@ export default function ProjectOverlay() {
                   </span>
                 </figure>
               )}
+              {/* §H: per-proof testimonial slot — dormant (renders nothing
+                  until a `quote` is wired in projects.js). */}
+              {!isAbout && <Quote {...proof.quote} />}
               {/* P7: the live-site door, right where the story starts */}
               {proof.liveUrl && (
                 <a
@@ -519,6 +523,13 @@ export default function ProjectOverlay() {
               What I can do for your business{' '}
               <span aria-hidden="true">&rarr;</span>
             </a>
+            {/* §H: colophon — small, About only (print-shop tradition). */}
+            {isAbout && (
+              <a className="ov-about-link" href="/colophon/">
+                Colophon — how this site is made{' '}
+                <span aria-hidden="true">&rarr;</span>
+              </a>
+            )}
             {/* X2: same quiet return as the end panel */}
             <button type="button" className="ov-return misregister" onClick={close}>
               <span aria-hidden="true">&larr;&nbsp;</span>Return to the catalog

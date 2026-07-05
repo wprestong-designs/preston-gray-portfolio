@@ -3222,3 +3222,31 @@ a.link-pill:hover {
 @media (prefers-reduced-motion: reduce) {
   .ticket-input, .ticket-chip, .ticket-btn, .contact-layer__close { transition: none; }
 }
+
+/* §H testimonial pull-quote — proof-annotation treatment (dormant until a
+   proof has a `quote` wired; renders nothing otherwise). */
+.proof-quote {
+  margin: 28px 0 0;
+  padding: 18px 22px;
+  border-left: 4px solid var(--ov, var(--ink));
+  background: var(--bg-off);
+}
+.proof-quote__text {
+  margin: 0;
+  font-family: var(--font-display, var(--font-body));
+  font-size: clamp(19px, 3vw, 25px);
+  font-weight: 700;
+  line-height: 1.28;
+  color: var(--ink);
+}
+.proof-quote__text::before { content: '\201C'; }
+.proof-quote__text::after { content: '\201D'; }
+.proof-quote__by {
+  margin-top: 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
