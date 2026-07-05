@@ -72,3 +72,13 @@ Branch `feature/overnight-polish` (from `feature/identity-and-roster`). Format:
   risks quality + is slow; they're lazy + preload=none so they don't hit initial
   load. Left for a dedicated encode pass. **Lighthouse** must run on the deploy
   preview (can't locally reach it) → watch-list.
+
+## §F — automated QA sweep
+- **axe-core across /, /work/, /small-business/, About, Contact, proof-overlay:**
+  0 violations after fixing Contact's `(optional)` em text (was --gray-utility
+  #8d99ae = 2.87:1, → --ink-soft, passes AA). · Enforcement default. · REVERSAL:
+  none needed.
+- **0 console errors** on every route/overlay. Harness matrix green, coverage
+  no-starvation (states 62–83 / theme 112–113 over 900 steps).
+- Internal routes + og/manifest/icons/404 all resolve 200 (dev). Keyboard/VoiceOver
+  full walk + Lighthouse-on-preview → human/deploy watch-list.

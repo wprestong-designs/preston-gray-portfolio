@@ -3110,7 +3110,8 @@ a.link-pill:hover {
   color: var(--ink-soft);
 }
 .ticket-label b { color: var(--signal-text); }
-.ticket-label em { font-style: normal; text-transform: none; letter-spacing: 0; color: var(--gray-utility, var(--ink-soft)); font-weight: 500; }
+/* --ink-soft (not --gray-utility) — the decorative gray fails AA at 12px (2.87). */
+.ticket-label em { font-style: normal; text-transform: none; letter-spacing: 0; color: var(--ink-soft); font-weight: 500; }
 
 .ticket-input {
   font-family: var(--font-body);
