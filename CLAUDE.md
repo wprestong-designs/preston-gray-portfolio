@@ -55,3 +55,17 @@ touch rendering.**
 - **~44px minimum tap targets**; inputs ≥16px font (no iOS zoom-trap).
 - Shape grammar (strokes 2/3/4px, hard shadows 4/6px zero-blur, ±8/15/45° rotation
   snaps, 0-radius-or-pill corners, 8pt grid): see the strategy doc §5.1.
+
+## Motion scale (one instrument — everything conforms)
+Two registers by intent, three shared micro-timings:
+- **DELIBERATE** — the shared-element open/close (poster shape ↔ overlay): **0.5s**
+  tween, ease **`cubic-bezier(0.32, 0.72, 0, 1)`** (`EXPAND_TRANSITION`). The signature
+  grow; the title FLIP + panel share it. This is the "one object" beat.
+- **AMBIENT** — the idle cycle geometry morph: spring **`{stiffness:50, damping:17}`**
+  (≈1s settle), **45ms** ripple stagger, **3s** dwell (`MORPH`/`STAGGER_MS`/`CYCLE_MS`).
+  A calm glide — deliberately slower/springier than the open (a click is decisive; the
+  cycle breathes). Kept as-is (Preston's approved feel); do not chase it to 0.5s.
+- **MICRO** (conform here): content in/out fade **0.2s**, hover/arm ink-in **0.25s**,
+  chip/press feedback **0.15s**. Reduced motion → the deliberate beat is **instant**
+  (duration 0) but colour/position-truthful.
+Rule: new motion picks ONE of these; don't introduce a fourth duration/ease.

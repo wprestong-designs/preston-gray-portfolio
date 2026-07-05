@@ -44,3 +44,19 @@ portal clone, and transform-scaling the clone blurs text — three strikes vs th
 2. Title: animate **font-size** (fragment→masthead), not transform-scale → crisp.
 3. Delete the collapse proxy; the visible shared element's AnimatePresence exit
    reverses the grow FOR FREE (close = open backward).
+
+## Phase A — BUILT + verified
+- Open **grows a rounded brand object** (radius relaxes into panel), title crisp,
+  content fades in after; **close = open reversed** (panel contracts back into the
+  shape's silhouette + title shrinks into the die-cut + content fades first), free via
+  the layoutId handoff + `closingId` freeze. No collapse proxy. · verified on Ourco
+  (hardest: dark panel/brick brand) + all 6 (correct pinned `--ov`, AA title, 0 blank
+  cycle frames). · REVERSAL: the changes are in CompositionHero (morph-source visible),
+  ProjectOverlay (backdrop layoutId + close-reverse effect, collapse retired),
+  OverlayProvider (closingId).
+- **Timing sheet** added to CLAUDE.md (DELIBERATE 0.5s tween / AMBIENT ~1s spring /
+  MICRO 0.15–0.25s). · kept the cycle spring (Preston's approved calm glide) as its
+  own register rather than forcing 0.5s — logged so it's a decision, not drift.
+- **Watch on the preview (Preston tunes feel):** Ourco open/close on desktop AND phone;
+  the 0.5s/ease and the content-fade overlap are the knobs. Keyboard/VoiceOver focus
+  (into card on open, back to shape on close) is human-verify.
