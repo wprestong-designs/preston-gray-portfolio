@@ -59,3 +59,16 @@ Branch `feature/overnight-polish` (from `feature/identity-and-roster`). Format:
 - **Icons + manifest** from the mark (favicon.svg): rendered apple-touch-icon (180),
   icon-192, icon-512; site.webmanifest (theme #171717); linked in all 3 entries. ·
   the mark's ink ground works light/dark.
+
+## §E — payload diet
+- **Recompressed 27 JPEGs at q82** (keep-if-smaller): src/assets **37.4M→34.4M**,
+  **mobile stills 7.2M→4.4M** (−40%). · originals were wastefully encoded (a 587px
+  mobile screenshot was 502K→126K); q82 keeps UI text crisp under lightbox zoom. ·
+  REVERSAL: originals in git history.
+- Lazy-load + `preload="none"` on videos already in ProofMedia; srcset (360w/480w/
+  640w mobile crops) already serves smallest-sufficient under 700px. Fonts already
+  `display=swap` + preconnected.
+- GAP/deferred: **videos still 25M** (biggest: summit-crm-zoom 4.2M) — re-encoding
+  risks quality + is slow; they're lazy + preload=none so they don't hit initial
+  load. Left for a dedicated encode pass. **Lighthouse** must run on the deploy
+  preview (can't locally reach it) → watch-list.
