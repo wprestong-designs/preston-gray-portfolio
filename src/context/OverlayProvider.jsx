@@ -14,6 +14,12 @@ import { OverlayContext } from './overlay-context.js'
 
 export function OverlayProvider({ children }) {
   const [openId, setOpenId] = useState(null)
+  // Phase A: the id whose overlay is EXITING. Stays set from close() until the
+  // exit animation completes (finalizeClose), so the poster can keep that shape
+  // frozen + brand-visible while the layoutId handoff shrinks the panel back
+  // into it — close = open played backward.
+  const [closingId, setClosingId] = useState(null)
+  const openIdRef = useRef(null)
   const [originKey, setOriginKey] = useState(null)
   // R4: the index layer's open state lives here so the composition can
   // pause its cycle while ANY layer is up
@@ -33,15 +39,25 @@ export function OverlayProvider({ children }) {
     scrollYRef.current = window.scrollY
     typeRectRef.current =
       el?.querySelector?.('.comp-type')?.getBoundingClientRect() ?? null
+    openIdRef.current = id
+    setClosingId(null)
     setOriginKey(key)
     setOpenId(id)
   }, [])
 
-  const jumpTo = useCallback((id) => setOpenId(id), [])
+  const jumpTo = useCallback((id) => {
+    openIdRef.current = id
+    setOpenId(id)
+  }, [])
 
-  const close = useCallback(() => setOpenId(null), [])
+  const close = useCallback(() => {
+    setClosingId(openIdRef.current)
+    openIdRef.current = null
+    setOpenId(null)
+  }, [])
 
   const finalizeClose = useCallback(() => {
+    setClosingId(null)
     setOriginKey(null)
     window.scrollTo(0, scrollYRef.current)
     // B1c: hash-arrival overlays have no origin element — land focus on
@@ -61,6 +77,7 @@ export function OverlayProvider({ children }) {
   const value = useMemo(
     () => ({
       openId,
+      closingId,
       originKey,
       scrollYRef,
       typeRectRef,
@@ -74,7 +91,7 @@ export function OverlayProvider({ children }) {
       contactOpen,
       setContactOpen,
     }),
-    [openId, originKey, open, jumpTo, close, finalizeClose, layerOpen, contactOpen],
+    [openId, closingId, originKey, open, jumpTo, close, finalizeClose, layerOpen, contactOpen],
   )
 
   return <OverlayContext.Provider value={value}>{children}</OverlayContext.Provider>

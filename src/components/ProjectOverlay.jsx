@@ -145,7 +145,7 @@ function WipeBg({ scrollYProgress, travel, getOffset, surface, mode }) {
 }
 
 export default function ProjectOverlay() {
-  const { openId, originKey, scrollYRef, typeRectRef, originElRef, close, jumpTo, setContactOpen } =
+  const { openId, closingId, originKey, scrollYRef, typeRectRef, close, jumpTo, setContactOpen } =
     useProofOverlay()
   const reducedMotion = useReducedMotion()
   // X-pass fix: keep rendering the LAST proof while openId goes null —
@@ -156,6 +156,8 @@ export default function ProjectOverlay() {
   const [displayId, setDisplayId] = useState(openId)
   if (openId !== null && openId !== displayId) setDisplayId(openId)
   const isAbout = displayId === 'about'
+  // Phase A: this overlay is the one closing → content fades out first.
+  const isClosing = closingId === displayId
   const proof = isAbout ? aboutOverlay : getProof(displayId)
 
   const finePointer = useMemo(
@@ -254,17 +256,24 @@ export default function ProjectOverlay() {
     return () => controls.forEach((c) => c.stop())
   }, [flipFrom, monX, monY, monScale, monOpacity])
 
-  // X-pass close: the visible collapse must run on the BACKDROP — on exit
-  // framer promotes the surviving morph-source, which is transparent and
-  // clipped inside its shape, so the shared-element reverse is invisible
-  // (probe-verified). The backdrop instead exits onto the origin's
-  // measured rect explicitly.
-  const [originRect, setOriginRect] = useState(null)
-  useLayoutEffect(() => {
-    const el = originElRef?.current
-    if (el && morph) setOriginRect(el.getBoundingClientRect())
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  // Phase A: CLOSE = OPEN REVERSED. When this overlay is the one closing, the
+  // motion values are imperatively driven BACK to the die-cut `from` (the exit
+  // prop can't drive style motion-values reliably), so the title shrinks into
+  // the fragment as the panel contracts into the shape. Same values, reversed.
+  useEffect(() => {
+    if (closingId !== displayId || !flipFrom) return undefined
+    const controls = [
+      animate(monX, flipFrom.x, EXPAND_TRANSITION),
+      animate(monY, flipFrom.y, EXPAND_TRANSITION),
+      animate(monScale, flipFrom.scale, EXPAND_TRANSITION),
+      animate(monOpacity, 0, { ...EXPAND_TRANSITION, duration: 0.34 }),
+    ]
+    return () => controls.forEach((c) => c.stop())
+  }, [closingId, displayId, flipFrom, monX, monY, monScale, monOpacity])
+
+  // Phase A: the origin-rect measurement + collapse proxy are retired — the
+  // shared element's morph-source is visible now, so the layout handoff owns a
+  // VISIBLE close (open played backward). No explicit exit rect needed.
 
   // X1/P7: every cell is one viewport wide now, but the runway/progress
   // math stays MEASURED, not unit-counted (travel = track scrollWidth −
@@ -424,9 +433,9 @@ export default function ProjectOverlay() {
             <motion.div
               className="ov-meta"
               initial={{ opacity: 0 }}
-              animate={{ opacity: expanded ? 1 : 0 }}
+              animate={{ opacity: expanded && !isClosing ? 1 : 0 }}
               exit={{ opacity: 0, transition: { duration: 0.15 } }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: isClosing ? 0.2 : 0.3 }}
             >
               <p className="ov-mono misregister">
                 {isAbout ? proof.tag : `Proof ${proof.index} · ${proof.tag}`}
@@ -591,37 +600,17 @@ export default function ProjectOverlay() {
     >
       {morph ? (
         <>
+          {/* Phase A: the ONE shared element. The poster shape's morph-source is
+              now visible (brand + silhouette), so this backdrop grows FROM a
+              rounded brand object on open and — via framer's layout handoff on
+              AnimatePresence exit — shrinks back INTO it on close. Close is the
+              open played backward, for free: no separate collapse proxy. */}
           <motion.div
             className="overlay__backdrop"
             layoutId={originLayoutId}
             style={{ borderRadius: 0 }}
             transition={EXPAND_TRANSITION}
             onLayoutAnimationComplete={() => setExpanded(true)}
-          />
-          {/* The visible collapse. Shared-layoutId elements IGNORE exit
-              props (the handoff owns their exit, and it animates the
-              transparent morph-source — invisible, probe-verified). This
-              proxy lies dormant at opacity 0 and only acts on exit:
-              snapping visible and contracting onto the origin's measured
-              rect while the layoutId backdrop hands off silently. */}
-          <motion.div
-            className="overlay__backdrop overlay__backdrop--collapse"
-            aria-hidden="true"
-            style={{ transformOrigin: 'top left', pointerEvents: 'none' }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0 }}
-            exit={
-              originRect
-                ? {
-                    opacity: 1,
-                    x: originRect.x,
-                    y: originRect.y,
-                    scaleX: originRect.width / Math.max(1, window.innerWidth),
-                    scaleY: originRect.height / Math.max(1, window.innerHeight),
-                    transition: { ...EXPAND_TRANSITION, opacity: { duration: 0.01 } },
-                  }
-                : { opacity: 0 }
-            }
           />
         </>
       ) : (

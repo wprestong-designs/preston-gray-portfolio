@@ -466,7 +466,7 @@ export default function CompositionHero({ poster = false }) {
   const cast = useCast()
   const reducedMotion = useReducedMotion()
   const { flood, clearFlood } = useFloodColor()
-  const { open, openId } = useProofOverlay()
+  const { open, openId, closingId } = useProofOverlay()
 
   const params = useMemo(() => new URLSearchParams(window.location.search), [])
   const composer = params.get('compose') === '1'
@@ -574,7 +574,9 @@ export default function CompositionHero({ poster = false }) {
   // Cycle: shuffled-without-repeat — any state except the current one.
   // Paused on hover/focus, and while any overlay/layer is open (R3);
   // resumes 1.5s after leave / on overlay close.
-  const overlayOpen = openId !== null
+  // Phase A: the cycle stays paused through the CLOSE animation too (closingId),
+  // so the origin shape holds still while the panel shrinks back into it.
+  const overlayOpen = openId !== null || closingId !== null
   useEffect(() => {
     if (composer || staticLayout || paused || overlayOpen || harness) return undefined
     const t = setInterval(() => {
@@ -815,7 +817,9 @@ export default function CompositionHero({ poster = false }) {
           // is open, so the shared-element morph is one continuous colored
           // object (shape brand → backdrop brand, same token) — the shape never
           // flashes back to the theme colour under the growing overlay.
-          const isOpen = openId === shape.overlayId
+          // Held brand through open AND close (closingId), so the shared
+          // element is a stable, visible, stationary target for the reverse.
+          const isOpen = openId === shape.overlayId || closingId === shape.overlayId
           const showBrand = isActive || isOpen
           const isDimmed = hoveredShape !== null && !isHovered
           // V1a: the settle gate now covers REVEALED type too — with
@@ -918,6 +922,17 @@ export default function CompositionHero({ poster = false }) {
                 className="comp-morph-source"
                 aria-hidden="true"
                 layoutId={`proof-shape-${shape.overlayId}`}
+                style={{
+                  // Phase A: the shared element is now VISIBLE (brand ground +
+                  // the shape's silhouette) while armed/opening, so open GROWS a
+                  // rounded brand OBJECT whose radius relaxes into the panel;
+                  // transparent during the cycle (no brand leak, no visible
+                  // double-settle — the cycle is paused whenever this shows).
+                  // The layoutId handoff then reverses the grow FOR FREE on
+                  // close (the separate collapse proxy is retired).
+                  background: showBrand ? shape.brandColor : 'transparent',
+                  borderRadius: l.r,
+                }}
               />
               {/* P1.5: strip-state hatching — the state's signature print
                   texture, opacity-gated like Registration's crop marks */}
