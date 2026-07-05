@@ -37,6 +37,19 @@
     />
   </head>
   <body>
+    <!-- Workstream C: static form definition so Netlify's build detects the
+         contact form (SPA gotcha — the live form is JS-rendered by ContactLayer,
+         which POSTs with this same form-name + honeypot field). Hidden from
+         users; Netlify parses it from the built HTML at deploy time. -->
+    <form name="contact-ticket" netlify netlify-honeypot="bot-field" hidden>
+      <input type="text" name="name" />
+      <input type="email" name="email" />
+      <input type="text" name="business" />
+      <input type="text" name="needs" />
+      <input type="text" name="timeline" />
+      <textarea name="message"></textarea>
+      <input type="text" name="bot-field" />
+    </form>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

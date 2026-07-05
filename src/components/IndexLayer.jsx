@@ -23,7 +23,7 @@ import { useProofOverlay } from '../context/overlay-context.js'
 
 export default function IndexLayer({ open, onClose }) {
   const reducedMotion = useReducedMotion()
-  const { openId, open: openOverlay } = useProofOverlay()
+  const { openId, open: openOverlay, setContactOpen } = useProofOverlay()
   const closeRef = useRef(null)
 
   useEffect(() => {
@@ -103,10 +103,20 @@ export default function IndexLayer({ open, onClose }) {
             For business owners
             <span className="index-extra__tag">What I can do for yours</span>
           </a>
-          <a className="index-extra__row" href="mailto:hello@preston-gray.com">
+          {/* Workstream C: the Contact row opens the job-ticket layer (email
+              stays available inside it for form-skeptics). */}
+          <a
+            className="index-extra__row"
+            href="/#contact"
+            onClick={(e) => {
+              e.preventDefault()
+              onClose()
+              setContactOpen(true)
+            }}
+          >
             <span className="index-extra__index">C</span>
             Contact
-            <span className="index-extra__tag">hello@preston-gray.com</span>
+            <span className="index-extra__tag">Start a job ticket</span>
           </a>
         </div>
       </div>

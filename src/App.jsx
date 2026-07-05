@@ -4,6 +4,7 @@ import { AnimatePresence, LayoutGroup } from 'motion/react'
 import { getProof } from './data/projects.js'
 import Poster from './components/Poster.jsx'
 import IndexLayer from './components/IndexLayer.jsx'
+import ContactLayer from './components/ContactLayer.jsx'
 import ProjectOverlay from './components/ProjectOverlay.jsx'
 import { FloodProvider } from './context/FloodColor.jsx'
 import { OverlayProvider } from './context/OverlayProvider.jsx'
@@ -33,13 +34,20 @@ function OverlayRoot() {
 }
 
 function PageChrome() {
-  const { layerOpen, setLayerOpen, open } = useProofOverlay()
+  const { layerOpen, setLayerOpen, contactOpen, setContactOpen, open } = useProofOverlay()
 
   // S1 deep links: /#proof-<id> from the /work/ subpage auto-opens the
   // overlay via the no-origin fade branch, then strips the hash so the
   // back button returns to /work/ cleanly. Y1: legacy ids map forward —
   // 'network' split into three proofs; old links land on bristol.
+  // Workstream C: /#contact auto-opens the job-ticket layer (the cross-page
+  // contact affordances from /work/ and /small-business/ point here).
   useEffect(() => {
+    if (window.location.hash === '#contact') {
+      setContactOpen(true)
+      window.history.replaceState(null, '', window.location.pathname + window.location.search)
+      return
+    }
     const LEGACY = { network: 'bristol' }
     const match = window.location.hash.match(/^#proof-([a-z]+)$/)
     if (!match) return
@@ -51,11 +59,11 @@ function PageChrome() {
       open(id, null, null)
       window.history.replaceState(null, '', window.location.pathname + window.location.search)
     }
-  }, [open])
+  }, [open, setContactOpen])
 
   return (
     <>
-      <main inert={layerOpen}>
+      <main inert={layerOpen || contactOpen}>
         <Poster />
       </main>
       <IndexLayer
@@ -63,6 +71,13 @@ function PageChrome() {
         onClose={() => {
           setLayerOpen(false)
           document.getElementById('index-util')?.focus()
+        }}
+      />
+      <ContactLayer
+        open={contactOpen}
+        onClose={() => {
+          setContactOpen(false)
+          document.getElementById('contact-util')?.focus()
         }}
       />
       <OverlayRoot />

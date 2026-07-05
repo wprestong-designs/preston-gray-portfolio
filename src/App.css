@@ -3024,3 +3024,200 @@ a.link-pill:hover {
   display: block;
   width: 100%;
 }
+
+/* ==================================================================
+   Workstream C — Contact as a JOB TICKET (the print-shop intake doc).
+   Layer mirrors .index-layer; z-150 so it covers the index but sits
+   under the project overlay (z-200).
+================================================================== */
+.contact-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  background: var(--bg);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-bottom: 2px solid var(--ink);
+}
+.contact-layer__chrome {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px clamp(20px, 3vw, 32px);
+  background: var(--bg-off);
+  border-bottom: 2px solid var(--ink);
+}
+.contact-layer__mark {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.contact-layer__close {
+  width: 44px;
+  height: 44px;
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  background: var(--bg-card);
+  box-shadow: var(--press-xs);
+  color: var(--ink);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+.contact-layer__close:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: var(--press-sm);
+}
+.contact-layer__body {
+  width: min(660px, 100% - 40px);
+  margin: 0 auto;
+  padding: clamp(24px, 5vw, 48px) 0 72px;
+}
+
+.ticket-head__title {
+  font-family: var(--font-display, var(--font-body));
+  font-size: clamp(30px, 6vw, 44px);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  margin: 0 0 8px;
+}
+.ticket-head__sub {
+  font-size: 16px;
+  color: var(--ink-soft);
+  margin: 0 0 28px;
+}
+.ticket-head__mail { color: var(--ink); font-weight: 600; }
+
+.ticket-form { display: flex; flex-direction: column; gap: 22px; }
+.ticket-row { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+@media (max-width: 560px) { .ticket-row { grid-template-columns: 1fr; } }
+
+.ticket-field { display: flex; flex-direction: column; gap: 8px; margin: 0; border: 0; padding: 0; min-inline-size: 0; }
+.ticket-label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.ticket-label b { color: var(--signal-text); }
+.ticket-label em { font-style: normal; text-transform: none; letter-spacing: 0; color: var(--gray-utility, var(--ink-soft)); font-weight: 500; }
+
+.ticket-input {
+  font-family: var(--font-body);
+  font-size: 16px; /* iOS: never <16px, so focus never zoom-traps */
+  line-height: 1.4;
+  color: var(--ink);
+  background: var(--bg-card);
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  padding: 12px 14px;
+  width: 100%;
+  box-shadow: var(--press-xs);
+  transition: box-shadow 0.15s var(--ease), transform 0.15s var(--ease), border-color 0.15s var(--ease);
+}
+.ticket-input:focus-visible {
+  outline: none;
+  transform: translate(-1px, -1px);
+  box-shadow: var(--press-sm);
+}
+.ticket-input.is-invalid { border-color: var(--signal-text); }
+.ticket-textarea { resize: vertical; min-height: 120px; }
+
+.ticket-err { font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--signal-text); }
+
+/* ticket-stub chips: sharp, ink-keyed; ON = filled ink with paper text */
+.ticket-chiprow { display: flex; flex-wrap: wrap; gap: 10px; }
+.ticket-chip {
+  min-height: 44px;
+  padding: 10px 16px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--bg-card);
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  box-shadow: var(--press-xs);
+  cursor: pointer;
+  transition: box-shadow 0.15s var(--ease), transform 0.15s var(--ease), background-color 0.15s var(--ease), color 0.15s var(--ease);
+}
+.ticket-chip:hover { transform: translate(-1px, -1px); box-shadow: var(--press-sm); }
+.ticket-chip.is-on { background: var(--ink); color: var(--paper); }
+.ticket-chip:focus-visible { outline: 3px solid var(--edge); outline-offset: 2px; }
+
+.ticket-btn {
+  align-self: flex-start;
+  min-height: 48px;
+  padding: 12px 26px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--paper);
+  background: var(--ink);
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  box-shadow: var(--press-sm);
+  cursor: pointer;
+  transition: transform 0.15s var(--ease), box-shadow 0.15s var(--ease);
+}
+.ticket-btn:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 var(--anchor); }
+.ticket-btn:disabled { opacity: 0.6; cursor: progress; }
+.ticket-btn--mail { color: var(--ink); background: var(--flash); }
+.ticket-fineprint { font-size: 13px; color: var(--ink-soft); margin: 2px 0 0; }
+
+/* honeypot — off-screen but reachable by bots */
+.ticket-hp { position: absolute; left: -9999px; top: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+/* failure fallback — nothing typed is lost */
+.ticket-fail {
+  border: 2px solid var(--signal-text);
+  background: var(--bg-off);
+  padding: 16px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ticket-field--copy { margin-top: 4px; }
+
+/* success — a stamped, received ticket */
+.ticket-done { text-align: left; padding-top: 12px; }
+.ticket-done__stamp {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--signal-text);
+  border: 3px solid var(--signal-text);
+  padding: 8px 16px;
+  transform: rotate(-4deg);
+  margin: 0 0 28px;
+}
+.ticket-done__title {
+  font-family: var(--font-display, var(--font-body));
+  font-size: clamp(26px, 5vw, 38px);
+  font-weight: 800;
+  line-height: 1.06;
+  color: var(--ink);
+  margin: 0 0 12px;
+  outline: none;
+}
+.ticket-done__sub { font-size: 16px; color: var(--ink-soft); margin: 0 0 28px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ticket-input, .ticket-chip, .ticket-btn, .contact-layer__close { transition: none; }
+}

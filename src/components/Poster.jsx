@@ -14,7 +14,7 @@ import CompositionHero from './CompositionHero.jsx'
 import { useProofOverlay } from '../context/overlay-context.js'
 
 export default function Poster() {
-  const { layerOpen, setLayerOpen, open } = useProofOverlay()
+  const { layerOpen, setLayerOpen, contactOpen, setContactOpen, open } = useProofOverlay()
   const indexBtnRef = useRef(null)
 
   return (
@@ -70,9 +70,19 @@ export default function Poster() {
           <a className="poster__util" href="/small-business/">
             For business owners
           </a>
-          <a className="poster__util" href="mailto:hello@preston-gray.com">
+          {/* Workstream C: Contact opens the job-ticket layer (all contact
+              affordances route to the one form path). */}
+          <button
+            id="contact-util"
+            type="button"
+            className="poster__util"
+            aria-haspopup="dialog"
+            aria-expanded={contactOpen}
+            aria-controls="contact-layer"
+            onClick={() => setContactOpen(true)}
+          >
             Contact
-          </a>
+          </button>
         </nav>
       </header>
 

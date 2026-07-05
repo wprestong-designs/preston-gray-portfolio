@@ -18,6 +18,9 @@ export function OverlayProvider({ children }) {
   // R4: the index layer's open state lives here so the composition can
   // pause its cycle while ANY layer is up
   const [layerOpen, setLayerOpen] = useState(false)
+  // Workstream C: the contact (job-ticket) layer — same treatment, so the
+  // poster cycle pauses under it too.
+  const [contactOpen, setContactOpen] = useState(false)
   const originElRef = useRef(null)
   const scrollYRef = useRef(0)
   // X1/T3: the origin's baked-letterform rect, measured at open — the
@@ -68,8 +71,10 @@ export function OverlayProvider({ children }) {
       finalizeClose,
       layerOpen,
       setLayerOpen,
+      contactOpen,
+      setContactOpen,
     }),
-    [openId, originKey, open, jumpTo, close, finalizeClose, layerOpen],
+    [openId, originKey, open, jumpTo, close, finalizeClose, layerOpen, contactOpen],
   )
 
   return <OverlayContext.Provider value={value}>{children}</OverlayContext.Provider>

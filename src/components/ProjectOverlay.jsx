@@ -141,7 +141,7 @@ function WipeBg({ scrollYProgress, travel, getOffset, surface, mode }) {
 }
 
 export default function ProjectOverlay() {
-  const { openId, originKey, scrollYRef, typeRectRef, originElRef, close, jumpTo } =
+  const { openId, originKey, scrollYRef, typeRectRef, originElRef, close, jumpTo, setContactOpen } =
     useProofOverlay()
   const reducedMotion = useReducedMotion()
   // X-pass fix: keep rendering the LAST proof while openId goes null —
@@ -479,8 +479,18 @@ export default function ProjectOverlay() {
           <section className="ov-panel ov-panel--end" key={`c-${i}`}>
             <p className="ov-mono">Contact</p>
             <p className="ov-statement">{panel.statement}</p>
-            <a className="ov-next" href="mailto:hello@preston-gray.com">
-              hello@preston-gray.com <span aria-hidden="true">&rarr;</span>
+            {/* Workstream C: route to the one job-ticket path. Close the overlay
+                (it exits above the contact layer) then open the ticket. */}
+            <a
+              className="ov-next"
+              href="/#contact"
+              onClick={(e) => {
+                e.preventDefault()
+                setContactOpen(true)
+                close()
+              }}
+            >
+              Start a job ticket <span aria-hidden="true">&rarr;</span>
             </a>
             {/* P7: the small-business page is the fuller pitch */}
             <a className="ov-about-link" href="/small-business/">
