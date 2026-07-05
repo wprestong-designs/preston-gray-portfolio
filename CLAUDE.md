@@ -84,3 +84,17 @@ Two registers by intent, three shared micro-timings:
   chip/press feedback **0.15s**. Reduced motion → the deliberate beat is **instant**
   (duration 0) but colour/position-truthful.
 Rule: new motion picks ONE of these; don't introduce a fourth duration/ease.
+
+## Backlog (post-v2.0.0)
+- **Phase C** — 5 new original compositions (roster 13→18). SVGs in `~/Downloads/
+  Geometric sequence graphics (1)/`; method: T-pass (border-radius+rotate, validator +
+  transition graph + coverage + contact sheet).
+- **CRM recaptures** — the badge-less assets unwired 2026-07-04 (territory-map zoom,
+  field/territory/analytics-explorer mobiles) need reshoots WITH a visible DEMO badge
+  before re-wiring. See `docs/recapture-list-*` / projects.js unwire comment.
+- **Testimonials** — `<Quote>` component + per-proof slot ship dormant; no real quotes
+  exist (`docs/testimonial-candidates.md`). Wire when Preston has them + permission.
+- **Analytics** — Plausible stub is OFF; needs a Plausible account for preston-gray.com
+  then `VITE_ANALYTICS=plausible` in Netlify env (`src/analytics.js`).
+- **Payload/video** — mobile stills done (7.2M→4.4M); the ~25M of lazy-loaded videos
+  are un-re-encoded (biggest: summit-crm-zoom 4.2M).
