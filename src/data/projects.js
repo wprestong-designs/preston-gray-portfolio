@@ -213,6 +213,7 @@ export const projects = [
           {
             kind: 'video',
             srcMp4: summitHomeMp4,
+            mp4First: true, // mp4 < webm after 2026-07-05 re-encode
             srcWebm: summitHomeWebm,
             poster: summitHomePoster,
             frame: 'browser',
@@ -449,6 +450,7 @@ export const projects = [
           {
             kind: 'video',
             srcMp4: bristolHomeMp4,
+            mp4First: true, // mp4 < webm after 2026-07-05 re-encode
             srcWebm: bristolHomeWebm,
             poster: bristolHomePoster,
             frame: 'browser',
@@ -472,6 +474,7 @@ export const projects = [
           {
             kind: 'video',
             srcMp4: bristolAboutMp4,
+            mp4First: true, // mp4 < webm after 2026-07-05 re-encode
             srcWebm: bristolAboutWebm,
             poster: bristolAboutPoster,
             frame: 'phone',
@@ -554,6 +557,7 @@ export const projects = [
           {
             kind: 'video',
             srcMp4: pinnacleAboutMp4,
+            mp4First: true, // mp4 < webm after 2026-07-05 re-encode
             srcWebm: pinnacleAboutWebm,
             poster: pinnacleAboutPoster,
             frame: 'browser',
@@ -781,8 +785,10 @@ export const aboutOverlay = {
       bodyDraft: true,
     },
     {
-      // Phase B: THE THREAD — the narrative + the pasted-up photo board.
-      // Copy is Preston's approved verbatim (typographic fixes only).
+      // Phase B / W2: THE THREAD — the narrative only now. The pasted-up photo
+      // board moved to its own 'photos' panel near the end (reflow: cards →
+      // photos → contact). Copy is Preston's approved verbatim (typographic
+      // fixes only).
       type: 'thread',
       label: 'The Thread',
       paragraphs: [
@@ -790,29 +796,51 @@ export const aboutOverlay = {
         'Summit Pharmacy brought me on next, as marketing manager and sales rep. That job keeps handing me new problems to build my way out of: a full rebrand, a website from scratch, price sheets, provider tools for prescribers across the Front Range. When no CRM fit the way I actually work a territory, I built my own. I use it every day.',
         'Now I’m pulling the same thread for other businesses. Ourco, an industrial shop in Houston, is getting a new site and a real local presence on Google and social. If a business does good work in person, it should read that way online — that’s the job.',
       ],
+    },
+    {
+      // W2: "What I make" is now a card grid (stamp cards), not a bullet list.
+      // Each card = the line (title) + ONE supporting sentence + a geometric
+      // mark. NOTE (draft): the `note` sentences are new copy — flagged for
+      // Preston to read/approve (bodyDraft).
+      type: 'cards',
+      label: 'What I make',
+      bodyDraft: true,
+      cards: [
+        {
+          mark: 'disc',
+          title: 'Websites that do the front-counter job',
+          note: 'A site that greets, answers, and books — so it isn’t all on you.',
+        },
+        {
+          mark: 'square',
+          title: 'Customer materials — flyers, handouts, service sheets',
+          note: 'Print and digital pieces that match your brand and never look homemade.',
+        },
+        {
+          mark: 'triangle',
+          title: 'Getting found locally — maps, profiles, the basics done right',
+          note: 'Google, maps, and listings set up so nearby customers find you first.',
+        },
+        {
+          mark: 'cross',
+          title: 'Simple follow-up systems, sized for small teams',
+          note: 'Light tools to track leads and follow up — no bloated CRM to babysit.',
+        },
+        {
+          mark: 'diamond',
+          title: 'Rewrites of confusing sites people already have',
+          note: 'Keep what works, fix what confuses, make the next step obvious.',
+        },
+      ],
+    },
+    {
+      // W2: the pasted-up photo board + the outdoors personal line, as a human
+      // coda right before contact. "Off the press" (woodworking/RuneScape/dog/
+      // degree) was cut entirely. Green plates sit behind the two photos.
+      type: 'photos',
+      label: 'Off the clock',
       personalLine:
         'Off hours I’m outside as much as Colorado allows. That’s where I feel free — and connected to something bigger than the work.',
-    },
-    {
-      type: 'points',
-      label: 'What I make',
-      points: [
-        'Websites that do the front-counter job',
-        'Customer materials — flyers, handouts, service sheets',
-        'Getting found locally — maps, profiles, the basics done right',
-        'Simple follow-up systems, sized for small teams',
-        'Rewrites of confusing sites people already have',
-      ],
-    },
-    {
-      type: 'points',
-      label: 'Off the press',
-      points: [
-        'Woodworking — sawdust as therapy',
-        'Old School RuneScape — patience training',
-        'A very good dog (see portrait)',
-        'English lit degree, recovering nicely',
-      ],
     },
     {
       type: 'contact',

@@ -147,6 +147,33 @@ function WipeBg({ scrollYProgress, travel, getOffset, surface, mode }) {
   )
 }
 
+/* W2: the geometric stamp on each "What I make" card — one shape from the
+   composition vocabulary, filled with the system green (--pop-1) and keylined
+   in --anchor (2px, per the shape grammar). Decorative → aria-hidden. */
+const CARD_MARK = {
+  disc: <circle cx="12" cy="12" r="8.5" />,
+  square: <rect x="3.5" y="3.5" width="17" height="17" />,
+  triangle: <polygon points="12,3 21,20 3,20" />,
+  cross: <polygon points="9,3 15,3 15,9 21,9 21,15 15,15 15,21 9,21 9,15 3,15 3,9 9,9" />,
+  diamond: <polygon points="12,2.5 21.5,12 12,21.5 2.5,12" />,
+}
+function CardMark({ shape }) {
+  return (
+    <svg
+      className="about-card__mark"
+      viewBox="0 0 24 24"
+      width="30"
+      height="30"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <g fill="var(--pop-1)" stroke="var(--anchor)" strokeWidth="2" strokeLinejoin="round">
+        {CARD_MARK[shape] ?? CARD_MARK.disc}
+      </g>
+    </svg>
+  )
+}
+
 export default function ProjectOverlay() {
   const { openId, closingId, originKey, scrollYRef, typeRectRef, close, jumpTo, setContactOpen } =
     useProofOverlay()
@@ -497,53 +524,86 @@ export default function ProjectOverlay() {
           </section>
         )
       case 'thread':
-        // Phase B: THE THREAD — narrative + a pasted-up photo board (two taped,
-        // rotated photos offset against the text, not a dead column).
+        // Phase B / W2: THE THREAD — the career narrative. The photo board
+        // moved to its own 'photos' panel (reflow: cards → photos → contact).
         return (
           <section className="ov-panel ov-panel--thread" key={`t-${i}`}>
             <p className="ov-mono">{panel.label}</p>
-            <div className="about-thread">
+            <div className="about-thread about-thread--text-only">
               <div className="about-thread__text">
                 {panel.paragraphs.map((para, pi) => (
                   <p key={pi} className="about-thread__para">{para}</p>
                 ))}
               </div>
-              {/* The photo CLUSTER — one pasted board (overlapping, offset,
-                  rotated). Beside the text on desktop, beneath it on mobile. */}
+            </div>
+          </section>
+        )
+      case 'cards':
+        // W2: "What I make" — a grid of stamp cards (ink keyline, hard offset
+        // shadow, a geometric mark + a supporting line). Scoped class so this
+        // never touches the proof panels' `.ov-points` list.
+        return (
+          <section className="ov-panel ov-panel--cards" key={`cd-${i}`}>
+            <p className="ov-mono">{panel.label}</p>
+            <ul className="about-cards">
+              {panel.cards.map((card) => (
+                <li className="about-card" key={card.title}>
+                  <span className="about-card__stamp" aria-hidden="true">
+                    <CardMark shape={card.mark} />
+                  </span>
+                  <p className="about-card__title">{card.title}</p>
+                  <p className="about-card__note">{card.note}</p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      case 'photos':
+        // W2: the pasted-up photo board (two taped, rotated photos on solid
+        // green plates) + the outdoors personal line — a human coda before
+        // contact. Each photo sits on a --pop-1 plate, offset + counter-tilted
+        // so the green corners frame the photo (keyline in --anchor).
+        return (
+          <section className="ov-panel ov-panel--photos" key={`ph-${i}`}>
+            <p className="ov-mono">{panel.label}</p>
+            <div className="about-photos">
               <div className="about-thread__board">
                 <figure className="about-photo about-photo--portrait">
-                  <span className="about-portrait__frame">
-                    <span className="about-portrait__tape about-portrait__tape--left" aria-hidden="true" />
-                    <img
-                      className="about-portrait__photo"
-                      src={prestonPortrait}
-                      srcSet={`${prestonPortraitSm} 300w, ${prestonPortrait} 600w`}
-                      sizes="(min-width: 900px) 300px, 220px"
-                      width="600"
-                      height="750"
-                      loading="lazy"
-                      alt="Preston Gray, in Denver."
-                    />
+                  <span className="about-photo__mat">
+                    <span className="about-photo__plate" aria-hidden="true" />
+                    <span className="about-portrait__frame">
+                      <img
+                        className="about-portrait__photo"
+                        src={prestonPortrait}
+                        srcSet={`${prestonPortraitSm} 300w, ${prestonPortrait} 600w`}
+                        sizes="(min-width: 900px) 300px, 220px"
+                        width="600"
+                        height="750"
+                        loading="lazy"
+                        alt="Preston Gray, in Denver."
+                      />
+                    </span>
                   </span>
                 </figure>
                 <figure className="about-photo about-photo--machu">
-                  <span className="about-portrait__frame">
-                    <span className="about-portrait__tape about-portrait__tape--right" aria-hidden="true" />
-                    <img
-                      className="about-portrait__photo about-portrait__photo--wide"
-                      src={machuPicchu}
-                      srcSet={`${machuPicchuSm} 480w, ${machuPicchu} 900w`}
-                      sizes="(min-width: 900px) 340px, 320px"
-                      width="900"
-                      height="675"
-                      loading="lazy"
-                      alt="Preston and his wife at Machu Picchu, the Inca ruins and green peaks rising behind them."
-                    />
+                  <span className="about-photo__mat">
+                    <span className="about-photo__plate" aria-hidden="true" />
+                    <span className="about-portrait__frame">
+                      <img
+                        className="about-portrait__photo about-portrait__photo--wide"
+                        src={machuPicchu}
+                        srcSet={`${machuPicchuSm} 480w, ${machuPicchu} 900w`}
+                        sizes="(min-width: 900px) 340px, 320px"
+                        width="900"
+                        height="675"
+                        loading="lazy"
+                        alt="Preston and his wife at Machu Picchu, the Inca ruins and green peaks rising behind them."
+                      />
+                    </span>
                   </span>
-                  <figcaption className="about-photo__cap">Machu Picchu — off the clock</figcaption>
-                  <p className="about-thread__personal">{panel.personalLine}</p>
                 </figure>
               </div>
+              <p className="about-thread__personal">{panel.personalLine}</p>
             </div>
           </section>
         )

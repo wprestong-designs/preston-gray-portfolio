@@ -39,19 +39,10 @@
     />
   </head>
   <body>
-    <!-- Workstream C: static form definition so Netlify's build detects the
-         contact form (SPA gotcha — the live form is JS-rendered by ContactLayer,
-         which POSTs with this same form-name + honeypot field). Hidden from
-         users; Netlify parses it from the built HTML at deploy time. -->
-    <form name="contact-ticket" netlify netlify-honeypot="bot-field" hidden>
-      <input type="text" name="name" />
-      <input type="email" name="email" />
-      <input type="text" name="business" />
-      <input type="text" name="needs" />
-      <input type="text" name="timeline" />
-      <textarea name="message"></textarea>
-      <input type="text" name="bot-field" />
-    </form>
+    <!-- Contact form is host-agnostic (Web3Forms): ContactLayer POSTs JSON
+         straight to api.web3forms.com, so no static form definition is needed
+         here. (Removed the Netlify build-detection stub during the Cloudflare
+         migration.) -->
     <div id="root">
       <!-- §B crawlable skeleton: real HTML for crawlers/unfurlers that don't run
            JS (the poster is an SPA). React's createRoot REPLACES this on mount,

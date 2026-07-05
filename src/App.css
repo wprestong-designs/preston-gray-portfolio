@@ -3251,13 +3251,16 @@ a.link-pill:hover {
   color: var(--ink-soft);
 }
 
-/* ===== THE THREAD storyboard — ONE ruleset, single media split (Phase B / §1).
-   Consolidated from the earlier layered blocks. The img chain gets min-width:0
-   + max-width:100% so grid/flex never renders it at intrinsic (900px) size. ===== */
+/* ===== THE THREAD storyboard (Phase B / §1 / W2).
+   W2 split it: `.about-thread` now carries the narrative TEXT only; the photo
+   board + the personal line moved to the `.ov-panel--photos` coda near the end
+   (reflow: cards → photos → contact). The img chain keeps min-width:0 +
+   max-width:100% so grid/flex never renders it at intrinsic (900px) size. ===== */
 .about-thread { margin-top: 18px; display: flex; flex-direction: column; gap: 20px; align-items: stretch; }
+.about-thread--text-only { display: block; }
 .about-thread__text { display: flex; flex-direction: column; gap: 16px; max-width: 62ch; }
 .about-thread__para { margin: 0; font-size: clamp(16px, 1.4vw, 19px); line-height: 1.58; color: var(--ov-fg, var(--ink)); }
-.about-thread__personal { margin: 12px 0 0; max-width: 38ch; font-size: 15px; font-style: italic; line-height: 1.5; color: var(--ov-fg, var(--ink)); }
+.about-thread__personal { margin: 0; max-width: 44ch; font-size: 16px; font-style: italic; line-height: 1.5; text-align: center; color: var(--ov-fg, var(--ink)); }
 .about-photo__cap { margin-top: 10px; font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ov-fg, var(--ink-soft)); }
 .about-photo { margin: 0; min-width: 0; }
 .about-photo .about-portrait__frame { width: 100%; min-width: 0; }
@@ -3265,23 +3268,75 @@ a.link-pill:hover {
 .about-portrait__photo--wide { aspect-ratio: 4 / 3; }
 .about-thread__board { display: flex; flex-direction: column; }
 
-/* MOBILE (default): text, then the two photos stacked + offset L/R. */
-.about-photo--portrait { width: min(260px, 74vw); align-self: flex-start; margin-left: 3%; transform: rotate(-3deg); }
-.about-photo--machu { width: min(320px, 84vw); align-self: flex-end; margin: 12px 3% 0 0; transform: rotate(2deg); }
+/* W2: the photos coda — the pasted board centered, personal line beneath it. */
+.about-photos { margin-top: 18px; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 24px; }
 
-/* DESKTOP (>=900px): THE THREAD text left, an overlapping photo CLUSTER right. */
+/* W2: GREEN PLATES — each photo sits on a solid --pop-1 (Memphis Spearmint)
+   mat, offset + counter-tilted so the green corners frame the tilted photo.
+   The mat wraps plate + frame so the plate never bleeds under the caption.
+   Keyline law (Rules 6/8): 2px --anchor border where green meets white. */
+.about-photo__mat { position: relative; display: block; width: 100%; }
+.about-photo__mat .about-portrait__frame { position: relative; z-index: 1; }
+.about-photo__plate {
+  position: absolute;
+  inset: -12px;
+  z-index: 0;
+  background: var(--pop-1);
+  border: 2px solid var(--anchor);
+  border-radius: 0;
+}
+.about-photo--portrait .about-photo__plate { transform: rotate(5deg); }
+.about-photo--machu .about-photo__plate { transform: rotate(-5deg); }
+
+/* MOBILE (default): the two photos stacked + offset L/R. */
+.about-photo--portrait { width: min(260px, 74vw); align-self: flex-start; margin-left: 6%; transform: rotate(-3deg); }
+.about-photo--machu { width: min(320px, 84vw); align-self: flex-end; margin: 22px 6% 0 0; transform: rotate(2deg); }
+
+/* DESKTOP (>=900px): the narrative reads full-width; the photos coda becomes
+   an offset CLUSTER, centered, with the personal line below it. The two photos
+   overlap only at a corner so both subjects stay fully visible. */
 @media (min-width: 900px) {
-  .about-thread { flex-direction: row; align-items: flex-start; gap: clamp(32px, 4vw, 64px); }
-  .about-thread__text { flex: 1 1 auto; }
-  .about-thread__board { position: relative; flex: 0 0 auto; width: 380px; min-height: 560px; display: block; }
+  .about-thread__board { position: relative; flex: 0 0 auto; width: 440px; min-height: 620px; display: block; }
   .about-thread__board .about-photo { position: absolute; margin: 0; }
-  .about-photo--portrait { top: 0; left: 6px; width: 220px; transform: rotate(-4deg); z-index: 1; }
-  .about-photo--machu { top: 176px; right: 0; width: 340px; transform: rotate(3deg); z-index: 2; }
+  .about-photo--portrait { top: 0; left: 0; width: 226px; transform: rotate(-4deg); z-index: 2; }
+  .about-photo--machu { top: 236px; right: 0; width: 340px; transform: rotate(3deg); z-index: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .about-photo--portrait, .about-photo--machu { transform: none; }
 }
+
+/* ===== W2: "WHAT I MAKE" stamp cards — ink keyline, hard offset shadow, a
+   geometric mark + the line + one supporting sentence. Scoped so the proof
+   panels' `.ov-points` list is untouched. One bright only (green mark). ===== */
+.about-cards {
+  list-style: none;
+  margin: 20px 0 0;
+  padding: 0;
+  width: 100%;
+  max-width: 940px;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 620px) { .about-cards { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 980px) { .about-cards { grid-template-columns: repeat(3, 1fr); } }
+.about-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px 16px 20px;
+  background: var(--paper);
+  border: 2px solid var(--anchor);
+  border-radius: 0;
+  box-shadow: 4px 4px 0 var(--anchor);
+}
+.about-card__stamp { display: inline-flex; transform: rotate(-6deg); }
+.about-card:nth-child(even) .about-card__stamp { transform: rotate(6deg); }
+.about-card__mark { display: block; }
+.about-card__title { margin: 0; font-weight: 700; font-size: 16px; line-height: 1.28; color: var(--ink); }
+.about-card__note { margin: 0; font-size: 14px; line-height: 1.5; color: var(--ink); }
 
 /* §2 — dev-only close-feel tuner (?tune=1). */
 .tune {

@@ -1,0 +1,22 @@
+# Cloudflare Pages headers. (Netlify ignored this file; it lands at dist/_headers
+# and only takes effect once the site is served from Cloudflare Pages.)
+
+# Content-hashed build assets are immutable — cache them for a year.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Global security headers (safe everywhere).
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), interest-cohort=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+
+# Content-Security-Policy — ENABLE AFTER the first .pages.dev deploy verifies all
+# 5 routes render with fonts. Only external origins used are Google Fonts
+# (googleapis stylesheet + gstatic font files). 'unsafe-inline' in style-src is
+# required by the 404.html inline <style> and the `motion` library's inline
+# style attributes; script-src stays strict ('self' — Vite emits an external
+# module, no inline JS). Uncomment the next line (must be one physical line):
+#  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; media-src 'self'; connect-src 'self' https://api.web3forms.com; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self' https://api.web3forms.com

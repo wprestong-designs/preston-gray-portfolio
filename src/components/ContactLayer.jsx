@@ -5,10 +5,12 @@
  * /#contact hash.
  *
  * Form is primary; a plain visible email is the alternative for form-skeptics.
- * Backend is NETLIFY FORMS: the static form definition lives in index.html
- * (hidden, so Netlify's build detects it — SPA gotcha); this component does a
- * JS POST with the same form-name + a honeypot. Email notification is a
- * Netlify dashboard setting (Forms → notifications).
+ * Backend is WEB3FORMS (host-agnostic): the component POSTs JSON straight to
+ * api.web3forms.com with a public access key (VITE_WEB3FORMS_KEY) + a honeypot.
+ * No static form definition, no build-time detection — portable across hosts.
+ * The notification inbox is bound to the access key (set when Preston creates
+ * it). Replaced Netlify Forms, whose build-time form registration silently
+ * failed in production.
  *
  * States (all in the system vocabulary): idle form · submitting · success
  * (stamped "TICKET RECEIVED") · error (inline validation, SR-announced, plus a
@@ -18,16 +20,22 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
 
-const FORM_NAME = 'contact-ticket'
+// Backend: WEB3FORMS (host-agnostic — replaced Netlify Forms, which relied on
+// build-time form detection that Netlify never registered → prod submissions
+// silently failed). The POST goes straight to api.web3forms.com, so there is
+// no static form to detect and the response is the real success/failure.
+//
+// TODO(Preston): create a Web3Forms access key at https://web3forms.com and
+// point it at an inbox you DEFINITELY receive. Until hello@preston-gray.com
+// forwarding is live (Cloudflare Email Routing — see docs/cloudflare-migration.md),
+// create the key against your working Gmail. Then set VITE_WEB3FORMS_KEY in
+// .env locally and in the host's env vars. Web3Forms keys are public by design
+// (client-side), so shipping it in the bundle is expected and safe.
+const ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_KEY
 const EMAIL = 'hello@preston-gray.com'
 const NEEDS = ['Website', 'Brand/Design', 'Print materials', 'Tools/CRM', 'Not sure yet']
 const TIMELINE = ['ASAP', 'This quarter', 'Just exploring']
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-
-const encode = (data) =>
-  Object.keys(data)
-    .map((k) => `${encodeURIComponent(k)}=${encodeURIComponent(data[k])}`)
-    .join('&')
 
 export default function ContactLayer({ open, onClose }) {
   const reducedMotion = useReducedMotion()
@@ -115,23 +123,40 @@ export default function ContactLayer({ open, onClose }) {
       setStatus('success')
       return
     }
+    // No access key configured → don't fire a doomed request or silently
+    // no-op. Route straight to the error state so the mailto fallback surfaces
+    // and nothing typed is lost.
+    if (!ACCESS_KEY) {
+      setStatus('error')
+      requestAnimationFrame(() => errSummaryRef.current?.focus())
+      return
+    }
     setStatus('submitting')
     try {
-      const res = await fetch('/', {
+      const res = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: encode({
-          'form-name': FORM_NAME,
-          'bot-field': botField,
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          access_key: ACCESS_KEY,
+          subject: `Job ticket — ${name || 'new enquiry'}`,
+          from_name: name,
+          replyto: email,
           name,
           email,
           business,
           needs: needs.join(', '),
           timeline,
           message,
+          // Web3Forms server-side honeypot (empty = human). Belt-and-suspenders
+          // with the client short-circuit above.
+          botcheck: botField,
         }),
       })
-      if (!res.ok) throw new Error(`submit failed: ${res.status}`)
+      const json = await res.json().catch(() => ({}))
+      if (!res.ok || !json.success) throw new Error(`submit failed: ${res.status}`)
       setStatus('success')
     } catch {
       setStatus('error')
@@ -205,21 +230,13 @@ export default function ContactLayer({ open, onClose }) {
               </div>
             )}
 
-            {/* JS submit; the static definition in index.html is what Netlify's
-                build detects. hidden inputs keep name/honeypot present. */}
-            <form
-              name={FORM_NAME}
-              method="POST"
-              data-netlify="true"
-              netlify-honeypot="bot-field"
-              onSubmit={handleSubmit}
-              noValidate
-              className="ticket-form"
-            >
-              <input type="hidden" name="form-name" value={FORM_NAME} />
+            {/* Web3Forms: a plain client-side POST (see handleSubmit). No
+                host-specific attributes, no build-time detection — the form
+                is fully portable across Netlify/Cloudflare/anywhere. */}
+            <form onSubmit={handleSubmit} noValidate className="ticket-form">
               <p className="ticket-hp" aria-hidden="true">
                 <label>
-                  Don&rsquo;t fill this out: <input name="bot-field" tabIndex={-1} autoComplete="off" value={botField} onChange={(e) => setBotField(e.target.value)} />
+                  Don&rsquo;t fill this out: <input name="botcheck" tabIndex={-1} autoComplete="off" value={botField} onChange={(e) => setBotField(e.target.value)} />
                 </label>
               </p>
 
