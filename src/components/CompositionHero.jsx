@@ -124,8 +124,8 @@ const LETTERFORMS = {
     portrait: { text: 'Prosource', scale: 2.2, dx: -0.04, dy: -0.04 },
   },
   fieldintel: {
-    landscape: { text: 'Field Intel', scale: 3.0, dx: -0.12, dy: 0.04 },
-    portrait: { text: 'Field Intel', scale: 2.8, dx: -0.1, dy: 0.02 },
+    landscape: { text: 'Custom CRM', scale: 3.0, dx: -0.12, dy: 0.04 },
+    portrait: { text: 'Custom CRM', scale: 2.8, dx: -0.1, dy: 0.02 },
   },
 }
 const showsTypeAtRest = (shapeId, mode) =>

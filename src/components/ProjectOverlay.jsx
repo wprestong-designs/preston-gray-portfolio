@@ -147,49 +147,11 @@ function WipeBg({ scrollYProgress, travel, getOffset, surface, mode }) {
   )
 }
 
-/* W2: the geometric stamp on each "What I make" card — one shape from the
-   composition vocabulary, filled with the system green (--pop-1) and keylined
-   in --anchor (2px, per the shape grammar). Decorative → aria-hidden. */
-const CARD_MARK = {
-  disc: <circle cx="12" cy="12" r="8.5" />,
-  square: <rect x="3.5" y="3.5" width="17" height="17" />,
-  triangle: <polygon points="12,3 21,20 3,20" />,
-  cross: <polygon points="9,3 15,3 15,9 21,9 21,15 15,15 15,21 9,21 9,15 3,15 3,9 9,9" />,
-  diamond: <polygon points="12,2.5 21.5,12 12,21.5 2.5,12" />,
-  // A2: sixth mark — a 2×2 quad (a brand-system/palette grid).
-  quad: (
-    <>
-      <rect x="3" y="3" width="7.5" height="7.5" />
-      <rect x="13.5" y="3" width="7.5" height="7.5" />
-      <rect x="3" y="13.5" width="7.5" height="7.5" />
-      <rect x="13.5" y="13.5" width="7.5" height="7.5" />
-    </>
-  ),
-}
-function CardMark({ shape }) {
-  return (
-    <svg
-      className="about-card__mark"
-      viewBox="0 0 24 24"
-      width="30"
-      height="30"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <g fill="var(--pop-1)" stroke="var(--anchor)" strokeWidth="2" strokeLinejoin="round">
-        {CARD_MARK[shape] ?? CARD_MARK.disc}
-      </g>
-    </svg>
-  )
-}
-
-/* A3/A4: a simplified About photo — the image on a solid green (--pop-1) plate,
-   offset + counter-tilted so the green frames it. No frame keyline, tape, mat,
-   or shadow (stripped per A3). The plate is decorative → aria-hidden. */
+/* A-pass: minimal About photo — just the image (no plate, tape, mat, keyline, or
+   shadow). Slight tilt for the pasted-in feel; reduced-motion flattens it. */
 function AboutPhoto({ variant, wide, ...img }) {
   return (
     <figure className={`about-photo about-photo--${variant}`}>
-      <span className="about-photo__plate" aria-hidden="true" />
       <img
         className={`about-photo__img${wide ? ' about-photo__img--wide' : ''}`}
         loading="lazy"
@@ -494,24 +456,48 @@ export default function ProjectOverlay() {
               exit={{ opacity: 0, transition: { duration: 0.15 } }}
               transition={{ duration: isClosing ? motionTune.contentFadeOut : 0.3 }}
             >
-              {/* A4: About pairs the opening statement with the smiling profile
-                  photo — the primary image, at the top of About. Proofs keep the
-                  plain kicker + lede (+ dormant testimonial slot). */}
+              {/* A-pass: minimal single-screen About — the corrected bio, two
+                  minimal photos (no plate/tape), and mono Email/Instagram links.
+                  Proofs keep the plain kicker + lede (+ dormant testimonial). */}
               {isAbout ? (
-                <div className="about-statement">
-                  <div className="about-statement__text">
-                    <p className="ov-mono">{proof.tag}</p>
-                    <p className="ov-lede">{panel.statement}</p>
+                <div className="about-bio">
+                  <p className="ov-mono">{proof.tag}</p>
+                  <p className="ov-lede about-bio__text">{panel.statement}</p>
+                  <div className="about-bio__photos">
+                    <AboutPhoto
+                      variant="profile"
+                      src={prestonPortrait}
+                      srcSet={`${prestonPortraitSm} 300w, ${prestonPortrait} 600w`}
+                      sizes="(min-width: 780px) 220px, 45vw"
+                      width="600"
+                      height="750"
+                      alt="Preston Gray, in Denver."
+                    />
+                    <AboutPhoto
+                      variant="machu"
+                      wide
+                      src={machuPicchu}
+                      srcSet={`${machuPicchuSm} 480w, ${machuPicchu} 900w`}
+                      sizes="(min-width: 780px) 300px, 50vw"
+                      width="900"
+                      height="675"
+                      alt="Preston and his wife at Machu Picchu, the Inca ruins and green peaks rising behind them."
+                    />
                   </div>
-                  <AboutPhoto
-                    variant="profile"
-                    src={prestonPortrait}
-                    srcSet={`${prestonPortraitSm} 300w, ${prestonPortrait} 600w`}
-                    sizes="(min-width: 780px) 280px, 220px"
-                    width="600"
-                    height="750"
-                    alt="Preston Gray, in Denver."
-                  />
+                  <p className="about-bio__links">
+                    <a className="ov-mono about-bio__link" href="mailto:hello@preston-gray.com">
+                      Email
+                    </a>
+                    {/* TODO(Preston): swap in the real Instagram handle URL. */}
+                    <a
+                      className="ov-mono about-bio__link"
+                      href="https://www.instagram.com/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Instagram
+                    </a>
+                  </p>
                 </div>
               ) : (
                 <>
@@ -553,6 +539,8 @@ export default function ProjectOverlay() {
                 below the media row. Reading-text rules apply (colorFg on
                 the deep flood, AA ≥4.5). */}
             {panel.body && <p className="ov-body">{panel.body}</p>}
+            {/* C7: an optional standalone line under the body (Summit provider tools). */}
+            {panel.bodyAdd && <p className="ov-body ov-body--add">{panel.bodyAdd}</p>}
           </section>
         )
       case 'points':
@@ -564,70 +552,6 @@ export default function ProjectOverlay() {
                 <li key={point}>{point}</li>
               ))}
             </ul>
-          </section>
-        )
-      case 'thread':
-        // Phase B / W2: THE THREAD — the career narrative. The photo board
-        // moved to its own 'photos' panel (reflow: cards → photos → contact).
-        return (
-          <section className="ov-panel ov-panel--thread" key={`t-${i}`}>
-            <p className="ov-mono">{panel.label}</p>
-            <div className="about-thread about-thread--text-only">
-              <div className="about-thread__text">
-                {/* A1: each paragraph gets a tinted plate + left keyline in an
-                    alternating role accent, so the three beats don't read as one
-                    gray block. Accents are decorative; text stays --ink (AA). */}
-                {panel.paragraphs.map((para, pi) => (
-                  <p key={pi} className="about-thread__para" data-accent={pi % 3}>
-                    {para}
-                  </p>
-                ))}
-              </div>
-            </div>
-          </section>
-        )
-      case 'cards':
-        // W2: "What I make" — a grid of stamp cards (ink keyline, hard offset
-        // shadow, a geometric mark + a supporting line). Scoped class so this
-        // never touches the proof panels' `.ov-points` list.
-        return (
-          <section className="ov-panel ov-panel--cards" key={`cd-${i}`}>
-            <p className="ov-mono">{panel.label}</p>
-            <ul className="about-cards">
-              {panel.cards.map((card) => (
-                <li className="about-card" key={card.title}>
-                  <span className="about-card__stamp" aria-hidden="true">
-                    <CardMark shape={card.mark} />
-                  </span>
-                  <p className="about-card__title">{card.title}</p>
-                  <p className="about-card__note">{card.note}</p>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )
-      case 'photos':
-        // A4: "Off the clock" — the Machu photo ALONE now (the smiling profile
-        // moved up to pair with the opening statement) + caption + the outdoors
-        // personal line. A3: photo on a solid green plate only — no frame
-        // keyline, tape, mat, or shadow. One photo per beat → never overlaps.
-        return (
-          <section className="ov-panel ov-panel--photos" key={`ph-${i}`}>
-            <p className="ov-mono">{panel.label}</p>
-            <div className="about-photos">
-              <AboutPhoto
-                variant="machu"
-                wide
-                src={machuPicchu}
-                srcSet={`${machuPicchuSm} 480w, ${machuPicchu} 900w`}
-                sizes="(min-width: 780px) 420px, 320px"
-                width="900"
-                height="675"
-                alt="Preston and his wife at Machu Picchu, the Inca ruins and green peaks rising behind them."
-              />
-              {panel.caption && <p className="about-photo__cap">{panel.caption}</p>}
-              <p className="about-thread__personal">{panel.personalLine}</p>
-            </div>
           </section>
         )
       case 'contact':

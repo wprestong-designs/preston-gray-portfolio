@@ -7,6 +7,10 @@
  */
 import './index.css'
 import './work.css'
+import { initCircleCursor } from './cursor.js'
+
+// A-pass: site-wide desktop-only circle cursor (no-op on touch / reduced-motion).
+initCircleCursor()
 
 const mount = document.getElementById('work-art')
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches

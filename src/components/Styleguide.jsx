@@ -65,7 +65,7 @@ const PROOF_SETS = [
   { id: 'bristol', name: 'Bristol', tag: 'Warm Brick + tan', slots: ['primary', 'on', 'ghost', 's1', 's2', 's3'] },
   { id: 'pinnacle', name: 'Pinnacle', tag: 'Razorback Red', slots: ['primary', 'on', 'ghost', 'black', 's1', 's3'] },
   { id: 'prosource', name: 'ProSource', tag: 'Industrial Red', slots: ['primary', 'accent', 'ghost', 's1', 's2'] },
-  { id: 'fieldintel', name: 'Field Intel', tag: 'CRM Plum', slots: ['primary', 'accent', 's1', 's2', 's3'] },
+  { id: 'fieldintel', name: 'Custom CRM', tag: 'CRM Plum', slots: ['primary', 'accent', 's1', 's2', 's3'] },
 ]
 
 function ProofTokens() {

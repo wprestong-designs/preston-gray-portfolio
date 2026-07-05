@@ -186,7 +186,7 @@
   --prosource-surface-1: var(--proof-prosource-s1); --prosource-surface-1-fg: var(--proof-prosource-s-fg);
   --prosource-surface-2: var(--proof-prosource-s2); --prosource-surface-2-fg: var(--proof-prosource-s-fg);
 
-  /* Field Intel → CRM Plum */
+  /* Custom CRM → CRM Plum */
   --fieldintel-flood: var(--proof-fieldintel-primary); --fieldintel-flood-fg: var(--proof-fieldintel-on);
   --fieldintel-accent: var(--proof-fieldintel-accent);
   --fieldintel-accent-ink: var(--proof-fieldintel-accent-ink);

@@ -6,3 +6,7 @@
 import './index.css'
 import './work.css'
 import './small-business.css'
+import { initCircleCursor } from './cursor.js'
+
+// A-pass: site-wide desktop-only circle cursor (no-op on touch / reduced-motion).
+initCircleCursor()

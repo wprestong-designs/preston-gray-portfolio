@@ -231,7 +231,7 @@ const features = [
     index: 'PG–04',
     category: 'Internal Systems · CRM · Reporting',
     accent: 'purple',
-    title: 'Summit Field Intel — CRM & Provider Tools',
+    title: 'Custom CRM — Built for Sales Reps',
     description:
       'A custom CRM and field-planning tool I built for my own pharmacy sales work — visit planning, office profiles, follow-up tracking, and clean provider-facing reports. I use it every day, so every feature earned its place.',
     built: [
@@ -248,8 +248,8 @@ const features = [
     urlB: 'accounts (demo)',
     imageA: crmAnalyticsDesktop,
     imageB: crmAccountsDesktop,
-    altA: 'Summit Field Intel analytics dashboard — demo build with sample data',
-    altB: 'Summit Field Intel accounts list — demo build with sample data',
+    altA: 'Custom CRM analytics dashboard — demo build with sample data',
+    altB: 'Custom CRM accounts list — demo build with sample data',
     spec: {
       intro:
         'Built for a day in the field — desktop for planning, phone for the parking lot. Everything below is the demo build with synthetic sample data.',
@@ -259,19 +259,19 @@ const features = [
           items: [
             {
               image: crmTodayDesktop,
-              alt: 'Field Intel Today screen with daily priorities — demo build with sample data',
+              alt: 'Custom CRM Today screen with daily priorities — demo build with sample data',
               caption: 'Today · Daily Priorities',
               frame: 'browser',
             },
             {
               image: crmFieldDesktop,
-              alt: 'Field Intel field view with routes and follow-ups — demo build with sample data',
+              alt: 'Custom CRM field view with routes and follow-ups — demo build with sample data',
               caption: 'Field · Routes & Follow-Ups',
               frame: 'browser',
             },
             {
               image: crmMoreDesktop,
-              alt: 'Field Intel sync and report center — demo build with sample data',
+              alt: 'Custom CRM sync and report center — demo build with sample data',
               caption: 'Sync & Report Center',
               frame: 'browser',
             },
@@ -282,19 +282,19 @@ const features = [
           items: [
             {
               image: crmTodayMobile,
-              alt: 'Field Intel mobile Today screen — demo build with sample data',
+              alt: 'Custom CRM mobile Today screen — demo build with sample data',
               caption: 'Mobile · Today',
               frame: 'phone',
             },
             {
               image: crmAccountsMobile,
-              alt: 'Field Intel mobile accounts list — demo build with sample data',
+              alt: 'Custom CRM mobile accounts list — demo build with sample data',
               caption: 'Mobile · Accounts',
               frame: 'phone',
             },
             {
               image: crmAccountProfileMobile,
-              alt: 'Field Intel mobile office Rx detail view — demo build with sample data',
+              alt: 'Custom CRM mobile office Rx detail view — demo build with sample data',
               caption: 'Mobile · Office Rx Detail',
               frame: 'phone',
             },

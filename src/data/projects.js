@@ -85,7 +85,7 @@ import pinnacleAboutPoster from '../assets/media/pinnacle-about-desktop-poster.j
  *
  * Live client domains. `null` = no link renders ANYWHERE (ProSource stays
  * null until launch per the standing never-a-live-link constraint; Ourco
- * is still in build; Field Intel is an internal tool with no public URL).
+ * is still in build; Custom CRM is an internal tool with no public URL).
  * ============================================================
  */
 export const LIVE_URLS = {
@@ -207,6 +207,9 @@ export const projects = [
         type: 'media',
         wipe: 'diagonal', // U2: seam geometry INTO this panel (data-declared)
         body: 'Summit is an independent compounding pharmacy in Centennial, Colorado. The site rebuild gave it a front door to match the counter: calm type, honest copy, and navigation that gets a patient or a provider where they’re going in one move.',
+        // C7: provider-materials line — a standalone note rendered under the body.
+        bodyAdd:
+          'Price sheets go out to every office that prescribes to Summit; Provider Access Reports go to the practices where the data earns a conversation.',
         bodyDraft: true,
         verify: ['Centennial, Colorado — public description'],
         items: [
@@ -353,9 +356,10 @@ export const projects = [
       },
       {
         type: 'media',
-        body: 'Ourco supplies Houston’s welders and fabricators. The identity leans into it — steel blues, hot orange, and type with shoulders. Site build in progress; these are the first proofs off the press.',
+        // TODO(launch): update the "early August" line once the Ourco site is live.
+        body: 'Ourco supplies industrial gas and welding equipment across Houston — a catalog of 4,500-plus products. The owners wanted the site to feel like the work itself: the welder and the Texas night sky. The brand runs on that — dark ground, starry-night fields, the classic welder as the central mark. The new site launches in early August.',
         bodyDraft: true,
-        verify: ['supplies Houston’s welders and fabricators', 'site-build-in-progress framing'],
+        verify: ['supplies industrial gas and welding equipment; 4,500-plus products', 'launches early August'],
         items: [
           {
             kind: 'image',
@@ -443,7 +447,7 @@ export const projects = [
       },
       {
         type: 'media',
-        body: 'Bristol is a community pharmacy that runs on familiarity — people walk in and get called by name. The site needed to do the same job online: clear services, real faces, and no corporate gloss between the pharmacy and its patients.',
+        body: 'Bristol is run by the same family that owns Summit — years behind the counter in Oklahoma City before Colorado. The site keeps that counter voice: plain language, the services patients actually use, and the insurance realities of OKC. No corporate gloss.',
         bodyDraft: true,
         verify: ['called-by-name characterization'],
         items: [
@@ -534,7 +538,7 @@ export const projects = [
       },
       {
         type: 'media',
-        body: 'Pinnacle’s site said “locally owned.” The accurate claim is “locally operated” — by a team patients know.',
+        body: 'Pinnacle’s site said “locally owned.” The accurate claim is “locally operated” — the owners live in Colorado, but the pharmacy is staffed and run in Arkansas, and you can walk in and pick up in person. The Razorback red is the owner’s call, leaning into the culture. Under the shared framework, the language, FAQ, and logistics were rebuilt for Arkansas.',
         bodyDraft: true,
         verify: ['Arkansas / copy-pass framing'],
         items: [
@@ -618,7 +622,7 @@ export const projects = [
       },
       {
         type: 'media',
-        body: 'ProSource Pharmacy runs bold — red brand, Vegas pace. Behind the 12-plus pages sits the piece that earns its keep: a refill request form wired straight to the pharmacy’s workflow, with spam protection that patients never see and the team never thinks about.',
+        body: 'ProSource red comes from their existing brand — the job was making it read against the Las Vegas landscape instead of fighting it. The site is built and ready; launch is on the owners’ timeline.',
         bodyDraft: true,
         verify: ['red-brand / Vegas-pace characterization'],
         items: [
@@ -661,8 +665,8 @@ export const projects = [
   {
     id: 'fieldintel',
     index: '06',
-    name: 'Summit Field Intel',
-    tag: 'Custom CRM, designed & built',
+    name: 'Custom CRM',
+    tag: 'Built for sales reps',
     color: 'var(--fieldintel-flood)', // PINNED brand
     colorFg: 'var(--fieldintel-flood-fg)',
     colorInk: 'var(--purple-deep)',
@@ -670,7 +674,7 @@ export const projects = [
     colorHover: 'var(--flood-purple)',
     displayFg: 'var(--display-purple-fg)',
     liveUrl: LIVE_URLS.fieldintel,
-    /* P7 — Field Intel keeps its plum system (ink · orange · tan lives
+    /* P7 — Custom CRM keeps its plum system (ink · orange · tan lives
        in the product; the portfolio treatment stays plum) */
     palette: {
       flood: 'var(--fieldintel-flood)',
@@ -683,13 +687,14 @@ export const projects = [
         { bg: 'var(--fieldintel-surface-2)', fg: 'var(--fieldintel-surface-2-fg)' },
       ],
     },
-    monument: 'Field Intel',
+    monument: 'Custom CRM',
     slug: 'pg-06',
     preview: fieldIntelPreview,
     panels: [
       {
         type: 'statement',
-        statement: 'Field Intel is the CRM I built for my own provider-relations work — days spent between dermatology offices.',
+        statement:
+          'Before this, territory prep meant Portatour that worked half the time, then Salesforce, then a Google sheet. Now I search an office or a provider and get the whole picture — volume, history, what to talk about — before I walk in. I built it for my own work at Summit, and I use it every day.',
       },
       {
         type: 'media',
@@ -704,7 +709,7 @@ export const projects = [
             poster: crmTodayPoster,
             frame: 'browser',
             caption: 'Today dashboard — the day at a glance',
-            alt: 'Field Intel CRM Today dashboard listing visits and follow-ups (demo data)',
+            alt: 'Custom CRM Today dashboard listing visits and follow-ups (demo data)',
             crmVerified: false,
           },
         ],
@@ -728,7 +733,7 @@ export const projects = [
             poster: crmAnalyticsPoster,
             frame: 'browser',
             caption: 'Analytics — a season, measured',
-            alt: 'Field Intel analytics charts of visit activity (demo data)',
+            alt: 'Custom CRM analytics charts of visit activity (demo data)',
             crmVerified: false,
           },
           {
@@ -736,7 +741,7 @@ export const projects = [
             src: crmFieldnotesDesktop,
             frame: 'browser',
             caption: 'Field notes + device sync',
-            alt: 'Field Intel field notes and device sync view on desktop (demo data)',
+            alt: 'Custom CRM field notes and device sync view on desktop (demo data)',
           },
         ],
       },
@@ -779,83 +784,13 @@ export const aboutOverlay = {
   // keep the prior working copy — flagged in content-state-report §6.
   panels: [
     {
+      // A-pass: the corrected verbatim bio IS the whole minimal single-screen
+      // About now (rendered by the statement case's isAbout branch). The prior
+      // Thread / What-I-make cards / green-plate photos / contact panels were
+      // deleted per the minimal direction. Verbatim-approved copy.
       type: 'statement',
       statement:
-        'I’m Preston Gray — a designer and builder in Denver. Days, I grow a pharmacy’s business face to face. Nights and weekends, I design and build the websites, brands, and tools that make small businesses easier to find, easier to trust, and easier to choose.',
-      bodyDraft: true,
-    },
-    {
-      // Phase B / W2: THE THREAD — the narrative only now. The pasted-up photo
-      // board moved to its own 'photos' panel near the end (reflow: cards →
-      // photos → contact). Copy is Preston's approved verbatim (typographic
-      // fixes only).
-      type: 'thread',
-      label: 'The Thread',
-      paragraphs: [
-        'I came up through English literature, and found design before I finished the degree. I kept at the craft until a Denver real estate company hired me to make their social content and marketing collateral.',
-        'Summit Pharmacy brought me on next, as marketing manager and sales rep. That job keeps handing me new problems to build my way out of: a full rebrand, a website from scratch, price sheets, provider tools for prescribers across the Front Range. When no CRM fit the way I actually work a territory, I built my own. I use it every day.',
-        'Now I’m pulling the same thread for other businesses. Ourco, an industrial shop in Houston, is getting a new site and a real local presence on Google and social. If a business does good work in person, it should read that way online — that’s the job.',
-      ],
-    },
-    {
-      // W2: "What I make" is now a card grid (stamp cards), not a bullet list.
-      // Each card = the line (title) + ONE supporting sentence + a geometric
-      // mark. NOTE (draft): the `note` sentences are new copy — flagged for
-      // Preston to read/approve (bodyDraft).
-      type: 'cards',
-      label: 'What I make',
-      bodyDraft: true,
-      cards: [
-        {
-          mark: 'disc',
-          title: 'Websites that do the front-counter job',
-          note: 'A site that greets, answers, and books — so it isn’t all on you.',
-        },
-        {
-          mark: 'square',
-          title: 'Customer materials — flyers, handouts, service sheets',
-          note: 'Print and digital pieces that match your brand and never look homemade.',
-        },
-        {
-          mark: 'triangle',
-          title: 'Getting found locally — maps, profiles, the basics done right',
-          note: 'Google, maps, and listings set up so nearby customers find you first.',
-        },
-        {
-          mark: 'cross',
-          title: 'Simple follow-up systems, sized for small teams',
-          note: 'Light tools to track leads and follow up — no bloated CRM to babysit.',
-        },
-        {
-          mark: 'diamond',
-          title: 'Rewrites of confusing sites people already have',
-          note: 'Keep what works, fix what confuses, make the next step obvious.',
-        },
-        {
-          // A2: sixth card — brand systems (grounded in the Summit rebrand + Ourco
-          // in THE THREAD). Rounds out the grid; no overlap with the other five.
-          mark: 'quad',
-          title: 'Brand basics — logo, colors, and type as one kit',
-          note: 'A consistent look across the sign, the site, and everything you hand out.',
-        },
-      ],
-    },
-    {
-      // A4: "Off the clock" — the Machu photo (moved here, alone) + caption +
-      // the outdoors personal line, as the human coda before contact. The
-      // smiling profile photo moved up to pair with the opening statement.
-      // A3: photo sits on a green plate only — no frame keyline / tape / shadow.
-      type: 'photos',
-      label: 'Off the clock',
-      caption: 'Machu Picchu, Peru',
-      personalLine:
-        'Off hours I’m outside as much as Colorado allows. That’s where I feel free — and connected to something bigger than the work.',
-    },
-    {
-      type: 'contact',
-      statement:
-        'If your business needs better materials, tell me what you’re trying to fix. A plain description in your own words is the perfect starting point.',
-      bodyDraft: true,
+        'I’m Preston Gray, a designer and builder in Denver. Days, I handle provider relations and marketing for Summit Pharmacy — fieldwork, print, and the website. Nights and weekends, I build websites, brands, and tools for small businesses: pharmacies in Oklahoma City, Little Rock, and Las Vegas, and an industrial supplier in Houston. When no CRM fit the way I work a territory, I built my own. I use it every day. Off hours I’m outside as much as Colorado allows.',
     },
   ],
 }
