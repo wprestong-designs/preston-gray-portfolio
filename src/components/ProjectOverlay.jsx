@@ -480,30 +480,35 @@ export default function ProjectOverlay() {
                   Proofs keep the plain kicker + lede (+ dormant testimonial). */}
               {isAbout ? (
                 <div className="about-hello">
-                  {/* DOM = mobile reading order: beat 1 → profile → beat 2 →
-                      Machu → links. Desktop places these into quadrants (b1/b2
-                      top, photos bottom) via grid-template-areas. */}
-                  <p className="ov-lede about-hello__beat about-hello__beat--a">{panel.beats[0]}</p>
-                  <AboutPhoto
-                    variant="profile"
-                    src={prestonPortrait}
-                    srcSet={`${prestonPortraitSm} 300w, ${prestonPortrait} 600w`}
-                    sizes="(min-width: 780px) 240px, 72vw"
-                    width="600"
-                    height="750"
-                    alt="Preston Gray, in Denver."
-                  />
-                  <p className="ov-lede about-hello__beat about-hello__beat--b">{beatWithMail(panel.beats[1])}</p>
-                  <AboutPhoto
-                    variant="machu"
-                    wide
-                    src={machuPicchu}
-                    srcSet={`${machuPicchuSm} 480w, ${machuPicchu} 900w`}
-                    sizes="(min-width: 780px) 360px, 86vw"
-                    width="900"
-                    height="675"
-                    alt="Preston and his wife at Machu Picchu, the Inca ruins and green peaks rising behind them."
-                  />
+                  {/* Two independent columns; each flows text → gap → photo, and
+                      the photos bottom-align on a level line (desktop). DOM order
+                      (col A then col B) IS the mobile reading order: beat 1 →
+                      profile → beat 2 → Machu → links. */}
+                  <div className="about-hello__col">
+                    <p className="ov-lede about-hello__beat about-hello__beat--a">{panel.beats[0]}</p>
+                    <AboutPhoto
+                      variant="profile"
+                      src={prestonPortrait}
+                      srcSet={`${prestonPortraitSm} 300w, ${prestonPortrait} 600w`}
+                      sizes="(min-width: 780px) 240px, 72vw"
+                      width="600"
+                      height="750"
+                      alt="Preston Gray, in Denver."
+                    />
+                  </div>
+                  <div className="about-hello__col">
+                    <p className="ov-lede about-hello__beat about-hello__beat--b">{beatWithMail(panel.beats[1])}</p>
+                    <AboutPhoto
+                      variant="machu"
+                      wide
+                      src={machuPicchu}
+                      srcSet={`${machuPicchuSm} 480w, ${machuPicchu} 900w`}
+                      sizes="(min-width: 780px) 360px, 86vw"
+                      width="900"
+                      height="675"
+                      alt="Preston and his wife at Machu Picchu, the Inca ruins and green peaks rising behind them."
+                    />
+                  </div>
                   <p className="about-bio__links">
                     <a className="ov-mono about-bio__link" href="mailto:hello@preston-gray.com">
                       Email

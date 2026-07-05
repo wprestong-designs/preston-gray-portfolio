@@ -1080,7 +1080,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px clamp(20px, 3vw, 36px);
+  /* viewport-fit=cover: pad past the device safe-area insets so the corner
+     label + close never tuck under a notch/rounded corner (the "BOUT" clip on
+     a left-inset landscape device). Matches the poster chrome's env() pattern. */
+  padding:
+    calc(env(safe-area-inset-top, 0px) + 18px)
+    calc(env(safe-area-inset-right, 0px) + clamp(20px, 3vw, 36px))
+    18px
+    calc(env(safe-area-inset-left, 0px) + clamp(20px, 3vw, 36px));
   pointer-events: none;
 }
 
@@ -3251,17 +3258,18 @@ a.link-pill:hover {
   color: var(--ink-soft);
 }
 
-/* ===== ABOUT v4 — "HELLO!" monument (above) + a QUADRANT composition that fits
-   with the monument in (or near) one viewport. Desktop: beat 1 top-left · beat 2
-   top-right · profile photo bottom-left · Machu bottom-right · EMAIL·INSTAGRAM
-   links full-width below the grid (my call — closes the composition). The grid
-   rows keep both columns the same height so neither feels heavier. Mobile: the
-   DOM order IS the reading order (beat 1 → profile → beat 2 → Machu → links).
-   Photos keep the minimal tilt (no plate/tape/keyline). Panel scrolls. ===== */
+/* ===== ABOUT v4.1 — "HELLO!" monument (above) + a two-column QUADRANT: beat 1 /
+   profile in the left column, beat 2 / Machu in the right, EMAIL·INSTAGRAM links
+   full-width below (my call — closes the composition). Each column flows
+   INDEPENDENTLY (text → fixed min-gap → photo) — photos are NOT row-locked to the
+   taller column. On desktop the columns stretch to equal height and the photos
+   bottom-align on a level line, so the extra space is absorbed as gap ABOVE the
+   shorter column's photo (no dead zone). Mobile: the DOM order IS the reading
+   order (beat 1 → profile → beat 2 → Machu → links). Panel scrolls. ===== */
 .ov-meta:has(.about-hello) { width: 100%; max-width: min(1040px, 100%); }
 .overlay__stack .ov-panel--statement:has(.about-hello) { justify-content: flex-start; }
 
-/* Mobile-first: one reading column (DOM order = reading order). */
+/* Mobile-first: the two columns stack; each flows text → gap → photo. */
 .about-hello {
   display: flex;
   flex-direction: column;
@@ -3269,7 +3277,9 @@ a.link-pill:hover {
   width: 100%;
   padding-bottom: clamp(20px, 5vh, 44px);
 }
-.about-hello__beat { margin: 0; max-width: 44ch; font-size: clamp(16px, 1.4vw, 19px); line-height: 1.52; color: var(--ov-fg, var(--ink)); }
+.about-hello__col { display: flex; flex-direction: column; }
+/* the beat's bottom margin IS the fixed min gap to its photo. */
+.about-hello__beat { margin: 0 0 clamp(26px, 3.4vh, 38px); max-width: 44ch; font-size: clamp(16px, 1.4vw, 19px); line-height: 1.52; color: var(--ov-fg, var(--ink)); }
 
 /* "email me" — inline live mailto inside beat 2. */
 .about-hello__mail {
@@ -3302,24 +3312,25 @@ a.link-pill:hover {
 .about-photo--profile .about-photo__img { transform: rotate(-2deg); }
 .about-photo--machu .about-photo__img { transform: rotate(2deg); }
 
-/* Desktop: the quadrant grid. */
+/* Desktop: two side-by-side columns (links full-width below). Columns stretch to
+   equal height; each photo bottom-aligns (margin-top:auto) so they close level. */
 @media (min-width: 780px) {
   .about-hello {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     grid-template-areas:
-      "b1 b2"
-      "pf mc"
+      "cola colb"
       "links links";
     column-gap: clamp(32px, 5vw, 72px);
-    row-gap: clamp(14px, 2vh, 28px);
-    align-items: start;
+    row-gap: clamp(14px, 2vh, 26px);
+    align-items: stretch;
     padding-bottom: 0;
   }
-  .about-hello__beat--a { grid-area: b1; }
-  .about-hello__beat--b { grid-area: b2; }
-  .about-hello .about-photo--profile { grid-area: pf; width: min(228px, 100%); }
-  .about-hello .about-photo--machu { grid-area: mc; width: min(360px, 100%); }
+  .about-hello__col:nth-of-type(1) { grid-area: cola; }
+  .about-hello__col:nth-of-type(2) { grid-area: colb; }
+  .about-hello__col .about-photo { margin-top: auto; }
+  .about-hello__col .about-photo--profile { width: min(228px, 100%); }
+  .about-hello__col .about-photo--machu { width: min(360px, 100%); }
   .about-bio__links { grid-area: links; margin-top: clamp(8px, 1.6vh, 20px); }
 }
 
