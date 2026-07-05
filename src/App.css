@@ -3251,33 +3251,38 @@ a.link-pill:hover {
   color: var(--ink-soft);
 }
 
-/* ===== ABOUT v3 — "HELLO!" + interleaved 5-beat scroll. HELLO! monument (above)
-   → solo profile → beat 1 → Machu → beat 2 → mono Email/Instagram links. Photos
-   are minimal (slight tilt, no plate/tape/keyline), generous, and ALTERNATE
-   alignment so the page reads as rhythm, not a left-hung column (kills the dead
-   right half). The About panel scrolls (forced out of the horizontal runway). == */
-/* Full width (not shrink-to-fit) so the alternating beats can actually spread
-   across and use the right half; capped for a comfortable measure. */
-.ov-meta:has(.about-hello) { width: 100%; max-width: min(1080px, 100%); }
-/* About flows top-to-bottom and scrolls — not vertically centered like a proof. */
+/* ===== ABOUT v4 — "HELLO!" monument (above) + a QUADRANT composition that fits
+   with the monument in (or near) one viewport. Desktop: beat 1 top-left · beat 2
+   top-right · profile photo bottom-left · Machu bottom-right · EMAIL·INSTAGRAM
+   links full-width below the grid (my call — closes the composition). The grid
+   rows keep both columns the same height so neither feels heavier. Mobile: the
+   DOM order IS the reading order (beat 1 → profile → beat 2 → Machu → links).
+   Photos keep the minimal tilt (no plate/tape/keyline). Panel scrolls. ===== */
+.ov-meta:has(.about-hello) { width: 100%; max-width: min(1040px, 100%); }
 .overlay__stack .ov-panel--statement:has(.about-hello) { justify-content: flex-start; }
 
+/* Mobile-first: one reading column (DOM order = reading order). */
 .about-hello {
   display: flex;
   flex-direction: column;
-  gap: clamp(26px, 5vh, 56px);
+  gap: clamp(20px, 3.4vh, 34px);
   width: 100%;
-  padding-bottom: clamp(24px, 6vh, 72px);
+  padding-bottom: clamp(20px, 5vh, 44px);
 }
-.about-hello__beat { margin: 0; max-width: 42ch; font-size: clamp(17px, 1.5vw, 21px); line-height: 1.55; color: var(--ov-fg, var(--ink)); }
+.about-hello__beat { margin: 0; max-width: 44ch; font-size: clamp(16px, 1.4vw, 19px); line-height: 1.52; color: var(--ov-fg, var(--ink)); }
 
-/* Alternating rhythm: profile + beat 1 hang left; Machu + beat 2 hang right. */
-.about-hello .about-photo--profile,
-.about-hello__beat--a { align-self: flex-start; }
-.about-hello .about-photo--machu,
-.about-hello__beat--b { align-self: flex-end; }
+/* "email me" — inline live mailto inside beat 2. */
+.about-hello__mail {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  transition: color 0.2s var(--ease);
+}
+.about-hello__mail:hover,
+.about-hello__mail:focus-visible { color: var(--pop-1); }
 
-.about-bio__links { display: flex; gap: 24px; margin: 0; align-self: flex-start; }
+.about-bio__links { display: flex; gap: 24px; margin: 0; }
 .about-bio__link {
   color: var(--ov-fg, var(--ink));
   text-decoration: none;
@@ -3292,14 +3297,30 @@ a.link-pill:hover {
 .about-photo { position: relative; margin: 0; }
 .about-photo__img { display: block; width: 100%; height: auto; max-width: 100%; }
 .about-photo__img--wide { aspect-ratio: 4 / 3; object-fit: cover; }
-.about-photo--profile { width: min(300px, 76vw); }
-.about-photo--machu { width: min(380px, 86vw); }
+.about-photo--profile { width: min(230px, 64vw); }
+.about-photo--machu { width: min(340px, 84vw); }
 .about-photo--profile .about-photo__img { transform: rotate(-2deg); }
 .about-photo--machu .about-photo__img { transform: rotate(2deg); }
 
+/* Desktop: the quadrant grid. */
 @media (min-width: 780px) {
-  .about-photo--profile { width: 380px; }
-  .about-photo--machu { width: 520px; }
+  .about-hello {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      "b1 b2"
+      "pf mc"
+      "links links";
+    column-gap: clamp(32px, 5vw, 72px);
+    row-gap: clamp(14px, 2vh, 28px);
+    align-items: start;
+    padding-bottom: 0;
+  }
+  .about-hello__beat--a { grid-area: b1; }
+  .about-hello__beat--b { grid-area: b2; }
+  .about-hello .about-photo--profile { grid-area: pf; width: min(228px, 100%); }
+  .about-hello .about-photo--machu { grid-area: mc; width: min(360px, 100%); }
+  .about-bio__links { grid-area: links; margin-top: clamp(8px, 1.6vh, 20px); }
 }
 
 @media (prefers-reduced-motion: reduce) {

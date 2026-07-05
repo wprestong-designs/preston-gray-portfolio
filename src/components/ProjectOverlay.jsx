@@ -161,6 +161,22 @@ function AboutPhoto({ variant, wide, ...img }) {
   )
 }
 
+/* About v4: render a beat, turning a trailing "email me" into a live mailto. */
+function beatWithMail(text) {
+  const marker = 'email me'
+  const i = text.lastIndexOf(marker)
+  if (i === -1) return text
+  return (
+    <>
+      {text.slice(0, i)}
+      <a className="about-hello__mail" href="mailto:hello@preston-gray.com">
+        {marker}
+      </a>
+      {text.slice(i + marker.length)}
+    </>
+  )
+}
+
 export default function ProjectOverlay() {
   const { openId, closingId, originKey, scrollYRef, typeRectRef, close, jumpTo, setContactOpen } =
     useProofOverlay()
@@ -464,27 +480,30 @@ export default function ProjectOverlay() {
                   Proofs keep the plain kicker + lede (+ dormant testimonial). */}
               {isAbout ? (
                 <div className="about-hello">
+                  {/* DOM = mobile reading order: beat 1 → profile → beat 2 →
+                      Machu → links. Desktop places these into quadrants (b1/b2
+                      top, photos bottom) via grid-template-areas. */}
+                  <p className="ov-lede about-hello__beat about-hello__beat--a">{panel.beats[0]}</p>
                   <AboutPhoto
                     variant="profile"
                     src={prestonPortrait}
                     srcSet={`${prestonPortraitSm} 300w, ${prestonPortrait} 600w`}
-                    sizes="(min-width: 780px) 380px, 72vw"
+                    sizes="(min-width: 780px) 240px, 72vw"
                     width="600"
                     height="750"
                     alt="Preston Gray, in Denver."
                   />
-                  <p className="ov-lede about-hello__beat about-hello__beat--a">{panel.beats[0]}</p>
+                  <p className="ov-lede about-hello__beat about-hello__beat--b">{beatWithMail(panel.beats[1])}</p>
                   <AboutPhoto
                     variant="machu"
                     wide
                     src={machuPicchu}
                     srcSet={`${machuPicchuSm} 480w, ${machuPicchu} 900w`}
-                    sizes="(min-width: 780px) 500px, 86vw"
+                    sizes="(min-width: 780px) 360px, 86vw"
                     width="900"
                     height="675"
                     alt="Preston and his wife at Machu Picchu, the Inca ruins and green peaks rising behind them."
                   />
-                  <p className="ov-lede about-hello__beat about-hello__beat--b">{panel.beats[1]}</p>
                   <p className="about-bio__links">
                     <a className="ov-mono about-bio__link" href="mailto:hello@preston-gray.com">
                       Email

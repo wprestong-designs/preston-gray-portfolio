@@ -789,8 +789,8 @@ export const aboutOverlay = {
       // case's isAbout branch. Verbatim-approved copy.
       type: 'statement',
       beats: [
-        'Hi — I’m Preston. I’m a designer and builder in Denver. Days, I’m out in the field for Summit Pharmacy, working with medical offices and making the print, the website, and the pitch all fit together.',
-        'Nights and weekends, I build websites, brands, and tools for small businesses — pharmacies in Oklahoma City, Little Rock, and Las Vegas, and an industrial supplier in Houston. When no CRM fit the way I work a territory, I built my own; I use it every day. Off hours, my wife and I are outside as much as Colorado allows — that’s us at Machu Picchu. If you’ve got a business that deserves a better website, say hello. I’d love to hear about it.',
+        'I’m Preston Gray. I design and build things in Denver. Days, I work the field for Summit Pharmacy: medical offices, print, the website, the pitch.',
+        'Nights and weekends, I build websites, brands, and tools for small businesses. Pharmacies in Oklahoma City, Little Rock, and Las Vegas. An industrial supplier in Houston. No CRM fit the way I work a territory, so I built one. I use it every day. Off hours, my wife and I are outside. That’s us at Machu Picchu. If your business needs a better website, email me.',
       ],
     },
   ],
