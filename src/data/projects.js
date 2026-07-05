@@ -831,14 +831,23 @@ export const aboutOverlay = {
           title: 'Rewrites of confusing sites people already have',
           note: 'Keep what works, fix what confuses, make the next step obvious.',
         },
+        {
+          // A2: sixth card — brand systems (grounded in the Summit rebrand + Ourco
+          // in THE THREAD). Rounds out the grid; no overlap with the other five.
+          mark: 'quad',
+          title: 'Brand basics — logo, colors, and type as one kit',
+          note: 'A consistent look across the sign, the site, and everything you hand out.',
+        },
       ],
     },
     {
-      // W2: the pasted-up photo board + the outdoors personal line, as a human
-      // coda right before contact. "Off the press" (woodworking/RuneScape/dog/
-      // degree) was cut entirely. Green plates sit behind the two photos.
+      // A4: "Off the clock" — the Machu photo (moved here, alone) + caption +
+      // the outdoors personal line, as the human coda before contact. The
+      // smiling profile photo moved up to pair with the opening statement.
+      // A3: photo sits on a green plate only — no frame keyline / tape / shadow.
       type: 'photos',
       label: 'Off the clock',
+      caption: 'Machu Picchu, Peru',
       personalLine:
         'Off hours I’m outside as much as Colorado allows. That’s where I feel free — and connected to something bigger than the work.',
     },

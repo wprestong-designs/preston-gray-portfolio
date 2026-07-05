@@ -703,11 +703,15 @@
   z-index: 10;
   pointer-events: none;
   white-space: nowrap;
-  /* T4: paper chip so the mono label reads over at-rest letterform
-     texture when edge-clamping parks it on top of a shape (token-derived
-     via color-mix — no new hex) */
-  padding: 4px 7px;
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  /* B1: SELF-CONTAINED plate. The label lives inside .comp[data-theme], so the
+     old themed chip (--bg/--ink) went white-on-white in dark palettes. Now an
+     OPAQUE paper plate + ink keyline + ink text in CONSTANT chrome tokens, so
+     the mono proof-indicator reads over ANY ground it lands on — shape fills,
+     the white paper ground, or dark states. */
+  padding: 4px 8px;
+  background: var(--chrome-paper);
+  border: 2px solid var(--chrome-ink);
+  border-radius: 0;
 }
 
 .comp-label--flip {
@@ -719,14 +723,14 @@
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.1em;
-  color: var(--ink);
+  color: var(--chrome-ink);
 }
 
 .comp-label__rule {
   display: block;
   height: 2px;
   margin-top: 4px;
-  background: var(--ink);
+  background: var(--chrome-ink);
   transform-origin: left;
 }
 
@@ -1237,14 +1241,10 @@
     --ghost-dy 0.3s var(--ease);
 }
 
-/* Spec ghost is 6px (monument scale). At mono-eyebrow scale a 6px ghost
-   overwhelms 12px glyphs, so small display strings take a 2px register —
-   reversible knob, logged in oneshot-report. */
-.ov-mono.misregister,
-.ov-return.misregister {
-  --ghost-dx: 2px;
-  --ghost-dy: 2px;
-}
+/* B2: misregistration is LEGAL only on large display titles (.ov-monument),
+   where a hard ghost can't cost legibility. It was stripped from the mono
+   kicker (.ov-mono) and the return button (.ov-return) — at reading size the
+   doubled print wrecked readability — so those render plain mono/ink now. */
 
 @media (prefers-reduced-motion: reduce) {
   .misregister {
@@ -3251,59 +3251,66 @@ a.link-pill:hover {
   color: var(--ink-soft);
 }
 
-/* ===== THE THREAD storyboard (Phase B / §1 / W2).
-   W2 split it: `.about-thread` now carries the narrative TEXT only; the photo
-   board + the personal line moved to the `.ov-panel--photos` coda near the end
-   (reflow: cards → photos → contact). The img chain keeps min-width:0 +
-   max-width:100% so grid/flex never renders it at intrinsic (900px) size. ===== */
-.about-thread { margin-top: 18px; display: flex; flex-direction: column; gap: 20px; align-items: stretch; }
-.about-thread--text-only { display: block; }
-.about-thread__text { display: flex; flex-direction: column; gap: 16px; max-width: 62ch; }
-.about-thread__para { margin: 0; font-size: clamp(16px, 1.4vw, 19px); line-height: 1.58; color: var(--ov-fg, var(--ink)); }
-.about-thread__personal { margin: 0; max-width: 44ch; font-size: 16px; font-style: italic; line-height: 1.5; text-align: center; color: var(--ov-fg, var(--ink)); }
-.about-photo__cap { margin-top: 10px; font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ov-fg, var(--ink-soft)); }
-.about-photo { margin: 0; min-width: 0; }
-.about-photo .about-portrait__frame { width: 100%; min-width: 0; }
-.about-photo .about-portrait__photo { display: block; width: 100%; height: auto; min-width: 0; max-width: 100%; }
-.about-portrait__photo--wide { aspect-ratio: 4 / 3; }
-.about-thread__board { display: flex; flex-direction: column; }
+/* ===== ABOUT — The Thread + photos (A-pass rebuild).
+   A1: the narrative paragraphs get alternating tinted plates + a left keyline
+   accent so the three beats don't read as one gray block (text stays --ink, AA).
+   A3: photos are the image on a solid green plate ONLY — no frame keyline, tape,
+   mat, or shadow. A4: the profile pairs with the opening statement (top beat);
+   Machu is alone in the "Off the clock" coda. One photo per beat → never
+   overlaps, full visibility at every width. ===== */
+.about-thread { margin-top: 18px; }
+.about-thread__text { display: flex; flex-direction: column; gap: 16px; max-width: 64ch; }
 
-/* W2: the photos coda — the pasted board centered, personal line beneath it. */
-.about-photos { margin-top: 18px; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 24px; }
-
-/* W2: GREEN PLATES — each photo sits on a solid --pop-1 (Memphis Spearmint)
-   mat, offset + counter-tilted so the green corners frame the tilted photo.
-   The mat wraps plate + frame so the plate never bleeds under the caption.
-   Keyline law (Rules 6/8): 2px --anchor border where green meets white. */
-.about-photo__mat { position: relative; display: block; width: 100%; }
-.about-photo__mat .about-portrait__frame { position: relative; z-index: 1; }
-.about-photo__plate {
-  position: absolute;
-  inset: -12px;
-  z-index: 0;
-  background: var(--pop-1);
-  border: 2px solid var(--anchor);
-  border-radius: 0;
+/* A1: per-paragraph rhythm — a tinted plate + left keyline in an alternating
+   role accent. Decorative; --ink text stays AA on the ~11% tint. */
+.about-thread__para {
+  margin: 0;
+  padding: 15px 18px;
+  font-size: clamp(16px, 1.4vw, 19px);
+  line-height: 1.58;
+  color: var(--ov-fg, var(--ink));
+  background: color-mix(in srgb, var(--accent, var(--pop-1)) 11%, var(--paper));
+  border-left: 5px solid var(--accent, var(--pop-1));
 }
-.about-photo--portrait .about-photo__plate { transform: rotate(5deg); }
-.about-photo--machu .about-photo__plate { transform: rotate(-5deg); }
+.about-thread__para[data-accent='0'] { --accent: var(--pop-2); }
+.about-thread__para[data-accent='1'] { --accent: var(--pop-1); }
+.about-thread__para[data-accent='2'] { --accent: var(--support); }
 
-/* MOBILE (default): the two photos stacked + offset L/R. */
-.about-photo--portrait { width: min(260px, 74vw); align-self: flex-start; margin-left: 6%; transform: rotate(-3deg); }
-.about-photo--machu { width: min(320px, 84vw); align-self: flex-end; margin: 22px 6% 0 0; transform: rotate(2deg); }
+.about-thread__personal { margin: 0; max-width: 44ch; font-size: 16px; font-style: italic; line-height: 1.5; text-align: center; color: var(--ov-fg, var(--ink)); }
+.about-photo__cap { margin: 0; font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ov-fg, var(--ink-soft)); }
 
-/* DESKTOP (>=900px): the narrative reads full-width; the photos coda becomes
-   an offset CLUSTER, centered, with the personal line below it. The two photos
-   overlap only at a corner so both subjects stay fully visible. */
-@media (min-width: 900px) {
-  .about-thread__board { position: relative; flex: 0 0 auto; width: 440px; min-height: 620px; display: block; }
-  .about-thread__board .about-photo { position: absolute; margin: 0; }
-  .about-photo--portrait { top: 0; left: 0; width: 226px; transform: rotate(-4deg); z-index: 2; }
-  .about-photo--machu { top: 236px; right: 0; width: 340px; transform: rotate(3deg); z-index: 1; }
+/* A3: simplified photo — the image on a solid green (--pop-1) plate, offset +
+   counter-tilted so the green frames it. No keyline / tape / mat / shadow. */
+.about-photo { position: relative; margin: 0; }
+.about-photo__img { position: relative; z-index: 1; display: block; width: 100%; height: auto; max-width: 100%; }
+.about-photo__img--wide { aspect-ratio: 4 / 3; object-fit: cover; }
+.about-photo__plate { position: absolute; inset: -13px; z-index: 0; background: var(--pop-1); border-radius: 0; }
+.about-photo--profile .about-photo__img { transform: rotate(-3deg); }
+.about-photo--profile .about-photo__plate { transform: rotate(4deg); }
+.about-photo--machu .about-photo__img { transform: rotate(2deg); }
+.about-photo--machu .about-photo__plate { transform: rotate(-4deg); }
+
+/* A4: statement beat — opening statement paired with the profile photo. About's
+   statement needs more room than the 58ch reading measure for the side-by-side
+   photo, so widen just this ov-meta; the photo holds its width (never shrinks). */
+.ov-meta:has(.about-statement) { max-width: min(90ch, 100%); }
+.about-statement { display: flex; flex-direction: column; gap: 24px; align-items: flex-start; }
+.about-statement__text { display: flex; flex-direction: column; gap: 14px; }
+.about-statement .about-photo--profile { width: min(230px, 62vw); align-self: center; flex-shrink: 0; }
+
+/* A4: "Off the clock" coda — Machu centered, caption + personal line below. */
+.about-photos { margin-top: 12px; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 18px; }
+.about-photos .about-photo--machu { width: min(330px, 80vw); }
+
+@media (min-width: 780px) {
+  .about-statement { flex-direction: row; align-items: center; gap: clamp(28px, 4vw, 56px); }
+  .about-statement__text { flex: 1 1 auto; max-width: 52ch; }
+  .about-statement .about-photo--profile { width: 260px; align-self: auto; }
+  .about-photos .about-photo--machu { width: min(440px, 46vw); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .about-photo--portrait, .about-photo--machu { transform: none; }
+  .about-photo__img, .about-photo__plate { transform: none; }
 }
 
 /* ===== W2: "WHAT I MAKE" stamp cards — ink keyline, hard offset shadow, a

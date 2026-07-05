@@ -156,6 +156,15 @@ const CARD_MARK = {
   triangle: <polygon points="12,3 21,20 3,20" />,
   cross: <polygon points="9,3 15,3 15,9 21,9 21,15 15,15 15,21 9,21 9,15 3,15 3,9 9,9" />,
   diamond: <polygon points="12,2.5 21.5,12 12,21.5 2.5,12" />,
+  // A2: sixth mark — a 2×2 quad (a brand-system/palette grid).
+  quad: (
+    <>
+      <rect x="3" y="3" width="7.5" height="7.5" />
+      <rect x="13.5" y="3" width="7.5" height="7.5" />
+      <rect x="3" y="13.5" width="7.5" height="7.5" />
+      <rect x="13.5" y="13.5" width="7.5" height="7.5" />
+    </>
+  ),
 }
 function CardMark({ shape }) {
   return (
@@ -171,6 +180,22 @@ function CardMark({ shape }) {
         {CARD_MARK[shape] ?? CARD_MARK.disc}
       </g>
     </svg>
+  )
+}
+
+/* A3/A4: a simplified About photo — the image on a solid green (--pop-1) plate,
+   offset + counter-tilted so the green frames it. No frame keyline, tape, mat,
+   or shadow (stripped per A3). The plate is decorative → aria-hidden. */
+function AboutPhoto({ variant, wide, ...img }) {
+  return (
+    <figure className={`about-photo about-photo--${variant}`}>
+      <span className="about-photo__plate" aria-hidden="true" />
+      <img
+        className={`about-photo__img${wide ? ' about-photo__img--wide' : ''}`}
+        loading="lazy"
+        {...img}
+      />
+    </figure>
   )
 }
 
@@ -469,14 +494,32 @@ export default function ProjectOverlay() {
               exit={{ opacity: 0, transition: { duration: 0.15 } }}
               transition={{ duration: isClosing ? motionTune.contentFadeOut : 0.3 }}
             >
-              <p className="ov-mono misregister">
-                {isAbout ? proof.tag : `Proof ${proof.index} · ${proof.tag}`}
-              </p>
-              <p className="ov-lede">{panel.statement}</p>
-              {/* §H: per-proof testimonial slot — dormant (renders nothing
-                  until a `quote` is wired in projects.js). The About portrait
-                  moved to the THE THREAD storyboard (Phase B). */}
-              {!isAbout && <Quote {...proof.quote} />}
+              {/* A4: About pairs the opening statement with the smiling profile
+                  photo — the primary image, at the top of About. Proofs keep the
+                  plain kicker + lede (+ dormant testimonial slot). */}
+              {isAbout ? (
+                <div className="about-statement">
+                  <div className="about-statement__text">
+                    <p className="ov-mono">{proof.tag}</p>
+                    <p className="ov-lede">{panel.statement}</p>
+                  </div>
+                  <AboutPhoto
+                    variant="profile"
+                    src={prestonPortrait}
+                    srcSet={`${prestonPortraitSm} 300w, ${prestonPortrait} 600w`}
+                    sizes="(min-width: 780px) 280px, 220px"
+                    width="600"
+                    height="750"
+                    alt="Preston Gray, in Denver."
+                  />
+                </div>
+              ) : (
+                <>
+                  <p className="ov-mono">{`Proof ${proof.index} · ${proof.tag}`}</p>
+                  <p className="ov-lede">{panel.statement}</p>
+                  <Quote {...proof.quote} />
+                </>
+              )}
               {/* P7: the live-site door, right where the story starts */}
               {proof.liveUrl && (
                 <a
@@ -531,8 +574,13 @@ export default function ProjectOverlay() {
             <p className="ov-mono">{panel.label}</p>
             <div className="about-thread about-thread--text-only">
               <div className="about-thread__text">
+                {/* A1: each paragraph gets a tinted plate + left keyline in an
+                    alternating role accent, so the three beats don't read as one
+                    gray block. Accents are decorative; text stays --ink (AA). */}
                 {panel.paragraphs.map((para, pi) => (
-                  <p key={pi} className="about-thread__para">{para}</p>
+                  <p key={pi} className="about-thread__para" data-accent={pi % 3}>
+                    {para}
+                  </p>
                 ))}
               </div>
             </div>
@@ -559,50 +607,25 @@ export default function ProjectOverlay() {
           </section>
         )
       case 'photos':
-        // W2: the pasted-up photo board (two taped, rotated photos on solid
-        // green plates) + the outdoors personal line — a human coda before
-        // contact. Each photo sits on a --pop-1 plate, offset + counter-tilted
-        // so the green corners frame the photo (keyline in --anchor).
+        // A4: "Off the clock" — the Machu photo ALONE now (the smiling profile
+        // moved up to pair with the opening statement) + caption + the outdoors
+        // personal line. A3: photo on a solid green plate only — no frame
+        // keyline, tape, mat, or shadow. One photo per beat → never overlaps.
         return (
           <section className="ov-panel ov-panel--photos" key={`ph-${i}`}>
             <p className="ov-mono">{panel.label}</p>
             <div className="about-photos">
-              <div className="about-thread__board">
-                <figure className="about-photo about-photo--portrait">
-                  <span className="about-photo__mat">
-                    <span className="about-photo__plate" aria-hidden="true" />
-                    <span className="about-portrait__frame">
-                      <img
-                        className="about-portrait__photo"
-                        src={prestonPortrait}
-                        srcSet={`${prestonPortraitSm} 300w, ${prestonPortrait} 600w`}
-                        sizes="(min-width: 900px) 300px, 220px"
-                        width="600"
-                        height="750"
-                        loading="lazy"
-                        alt="Preston Gray, in Denver."
-                      />
-                    </span>
-                  </span>
-                </figure>
-                <figure className="about-photo about-photo--machu">
-                  <span className="about-photo__mat">
-                    <span className="about-photo__plate" aria-hidden="true" />
-                    <span className="about-portrait__frame">
-                      <img
-                        className="about-portrait__photo about-portrait__photo--wide"
-                        src={machuPicchu}
-                        srcSet={`${machuPicchuSm} 480w, ${machuPicchu} 900w`}
-                        sizes="(min-width: 900px) 340px, 320px"
-                        width="900"
-                        height="675"
-                        loading="lazy"
-                        alt="Preston and his wife at Machu Picchu, the Inca ruins and green peaks rising behind them."
-                      />
-                    </span>
-                  </span>
-                </figure>
-              </div>
+              <AboutPhoto
+                variant="machu"
+                wide
+                src={machuPicchu}
+                srcSet={`${machuPicchuSm} 480w, ${machuPicchu} 900w`}
+                sizes="(min-width: 780px) 420px, 320px"
+                width="900"
+                height="675"
+                alt="Preston and his wife at Machu Picchu, the Inca ruins and green peaks rising behind them."
+              />
+              {panel.caption && <p className="about-photo__cap">{panel.caption}</p>}
               <p className="about-thread__personal">{panel.personalLine}</p>
             </div>
           </section>
@@ -638,7 +661,7 @@ export default function ProjectOverlay() {
               </a>
             )}
             {/* X2: same quiet return as the end panel */}
-            <button type="button" className="ov-return misregister" onClick={close}>
+            <button type="button" className="ov-return" onClick={close}>
               <span aria-hidden="true">&larr;&nbsp;</span>Return to the catalog
             </button>
           </section>
@@ -659,7 +682,7 @@ export default function ProjectOverlay() {
                 Visit the live site <span aria-hidden="true">&#8599;</span>
               </a>
             )}
-            <button type="button" className="ov-return misregister" onClick={close}>
+            <button type="button" className="ov-return" onClick={close}>
               <span aria-hidden="true">&larr;&nbsp;</span>Return to the catalog
             </button>
             {proof.id === 'fieldintel' && (

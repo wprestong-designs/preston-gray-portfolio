@@ -17,6 +17,13 @@
   --gray-functional: #6C7A93;/* AA-grade border step of the utility gray */
   --signal-text: #E71D36;    /* Cherry Slush — system text-grade red (4.5:1 on white) */
 
+  /* B1 — CHROME ink/paper that stay CONSTANT even inside a cycling
+     [data-theme] scope. The poster's proof-indicator label plate lives inside
+     .comp[data-theme] (unlike the wordmark), where --ink/--paper flip and turned
+     the label white-on-white in dark themes. NEVER override these in a theme block. */
+  --chrome-ink: #171717;
+  --chrome-paper: #FFFFFF;
+
   /* ==== 64 PRIMITIVES, namespaced by palette ==== */
 
   /* Memphis Playroom — Tier 1 Core */
