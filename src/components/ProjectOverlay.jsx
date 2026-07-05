@@ -29,9 +29,11 @@ import { aboutOverlay, getProof } from '../data/projects.js'
 import { useProofOverlay } from '../context/overlay-context.js'
 import ProofMedia from './ProofMedia.jsx'
 import Quote from './Quote.jsx'
-// N2: Preston's portrait — taped-photo treatment lives in .about-portrait CSS.
+// N2/Phase B: About photos — taped-photo treatment (.about-portrait CSS).
 import prestonPortrait from '../assets/preston-portrait.jpg'
 import prestonPortraitSm from '../assets/preston-portrait-300.jpg'
+import machuPicchu from '../assets/machu-picchu.jpg'
+import machuPicchuSm from '../assets/machu-picchu-480.jpg'
 
 /* W1b — expand/collapse pacing knob. A deliberate ~500ms ease reads
    calmer than the default spring for a viewport-scale morph; swap in a
@@ -441,27 +443,9 @@ export default function ProjectOverlay() {
                 {isAbout ? proof.tag : `Proof ${proof.index} · ${proof.tag}`}
               </p>
               <p className="ov-lede">{panel.statement}</p>
-              {/* N2: the taped portrait — About only ("see portrait" in copy). */}
-              {isAbout && (
-                <figure className="about-portrait">
-                  <span className="about-portrait__frame">
-                    <span className="about-portrait__tape about-portrait__tape--left" aria-hidden="true" />
-                    <span className="about-portrait__tape about-portrait__tape--right" aria-hidden="true" />
-                    <img
-                      className="about-portrait__photo"
-                      src={prestonPortrait}
-                      srcSet={`${prestonPortraitSm} 300w, ${prestonPortrait} 600w`}
-                      sizes="300px"
-                      width="600"
-                      height="750"
-                      loading="lazy"
-                      alt="Preston Gray — the designer and builder behind this studio, in Denver."
-                    />
-                  </span>
-                </figure>
-              )}
               {/* §H: per-proof testimonial slot — dormant (renders nothing
-                  until a `quote` is wired in projects.js). */}
+                  until a `quote` is wired in projects.js). The About portrait
+                  moved to the THE THREAD storyboard (Phase B). */}
               {!isAbout && <Quote {...proof.quote} />}
               {/* P7: the live-site door, right where the story starts */}
               {proof.liveUrl && (
@@ -507,6 +491,53 @@ export default function ProjectOverlay() {
                 <li key={point}>{point}</li>
               ))}
             </ul>
+          </section>
+        )
+      case 'thread':
+        // Phase B: THE THREAD — narrative + a pasted-up photo board (two taped,
+        // rotated photos offset against the text, not a dead column).
+        return (
+          <section className="ov-panel ov-panel--thread" key={`t-${i}`}>
+            <p className="ov-mono">{panel.label}</p>
+            <div className="about-thread">
+              <div className="about-thread__text">
+                {panel.paragraphs.map((para, pi) => (
+                  <p key={pi} className="about-thread__para">{para}</p>
+                ))}
+              </div>
+              <figure className="about-photo about-photo--portrait">
+                <span className="about-portrait__frame">
+                  <span className="about-portrait__tape about-portrait__tape--left" aria-hidden="true" />
+                  <img
+                    className="about-portrait__photo"
+                    src={prestonPortrait}
+                    srcSet={`${prestonPortraitSm} 300w, ${prestonPortrait} 600w`}
+                    sizes="220px"
+                    width="600"
+                    height="750"
+                    loading="lazy"
+                    alt="Preston Gray, in Denver."
+                  />
+                </span>
+              </figure>
+              <figure className="about-photo about-photo--machu">
+                <span className="about-portrait__frame">
+                  <span className="about-portrait__tape about-portrait__tape--right" aria-hidden="true" />
+                  <img
+                    className="about-portrait__photo about-portrait__photo--wide"
+                    src={machuPicchu}
+                    srcSet={`${machuPicchuSm} 480w, ${machuPicchu} 900w`}
+                    sizes="320px"
+                    width="900"
+                    height="675"
+                    loading="lazy"
+                    alt="Preston and his wife at Machu Picchu, the Inca ruins and green peaks rising behind them."
+                  />
+                </span>
+                <figcaption className="about-photo__cap">Machu Picchu — off the clock</figcaption>
+                <p className="about-thread__personal">{panel.personalLine}</p>
+              </figure>
+            </div>
           </section>
         )
       case 'contact':

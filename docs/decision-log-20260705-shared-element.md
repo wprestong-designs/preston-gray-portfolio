@@ -60,3 +60,25 @@ portal clone, and transform-scaling the clone blurs text — three strikes vs th
 - **Watch on the preview (Preston tunes feel):** Ourco open/close on desktop AND phone;
   the 0.5s/ease and the content-fade overlap are the knobs. Keyboard/VoiceOver focus
   (into card on open, back to shape on close) is human-verify.
+
+## Phase B — About narrative rebuild (BUILT)
+- New structure: intro → **THE THREAD** → What I make → Off the press → contact.
+  Removed "Where this comes from" (its story role is taken by THE THREAD, per the
+  approved structure). · copy is verbatim (typographic apostrophes only). · REVERSAL:
+  the old points panel is in git history.
+- **THE THREAD** = a `thread` panel (new renderPanel case): mono label + the 3
+  verbatim paragraphs + a **pasted-up photo board** — the taped portrait (moved out
+  of the statement panel) + the NEW Machu Picchu photo, offset L/R + rotated (−3°/+2°),
+  tape + hard shadow (design law), caption "MACHU PICCHU — OFF THE CLOCK", the personal
+  line beside it. Machu Picchu = IMG_5444.heic → machu-picchu.jpg (900w) + 480w srcset.
+- **CSS trap fixed:** grid items default to min-width:auto (= the image's 900px
+  intrinsic width) → photos rendered full-size. Rebuilt as a flex column with
+  min-width:0 + max-width:100% on the img chain. · verified mobile (portrait 298×364,
+  clean scroll) + About a11y 0 violations.
+
+## Phase C — DEFERRED (stretch, not started)
+- Per the "start it or revert it" rule, I did NOT begin the 5 new compositions.
+  A+B consumed the run. The 5 Canva SVGs are at ~/Downloads/Geometric sequence
+  graphics (1)/; the completion plan is in the overnight decision log (T-pass method,
+  new arrangement types, graph + coverage + contact sheet). · clean deferral, no
+  half-integrated state on the branch.

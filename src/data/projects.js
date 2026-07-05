@@ -781,6 +781,19 @@ export const aboutOverlay = {
       bodyDraft: true,
     },
     {
+      // Phase B: THE THREAD — the narrative + the pasted-up photo board.
+      // Copy is Preston's approved verbatim (typographic fixes only).
+      type: 'thread',
+      label: 'The Thread',
+      paragraphs: [
+        'I came up through English literature, and found design before I finished the degree. I kept at the craft until a Denver real estate company hired me to make their social content and marketing collateral.',
+        'Summit Pharmacy brought me on next, as marketing manager and sales rep. That job keeps handing me new problems to build my way out of: a full rebrand, a website from scratch, price sheets, provider tools for prescribers across the Front Range. When no CRM fit the way I actually work a territory, I built my own. I use it every day.',
+        'Now I’m pulling the same thread for other businesses. Ourco, an industrial shop in Houston, is getting a new site and a real local presence on Google and social. If a business does good work in person, it should read that way online — that’s the job.',
+      ],
+      personalLine:
+        'Off hours I’m outside as much as Colorado allows. That’s where I feel free — and connected to something bigger than the work.',
+    },
+    {
       type: 'points',
       label: 'What I make',
       points: [
@@ -790,18 +803,6 @@ export const aboutOverlay = {
         'Simple follow-up systems, sized for small teams',
         'Rewrites of confusing sites people already have',
       ],
-    },
-    {
-      // G2/P7: the background panel — why the work reads the way it does.
-      type: 'points',
-      label: 'Where this comes from',
-      points: [
-        'I write the copy myself — words first, layout second',
-        'Business development for a pharmacy — outreach, reporting, growth',
-        'Marketing for real storefronts',
-        'I use the tools I build — including my own CRM, daily',
-      ],
-      bodyDraft: true,
     },
     {
       type: 'points',
