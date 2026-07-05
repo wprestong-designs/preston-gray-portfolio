@@ -82,3 +82,19 @@ portal clone, and transform-scaling the clone blurs text — three strikes vs th
   graphics (1)/; the completion plan is in the overnight decision log (T-pass method,
   new arrangement types, graph + coverage + contact sheet). · clean deferral, no
   half-integrated state on the branch.
+
+---
+# Focused pass: About desktop + close tuning (2026-07-05 pm)
+
+## §0 — main drift reconciled
+- Fetched: origin/main moved c2f4981 → **1b7c3b7** ("Add files via upload") = Preston's
+  web upload of **Media/Screenshots/IMG_5444.heic** (2.45MB, the Machu Picchu original).
+- **Merged origin/main INTO the branch** (merge, not rebase — the branch is pushed).
+  Clean (disjoint: raw in Media/, my processed asset in src/assets/). Branch now
+  contains main → future stacked merge is conflict-free.
+- **Provenance confirmed:** md5 of the uploaded raw == md5 of the photo I processed from
+  (`8fe646b5…`). The processed src/assets/machu-picchu.jpg derives from the RIGHT photo;
+  raw stays in Media/ per convention.
+- CLAUDE.md updated: review surface is LOCALHOST (checkout + npm run dev; no deploy-
+  preview flagging ever again); every run fetches + reconciles main first; Netlify ref
+  noted.

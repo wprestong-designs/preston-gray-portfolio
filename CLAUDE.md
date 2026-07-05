@@ -10,10 +10,21 @@ Index, and Contact are layers/overlays, not pages.
 - **Commands:** `npm run dev` · `npm run build` · `npm run lint`
 
 ## Branch workflow — NEVER TOUCH MAIN
-All work on **feature branches**. Push branches to origin freely (Netlify makes a
-deploy preview per branch). **NEVER push, merge, or fast-forward `main`** — Netlify
-deploys `main` to production; merging is **Preston's** action after his review. If
-you think main must change, write it in the decision log and STOP that item.
+All work on **feature branches**; push them to origin freely. **NEVER push, merge, or
+fast-forward `main`** — Netlify auto-deploys `main` to production; merging is
+**Preston's** action after review. If you think main must change, log it and STOP that item.
+
+- **REVIEW SURFACE = LOCALHOST.** Preston reviews every branch with `git checkout <branch>`
+  then `npm run dev`. **Deploy previews are NOT part of this workflow** — never flag a
+  "missing deploy-preview URL" again. **End every handoff** with those two commands +
+  the exact routes/interactions to look at.
+- **Main drifts via GitHub web uploads** (Preston uploads raw assets straight to main —
+  they land as "Add files via upload" commits). **Every run starts with `git fetch` and
+  reconciles `origin/main` into the branch** (merge, not rebase) before reporting state,
+  so stacked merges stay conflict-free. Raw uploaded assets live in `Media/`; the
+  processed web derivatives live in `src/assets/`.
+- Reference (not the review path): Netlify site `preston-gray-portfolio.netlify.app` /
+  `preston-gray.com`.
 
 ## Color governance (the ruling)
 - **Site-owned surfaces** (poster, index, chrome, headers) wear the **Memphis 8-theme
