@@ -189,7 +189,9 @@ export default function ProjectOverlay() {
     () => window.matchMedia('(min-width: 900px)').matches,
     [],
   )
-  const horizontal = finePointer && !reducedMotion && wideViewport
+  // About v3 scrolls vertically (interleaved beats), so it never takes the
+  // horizontal runway — even on a wide fine-pointer desktop. Proofs are unchanged.
+  const horizontal = finePointer && !reducedMotion && wideViewport && !isAbout
   const morph = !reducedMotion && !!originKey
   // V1b: origin identities are static and distinct — "shape:summit" →
   // the shape's permanent layoutId "proof-shape-summit", "row:summit" →
@@ -456,42 +458,40 @@ export default function ProjectOverlay() {
               exit={{ opacity: 0, transition: { duration: 0.15 } }}
               transition={{ duration: isClosing ? motionTune.contentFadeOut : 0.3 }}
             >
-              {/* A-pass: minimal single-screen About — the corrected bio, two
-                  minimal photos (no plate/tape), and mono Email/Instagram links.
+              {/* About v3: HELLO! monument (above) → solo profile → beat 1 →
+                  Machu → beat 2 → mono links. Photos alternate alignment for
+                  rhythm; the whole About scrolls (forced out of the runway).
                   Proofs keep the plain kicker + lede (+ dormant testimonial). */}
               {isAbout ? (
-                <div className="about-bio">
-                  <p className="ov-mono">{proof.tag}</p>
-                  <p className="ov-lede about-bio__text">{panel.statement}</p>
-                  <div className="about-bio__photos">
-                    <AboutPhoto
-                      variant="profile"
-                      src={prestonPortrait}
-                      srcSet={`${prestonPortraitSm} 300w, ${prestonPortrait} 600w`}
-                      sizes="(min-width: 780px) 220px, 45vw"
-                      width="600"
-                      height="750"
-                      alt="Preston Gray, in Denver."
-                    />
-                    <AboutPhoto
-                      variant="machu"
-                      wide
-                      src={machuPicchu}
-                      srcSet={`${machuPicchuSm} 480w, ${machuPicchu} 900w`}
-                      sizes="(min-width: 780px) 300px, 50vw"
-                      width="900"
-                      height="675"
-                      alt="Preston and his wife at Machu Picchu, the Inca ruins and green peaks rising behind them."
-                    />
-                  </div>
+                <div className="about-hello">
+                  <AboutPhoto
+                    variant="profile"
+                    src={prestonPortrait}
+                    srcSet={`${prestonPortraitSm} 300w, ${prestonPortrait} 600w`}
+                    sizes="(min-width: 780px) 380px, 72vw"
+                    width="600"
+                    height="750"
+                    alt="Preston Gray, in Denver."
+                  />
+                  <p className="ov-lede about-hello__beat about-hello__beat--a">{panel.beats[0]}</p>
+                  <AboutPhoto
+                    variant="machu"
+                    wide
+                    src={machuPicchu}
+                    srcSet={`${machuPicchuSm} 480w, ${machuPicchu} 900w`}
+                    sizes="(min-width: 780px) 500px, 86vw"
+                    width="900"
+                    height="675"
+                    alt="Preston and his wife at Machu Picchu, the Inca ruins and green peaks rising behind them."
+                  />
+                  <p className="ov-lede about-hello__beat about-hello__beat--b">{panel.beats[1]}</p>
                   <p className="about-bio__links">
                     <a className="ov-mono about-bio__link" href="mailto:hello@preston-gray.com">
                       Email
                     </a>
-                    {/* TODO(Preston): swap in the real Instagram handle URL. */}
                     <a
                       className="ov-mono about-bio__link"
-                      href="https://www.instagram.com/"
+                      href="https://www.instagram.com/w.preston.gray/"
                       target="_blank"
                       rel="noopener noreferrer"
                     >

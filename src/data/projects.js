@@ -773,7 +773,7 @@ export const aboutOverlay = {
   index: '—',
   name: 'About Preston',
   tag: 'Denver, Colorado',
-  monument: 'About',
+  monument: 'HELLO!',
   // N2 fix: `color` is the overlay ground (--ov). The migration left it as
   // --flood-green-fg (= --ink = black), so About rendered black-on-black. About
   // is a site-owned paper document: light ground, ink text (AA 10.4:1).
@@ -784,13 +784,14 @@ export const aboutOverlay = {
   // keep the prior working copy — flagged in content-state-report §6.
   panels: [
     {
-      // A-pass: the corrected verbatim bio IS the whole minimal single-screen
-      // About now (rendered by the statement case's isAbout branch). The prior
-      // Thread / What-I-make cards / green-plate photos / contact panels were
-      // deleted per the minimal direction. Verbatim-approved copy.
+      // About v3: HELLO! + interleaved 5-beat scroll (monument → profile photo →
+      // beat 1 → Machu photo → beat 2 → mono links), rendered by the statement
+      // case's isAbout branch. Verbatim-approved copy.
       type: 'statement',
-      statement:
-        'I’m Preston Gray, a designer and builder in Denver. Days, I handle provider relations and marketing for Summit Pharmacy — fieldwork, print, and the website. Nights and weekends, I build websites, brands, and tools for small businesses: pharmacies in Oklahoma City, Little Rock, and Las Vegas, and an industrial supplier in Houston. When no CRM fit the way I work a territory, I built my own. I use it every day. Off hours I’m outside as much as Colorado allows.',
+      beats: [
+        'Hi — I’m Preston. I’m a designer and builder in Denver. Days, I’m out in the field for Summit Pharmacy, working with medical offices and making the print, the website, and the pitch all fit together.',
+        'Nights and weekends, I build websites, brands, and tools for small businesses — pharmacies in Oklahoma City, Little Rock, and Las Vegas, and an industrial supplier in Houston. When no CRM fit the way I work a territory, I built my own; I use it every day. Off hours, my wife and I are outside as much as Colorado allows — that’s us at Machu Picchu. If you’ve got a business that deserves a better website, say hello. I’d love to hear about it.',
+      ],
     },
   ],
 }

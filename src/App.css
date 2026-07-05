@@ -3251,14 +3251,33 @@ a.link-pill:hover {
   color: var(--ink-soft);
 }
 
-/* ===== ABOUT — minimal single screen (A-pass). The corrected bio + two plain
-   photos + mono Email/Instagram links, rendered in the statement panel's
-   isAbout branch. No Thread, What-I-make cards, green plates, or tape. ===== */
-.ov-meta:has(.about-bio) { max-width: min(82ch, 100%); }
-.about-bio { display: flex; flex-direction: column; gap: clamp(12px, 1.8vh, 20px); align-items: flex-start; }
-.about-bio__text { max-width: 58ch; }
-.about-bio__photos { display: flex; gap: clamp(14px, 2.4vw, 28px); align-items: flex-start; }
-.about-bio__links { display: flex; gap: 24px; margin: 0; }
+/* ===== ABOUT v3 — "HELLO!" + interleaved 5-beat scroll. HELLO! monument (above)
+   → solo profile → beat 1 → Machu → beat 2 → mono Email/Instagram links. Photos
+   are minimal (slight tilt, no plate/tape/keyline), generous, and ALTERNATE
+   alignment so the page reads as rhythm, not a left-hung column (kills the dead
+   right half). The About panel scrolls (forced out of the horizontal runway). == */
+/* Full width (not shrink-to-fit) so the alternating beats can actually spread
+   across and use the right half; capped for a comfortable measure. */
+.ov-meta:has(.about-hello) { width: 100%; max-width: min(1080px, 100%); }
+/* About flows top-to-bottom and scrolls — not vertically centered like a proof. */
+.overlay__stack .ov-panel--statement:has(.about-hello) { justify-content: flex-start; }
+
+.about-hello {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(26px, 5vh, 56px);
+  width: 100%;
+  padding-bottom: clamp(24px, 6vh, 72px);
+}
+.about-hello__beat { margin: 0; max-width: 42ch; font-size: clamp(17px, 1.5vw, 21px); line-height: 1.55; color: var(--ov-fg, var(--ink)); }
+
+/* Alternating rhythm: profile + beat 1 hang left; Machu + beat 2 hang right. */
+.about-hello .about-photo--profile,
+.about-hello__beat--a { align-self: flex-start; }
+.about-hello .about-photo--machu,
+.about-hello__beat--b { align-self: flex-end; }
+
+.about-bio__links { display: flex; gap: 24px; margin: 0; align-self: flex-start; }
 .about-bio__link {
   color: var(--ov-fg, var(--ink));
   text-decoration: none;
@@ -3273,14 +3292,14 @@ a.link-pill:hover {
 .about-photo { position: relative; margin: 0; }
 .about-photo__img { display: block; width: 100%; height: auto; max-width: 100%; }
 .about-photo__img--wide { aspect-ratio: 4 / 3; object-fit: cover; }
-.about-photo--profile { width: min(140px, 36vw); }
-.about-photo--machu { width: min(210px, 50vw); }
+.about-photo--profile { width: min(300px, 76vw); }
+.about-photo--machu { width: min(380px, 86vw); }
 .about-photo--profile .about-photo__img { transform: rotate(-2deg); }
 .about-photo--machu .about-photo__img { transform: rotate(2deg); }
 
 @media (min-width: 780px) {
-  .about-photo--profile { width: 168px; }
-  .about-photo--machu { width: 248px; }
+  .about-photo--profile { width: 380px; }
+  .about-photo--machu { width: 520px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
