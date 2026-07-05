@@ -180,10 +180,15 @@ function useCast() {
         color: p.colorDisplay ?? p.color,
         colorHover: p.colorHover,
         displayFg: p.displayFg,
-        // Poster is site-owned → themed. The echo uses the themed display
-        // color, not the pinned brand (p.color), so no brand leaks onto the
-        // composition. Brand appears only when the proof opens.
-        echoColor: p.colorDisplay ?? p.color,
+        // N1 (identity connection): an ARMED shape becomes a proof-surface
+        // preview — it floods the project's PINNED brand color and titles
+        // itself in the brand's AA foreground, so its color + title ARE what
+        // opens (the overlay backdrop shares this exact pinned color). Pinned
+        // tokens live at :root, so brand resolves the same under any theme.
+        brandColor: p.color,
+        brandFg: p.colorFg,
+        // Echo accent rides the armed brand ground → brand foreground.
+        echoColor: p.colorFg,
         outline: null,
         // B1b: real URLs — the S1 deep-link format, so middle-click /
         // copy-link / AT link lists resolve. Click still preventDefaults
@@ -806,6 +811,12 @@ export default function CompositionHero({ poster = false }) {
           // the two can never disagree per shape. Dim stays hover-only:
           // arming's enumerated affordances are ink-in + type + echo.
           const isActive = isHovered || isArmed
+          // N1: the shape floods PINNED brand while armed AND while its overlay
+          // is open, so the shared-element morph is one continuous colored
+          // object (shape brand → backdrop brand, same token) — the shape never
+          // flashes back to the theme colour under the growing overlay.
+          const isOpen = openId === shape.overlayId
+          const showBrand = isActive || isOpen
           const isDimmed = hoveredShape !== null && !isHovered
           // V1a: the settle gate now covers REVEALED type too — with
           // at-rest letterforms off, hover/arm early in a state morph was
@@ -823,22 +834,23 @@ export default function CompositionHero({ poster = false }) {
               key={shape.id}
               href={shape.href}
               aria-label={shape.aria}
+              data-shape={shape.id}
               onClick={shapeClick(shape)}
               className="comp-shape"
               style={{
                 zIndex: Z[shape.id],
-                // Active fill is a CSS transition (framer can't tween var()
-                // strings); reduced motion keeps the color change (spec §B).
-                background: isActive ? shape.colorHover ?? fill : fill,
+                // N1: armed / opening → PINNED brand (a CSS transition; framer
+                // can't tween var() strings). Reduced motion keeps the swap —
+                // instant but still colour-truthful (spec §B). Idle → the
+                // themed role fill.
+                background: showBrand ? shape.brandColor : fill,
                 // G1: the cycle re-ink rides THIS shape's own morph — same
                 // stagger delay as its geometry, duration matched to the
                 // spring's main travel — so a repaint can never land on a
                 // resting shape ahead of its movement (the "second color
-                // mid-step" glitch, G0-measured). Hover/arm ink-in stays
-                // snappy and undelayed, and because it re-renders with a
-                // zero-delay transition it always beats an in-flight cycle
-                // repaint on an armed shape.
-                transition: isActive
+                // mid-step" glitch, G0-measured). Arm/open ink-in stays snappy
+                // and undelayed, always beating an in-flight cycle repaint.
+                transition: showBrand
                   ? 'background-color 0.25s var(--ease)'
                   : `background-color 0.5s var(--ease) ${staggerDelay}s`,
                 border: shape.outline ?? undefined,
@@ -926,7 +938,10 @@ export default function CompositionHero({ poster = false }) {
                 <motion.span
                   className="comp-type"
                   aria-hidden="true"
-                  style={{ color: shape.displayFg }}
+                  // N1: the revealed title sits on the armed brand ground, so
+                  // it wears the brand's AA foreground (contrast-verified for
+                  // all six projects); idle at-rest type keeps the display fg.
+                  style={{ color: showBrand ? shape.brandFg : shape.displayFg }}
                   initial={false}
                   animate={{
                     fontSize: l.h * lf.scale,
