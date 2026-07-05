@@ -98,3 +98,13 @@ portal clone, and transform-scaling the clone blurs text — three strikes vs th
 - CLAUDE.md updated: review surface is LOCALHOST (checkout + npm run dev; no deploy-
   preview flagging ever again); every run fetches + reconciles main first; Netlify ref
   noted.
+
+## §1 — About desktop repair
+- Desktop (≥900px) is a **two-region storyboard**: THE THREAD text left (≤62ch) + an
+  overlapping photo CLUSTER right (portrait rotate −4°/220px, Machu rotate +3°/340px,
+  absolute-positioned so edges overlap; caption + personal line with the cluster).
+  Mobile keeps the stacked offset pair. · one pasted board, not a column + attachments.
+- **CSS hygiene:** deleted the 3 layered contradictory .about-thread blocks + the
+  orphan comment; ONE ruleset now, single `@media (min-width:900px)` split. No
+  wins-by-source-order. · verified 1440/1024 (row cluster) + 768/390 (column), axe 0.
+- The img chain keeps min-width:0 + max-width:100% (the grid/flex intrinsic-size trap).

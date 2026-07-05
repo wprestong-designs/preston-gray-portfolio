@@ -505,38 +505,42 @@ export default function ProjectOverlay() {
                   <p key={pi} className="about-thread__para">{para}</p>
                 ))}
               </div>
-              <figure className="about-photo about-photo--portrait">
-                <span className="about-portrait__frame">
-                  <span className="about-portrait__tape about-portrait__tape--left" aria-hidden="true" />
-                  <img
-                    className="about-portrait__photo"
-                    src={prestonPortrait}
-                    srcSet={`${prestonPortraitSm} 300w, ${prestonPortrait} 600w`}
-                    sizes="220px"
-                    width="600"
-                    height="750"
-                    loading="lazy"
-                    alt="Preston Gray, in Denver."
-                  />
-                </span>
-              </figure>
-              <figure className="about-photo about-photo--machu">
-                <span className="about-portrait__frame">
-                  <span className="about-portrait__tape about-portrait__tape--right" aria-hidden="true" />
-                  <img
-                    className="about-portrait__photo about-portrait__photo--wide"
-                    src={machuPicchu}
-                    srcSet={`${machuPicchuSm} 480w, ${machuPicchu} 900w`}
-                    sizes="320px"
-                    width="900"
-                    height="675"
-                    loading="lazy"
-                    alt="Preston and his wife at Machu Picchu, the Inca ruins and green peaks rising behind them."
-                  />
-                </span>
-                <figcaption className="about-photo__cap">Machu Picchu — off the clock</figcaption>
-                <p className="about-thread__personal">{panel.personalLine}</p>
-              </figure>
+              {/* The photo CLUSTER — one pasted board (overlapping, offset,
+                  rotated). Beside the text on desktop, beneath it on mobile. */}
+              <div className="about-thread__board">
+                <figure className="about-photo about-photo--portrait">
+                  <span className="about-portrait__frame">
+                    <span className="about-portrait__tape about-portrait__tape--left" aria-hidden="true" />
+                    <img
+                      className="about-portrait__photo"
+                      src={prestonPortrait}
+                      srcSet={`${prestonPortraitSm} 300w, ${prestonPortrait} 600w`}
+                      sizes="(min-width: 900px) 300px, 220px"
+                      width="600"
+                      height="750"
+                      loading="lazy"
+                      alt="Preston Gray, in Denver."
+                    />
+                  </span>
+                </figure>
+                <figure className="about-photo about-photo--machu">
+                  <span className="about-portrait__frame">
+                    <span className="about-portrait__tape about-portrait__tape--right" aria-hidden="true" />
+                    <img
+                      className="about-portrait__photo about-portrait__photo--wide"
+                      src={machuPicchu}
+                      srcSet={`${machuPicchuSm} 480w, ${machuPicchu} 900w`}
+                      sizes="(min-width: 900px) 340px, 320px"
+                      width="900"
+                      height="675"
+                      loading="lazy"
+                      alt="Preston and his wife at Machu Picchu, the Inca ruins and green peaks rising behind them."
+                    />
+                  </span>
+                  <figcaption className="about-photo__cap">Machu Picchu — off the clock</figcaption>
+                  <p className="about-thread__personal">{panel.personalLine}</p>
+                </figure>
+              </div>
             </div>
           </section>
         )
