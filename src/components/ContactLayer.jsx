@@ -5,8 +5,10 @@
  * /#contact hash.
  *
  * Form is primary; a plain visible email is the alternative for form-skeptics.
- * Backend is WEB3FORMS (host-agnostic): the component POSTs JSON straight to
- * api.web3forms.com with a public access key (VITE_WEB3FORMS_KEY) + a honeypot.
+ * Backend is WEB3FORMS (host-agnostic): the component POSTs FormData straight
+ * to api.web3forms.com with a public access key (VITE_WEB3FORMS_KEY) + a
+ * honeypot (FormData, not JSON — JSON's CORS preflight is challenged by
+ * Web3Forms' bot protection and fails for real visitors).
  * No static form definition, no build-time detection — portable across hosts.
  * The notification inbox is bound to the access key (set when Preston creates
  * it). Replaced Netlify Forms, whose build-time form registration silently
@@ -133,27 +135,31 @@ export default function ContactLayer({ open, onClose }) {
     }
     setStatus('submitting')
     try {
+      // FormData, NOT JSON: a JSON body forces a CORS preflight (OPTIONS),
+      // and Web3Forms' bot protection challenges that preflight (403,
+      // cf-mitigated: challenge) — so every JSON submission died as a
+      // network error for real visitors. FormData is a CORS "simple
+      // request" with no preflight and goes straight through.
+      const fields = {
+        access_key: ACCESS_KEY,
+        subject: `Job ticket — ${name || 'new enquiry'}`,
+        from_name: name,
+        replyto: email,
+        name,
+        email,
+        business,
+        needs: needs.join(', '),
+        timeline,
+        message,
+        // Web3Forms server-side honeypot (empty = human). Belt-and-suspenders
+        // with the client short-circuit above.
+        botcheck: botField,
+      }
+      const formData = new FormData()
+      Object.entries(fields).forEach(([k, v]) => formData.append(k, v))
       const res = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify({
-          access_key: ACCESS_KEY,
-          subject: `Job ticket — ${name || 'new enquiry'}`,
-          from_name: name,
-          replyto: email,
-          name,
-          email,
-          business,
-          needs: needs.join(', '),
-          timeline,
-          message,
-          // Web3Forms server-side honeypot (empty = human). Belt-and-suspenders
-          // with the client short-circuit above.
-          botcheck: botField,
-        }),
+        body: formData,
       })
       const json = await res.json().catch(() => ({}))
       if (!res.ok || !json.success) throw new Error(`submit failed: ${res.status}`)

@@ -262,13 +262,25 @@
   height: 100%;
 }
 
+.comp--poster {
+  /* R1.6 clearance, shared: the stage wrapper AND the label over-layer must
+     start at the same y — the over-layer copies the wrapper's fit transform,
+     so a mismatched origin shifts every hover label up into the header band
+     (the label-over-nav collision). One var, both rules. */
+  --poster-clearance: clamp(52px, 7vh, 76px);
+}
+
 .comp--poster .comp__stage-wrap {
   position: absolute;
   /* R1.6 fix: guaranteed top/bottom clearance so the floating brand + utils
      always sit in a letterbox band — the stage never reaches the header on any
      aspect ratio. Applies to EVERY state uniformly (the solid triangle just
      exposed the missing clearance; it now obeys the same bounds as the rest). */
-  inset: clamp(52px, 7vh, 76px) 0;
+  inset: var(--poster-clearance) 0;
+}
+
+.comp--poster .comp__stage--over {
+  top: var(--poster-clearance);
 }
 
 /* U1: desktop keeps the wrapper invisible — brand + utils stay in the
@@ -424,9 +436,10 @@
   }
 
   /* Mobile has a real header BAND above this flex area — the stage no longer
-     shares space with a floating header, so drop the desktop clearance. */
-  .comp--poster .comp__stage-wrap {
-    inset: 0;
+     shares space with a floating header, so drop the desktop clearance
+     (stage wrapper and label over-layer both follow the shared var). */
+  .comp--poster {
+    --poster-clearance: 0px;
   }
 }
 
@@ -573,19 +586,24 @@
 
 /* F1 — ornaments: composition elements that are not project doors.
    Ink fill by default; the paper variant carries the ink outline. Opaque
-   always; clipped like shapes (overflow for the hatch child). */
+   always; clipped like shapes (overflow for the hatch child).
+   CHROME tokens, not --ink/--bg: the poster ground stays constant white
+   under every data-theme, but the dark registers (techlab/arcade/splash)
+   flip --ink to white inside the .comp scope — an ink ornament went
+   white-on-white and vanished (the "missing column" in columns state).
+   Same fix as the B1 label plate. */
 .comp-ornament {
   position: absolute;
   top: 0;
   left: 0;
   overflow: hidden;
   pointer-events: none;
-  background: var(--ink);
+  background: var(--chrome-ink);
 }
 
 .comp-ornament--paper {
-  background: var(--bg);
-  border: 2px solid var(--ink);
+  background: var(--chrome-paper);
+  border: 2px solid var(--chrome-ink);
 }
 
 /* W1a — invisible morph source: carries the shape's layoutId so layout
@@ -694,7 +712,9 @@
   width: 100%;
   height: 100%;
   pointer-events: none;
-  stroke: var(--ink);
+  /* Chrome ink (constant): --ink flips to white in dark themes and the
+     crop marks vanished on the constant white ground. */
+  stroke: var(--chrome-ink);
   stroke-width: 2;
 }
 
