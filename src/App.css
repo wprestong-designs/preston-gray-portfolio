@@ -1437,6 +1437,10 @@
   flex-direction: column;
   gap: 10px;
   min-width: 0;
+  /* .pm is a <figure>: drop the UA 17px/40px margin — it silently pushed
+     solo frames + placard past the row budget, so the placard wrapped
+     under the frame below ~1900px wide. Spacing comes from the panel gap. */
+  margin: 0;
 }
 
 .pm__frame {
@@ -1519,7 +1523,19 @@
    width for the text column */
 .overlay__cell .ov-panel--media[data-count='1']:has(.ov-body) .pm--browser,
 .overlay__cell .ov-panel--media[data-count='1']:has(.ov-body) .pm--plain {
-  max-width: min(920px, 56vw);
+  /* row = frame + gap (≤40px) + 36ch placard (≤398px at 17.5px) inside
+     88vw (6vw padding each side) → the frame takes what is left, so the
+     placard never wraps under it: 827px at 1440, 686px at 1280 */
+  max-width: min(920px, calc(88vw - 440px));
+}
+
+/* Re-shoot 2026-11-14 — ONE browser frame per panel (projects.js PANEL
+   RULE), so a browser frame paired with a phone gets the room the old
+   2-up browser row split: ≥720px at 1440 wide. Budget: phone (≤216px at
+   900 tall) + 3vw gap + 52vw + 12vw padding stays inside 100vw. */
+.overlay__cell .ov-panel--media[data-count='2']:has(.pm--phone) .pm--browser,
+.overlay__cell .ov-panel--media[data-count='2']:has(.pm--phone) .pm--plain {
+  max-width: min(880px, 52vw);
 }
 
 .overlay__cell .ov-panel--media[data-count='1'] .pm--phone {

@@ -56,6 +56,14 @@ log it and STOP that item.
   (`Ornaments.jsx` is styleguide-only; never mount on live routes).
 - **No new motion / roster / choreography** beyond a task's spec. No redesigns.
 
+## Project media (re-shoot 2026-11-14 — `docs/reshoot-report-20261114.md`)
+Never screen-record. `scripts/reshoot-capture.mjs` (live sites + local ProSource)
+and `scripts/compass-capture.mjs` (Compass FICTIONAL demo only, DEMO · SAMPLE DATA
+badge injected) shoot 2x stills and frame-by-frame clips into gitignored
+`/Media/reshoot/`; `scripts/process-media.mjs` encodes (CRF 21/30, steps up only
+to fit 3 MiB). Stills ship as WebP in `src/assets/shots/`. Proof panels hold ONE
+browser frame (+ an optional phone) so stills render ≥720px at 1440.
+
 ## Visual harness (motion/visual work is verified against it)
 `node scripts/visual-matrix.mjs` (needs `npm run dev` up; pass `BASE_URL`). Forces
 every geometry state × every theme via `?harness=1&state=&theme=` (dev-only control

@@ -10,27 +10,32 @@
  * markers wherever the string is not Preston-final — the registry in
  * content-state-report.md §4 mirrors them.
  */
-import summitPreview from '../assets/summit-home.jpg'
-import summitRefill from '../assets/summit-refill.png'
-import summitWomens from '../assets/summit-womens-health.jpg'
-import summitOphtho from '../assets/summit-ophthalmology-page.jpg'
-import summitReviews from '../assets/summit-reviews.jpg'
-import ourcoPreview from '../assets/ourco-home.jpg'
-import ourcoAbout from '../assets/ourco-about.jpg'
-import bristolPreview from '../assets/bristol-home.jpg'
-import pinnacleHome from '../assets/pinnacle-home.jpg'
-import prosourceHome from '../assets/prosource-home.jpg'
-// M1: mobile CROP (hero headline + CTA) for the ProSource homepage still.
-import prosourceHomeCropSm from '../assets/mobile/prosource-home-480w.jpg'
-import prosourceHomeCropLg from '../assets/mobile/prosource-home.jpg'
-import fieldIntelPreview from '../assets/crm-analytics-desktop.jpg'
-import crmFieldnotesDesktop from '../assets/crm-fieldnotes-desktop.jpg'
-// crm-territorymap-mobile + analytics-explorer imports removed — CRM data-safety unwire (2026-07-04)
-// crm-field-desktop.jpg (manifest still #3) is trimmed from wiring: the
-// panel-size rule caps media panels at 3 items and both CRM media panels
-// are full — logged in oneshot-report.md Open Items.
+/* Re-shoot 2026-11-14 (scripts/reshoot-capture.mjs + compass-capture.mjs):
+   2x viewport captures, WebP stills at 1920w (mobile 780w + 480w). */
+import summitRefill from '../assets/shots/summit-refill-desktop.webp'
+import summitWomens from '../assets/shots/summit-womenshealth-desktop.webp'
+import summitOphtho from '../assets/shots/summit-ophthalmology-desktop.webp'
+import summitReviews from '../assets/shots/summit-reviews-desktop.webp'
+import ourcoHome from '../assets/shots/ourco-home-desktop.webp'
+import ourcoHomeMobile from '../assets/shots/ourco-home-mobile.webp'
+import ourcoAbout from '../assets/shots/ourco-about-desktop.webp'
+import ourcoServices from '../assets/shots/ourco-services-desktop.webp'
+import ourcoGases from '../assets/shots/ourco-gases-desktop.webp'
+import ourcoBrands from '../assets/shots/ourco-brands-desktop.webp'
+import bristolHomeMobile from '../assets/shots/bristol-home-mobile.webp'
+import pinnacleHome from '../assets/shots/pinnacle-home-desktop.webp'
+import prosourceHome from '../assets/shots/prosource-home-desktop.webp'
+// M1: mobile viewport capture for the ProSource homepage still (<700px).
+import prosourceHomeMobileSm from '../assets/shots/prosource-home-mobile-480w.webp'
+import prosourceHomeMobileLg from '../assets/shots/prosource-home-mobile.webp'
+// Compass (Custom CRM) — captured ONLY from the fictional pilot demo, with the
+// DEMO · SAMPLE DATA badge in-frame. Videos stay crmVerified:false (poster-only).
+import crmToday from '../assets/shots/crm-today-desktop.webp'
+import crmReports from '../assets/shots/crm-reports-desktop.webp'
+import crmTeam from '../assets/shots/crm-team-desktop.webp'
 
-/* Processed clip triplets (scripts/process-media.mjs output — manifest v2) */
+/* Processed clip triplets (scripts/process-media.mjs output) — frame-by-frame
+   captures, H.264 CRF 21–28 / VP9 CRF 30, all ≤12s and ≤3MB */
 import summitHomeMp4 from '../assets/media/summit-homepage-scroll-desktop.mp4'
 import summitHomeWebm from '../assets/media/summit-homepage-scroll-desktop.webm'
 import summitHomePoster from '../assets/media/summit-homepage-scroll-desktop-poster.jpg'
@@ -40,30 +45,38 @@ import summitRefillPoster from '../assets/media/summit-rxrefillrequest-scroll-mo
 import summitRxSubMp4 from '../assets/media/summit-rxsubmission-scroll-desktop.mp4'
 import summitRxSubWebm from '../assets/media/summit-rxsubmission-scroll-desktop.webm'
 import summitRxSubPoster from '../assets/media/summit-rxsubmission-scroll-desktop-poster.jpg'
-import summitDermMp4 from '../assets/media/summit-dermatology-desktop.mp4'
-import summitDermWebm from '../assets/media/summit-dermatology-desktop.webm'
-import summitDermPoster from '../assets/media/summit-dermatology-desktop-poster.jpg'
-import crmTodayMp4 from '../assets/media/crm-todaydashboard-scroll-desktop.mp4'
-import crmTodayWebm from '../assets/media/crm-todaydashboard-scroll-desktop.webm'
-import crmTodayPoster from '../assets/media/crm-todaydashboard-scroll-desktop-poster.jpg'
-// crm field-scroll-mobile + territorymap-zoom-desktop imports removed — CRM data-safety unwire (2026-07-04)
-import crmAnalyticsMp4 from '../assets/media/crm-analytics-desktop.mp4'
-import crmAnalyticsWebm from '../assets/media/crm-analytics-desktop.webm'
-import crmAnalyticsPoster from '../assets/media/crm-analytics-desktop-poster.jpg'
-import bristolHomeMp4 from '../assets/media/bristol-homepage-desktop.mp4'
-import bristolHomeWebm from '../assets/media/bristol-homepage-desktop.webm'
-import bristolHomePoster from '../assets/media/bristol-homepage-desktop-poster.jpg'
-import bristolAboutMp4 from '../assets/media/bristol-about-mobile.mp4'
-import bristolAboutWebm from '../assets/media/bristol-about-mobile.webm'
-import bristolAboutPoster from '../assets/media/bristol-about-mobile-poster.jpg'
-// §1.2: the letterboxed pinnacle-homepage-mobile is retired for the native
-// PORTRAIT capture (cropped 520×1080 from the new push).
+import summitDermMp4 from '../assets/media/summit-dermatology-scroll-desktop.mp4'
+import summitDermWebm from '../assets/media/summit-dermatology-scroll-desktop.webm'
+import summitDermPoster from '../assets/media/summit-dermatology-scroll-desktop-poster.jpg'
+import ourcoHomeMp4 from '../assets/media/ourco-homepage-desktop.mp4'
+import ourcoHomeWebm from '../assets/media/ourco-homepage-desktop.webm'
+import ourcoHomePoster from '../assets/media/ourco-homepage-desktop-poster.jpg'
+import crmWeekMp4 from '../assets/media/crm-week-mobile.mp4'
+import crmWeekWebm from '../assets/media/crm-week-mobile.webm'
+import crmWeekPoster from '../assets/media/crm-week-mobile-poster.jpg'
+import crmAnalyticsMp4 from '../assets/media/crm-analytics-scroll-desktop.mp4'
+import crmAnalyticsWebm from '../assets/media/crm-analytics-scroll-desktop.webm'
+import crmAnalyticsPoster from '../assets/media/crm-analytics-scroll-desktop-poster.jpg'
+import bristolHomeMp4 from '../assets/media/bristol-homepage-scroll-desktop.mp4'
+import bristolHomeWebm from '../assets/media/bristol-homepage-scroll-desktop.webm'
+import bristolHomePoster from '../assets/media/bristol-homepage-scroll-desktop-poster.jpg'
+import bristolAboutMp4 from '../assets/media/bristol-about-scroll-mobile.mp4'
+import bristolAboutWebm from '../assets/media/bristol-about-scroll-mobile.webm'
+import bristolAboutPoster from '../assets/media/bristol-about-scroll-mobile-poster.jpg'
 import pinnacleHomeMp4 from '../assets/media/pinnacle-homepage-scroll-mobile.mp4'
 import pinnacleHomeWebm from '../assets/media/pinnacle-homepage-scroll-mobile.webm'
 import pinnacleHomePoster from '../assets/media/pinnacle-homepage-scroll-mobile-poster.jpg'
-import pinnacleAboutMp4 from '../assets/media/pinnacle-about-desktop.mp4'
-import pinnacleAboutWebm from '../assets/media/pinnacle-about-desktop.webm'
-import pinnacleAboutPoster from '../assets/media/pinnacle-about-desktop-poster.jpg'
+import pinnacleAboutMp4 from '../assets/media/pinnacle-about-scroll-desktop.mp4'
+import pinnacleAboutWebm from '../assets/media/pinnacle-about-scroll-desktop.webm'
+import pinnacleAboutPoster from '../assets/media/pinnacle-about-scroll-desktop-poster.jpg'
+import prosourceRefillMp4 from '../assets/media/prosource-rxrefill-scroll-desktop.mp4'
+import prosourceRefillWebm from '../assets/media/prosource-rxrefill-scroll-desktop.webm'
+import prosourceRefillPoster from '../assets/media/prosource-rxrefill-scroll-desktop-poster.jpg'
+
+/* PANEL RULE (re-shoot 2026-11-14): at most ONE browser frame per media
+   panel (a phone frame may ride beside it), so desktop stills render
+   ≥720px wide at 1440 — see the P7 MEDIA SCALE PASS block in App.css.
+   Captions marked `captionDraft: true` are Claude drafts awaiting Preston. */
 
 /*
  * ============================================================
@@ -84,13 +97,12 @@ import pinnacleAboutPoster from '../assets/media/pinnacle-about-desktop-poster.j
  * update them together when a URL changes.
  *
  * Live client domains. `null` = no link renders ANYWHERE (ProSource stays
- * null until launch per the standing never-a-live-link constraint; Ourco
- * is still in build; Custom CRM is an internal tool with no public URL).
+ * null until launch per the standing never-a-live-link constraint; Custom CRM is an internal tool with no public URL).
  * ============================================================
  */
 export const LIVE_URLS = {
   summit: 'https://summitpharmacycolorado.com',
-  ourco: null, // build in progress — flip when the site ships
+  ourco: 'https://ourco.net', // live 2026-11 (confirmed by Preston 2026-11-13)
   bristol: 'https://rxbristolokc.com',
   pinnacle: 'https://pinnacle-rx.com',
   prosource: null, // standing constraint: never a live link until launch
@@ -196,7 +208,7 @@ export const projects = [
     // a plain string renders single-line (renderer supports both).
     monument: ['Summit', 'Pharmacy'],
     slug: 'pg-01',
-    preview: summitPreview,
+    preview: summitHomePoster,
     panels: [
       {
         type: 'statement',
@@ -216,7 +228,6 @@ export const projects = [
           {
             kind: 'video',
             srcMp4: summitHomeMp4,
-            mp4First: true, // mp4 < webm after 2026-07-05 re-encode
             srcWebm: summitHomeWebm,
             poster: summitHomePoster,
             frame: 'browser',
@@ -243,13 +254,17 @@ export const projects = [
           {
             kind: 'video',
             srcMp4: summitRxSubMp4,
-            mp4First: true, // mp4 < webm (measured) — serve mp4 first
             srcWebm: summitRxSubWebm,
             poster: summitRxSubPoster,
             frame: 'browser',
             caption: 'Provider Rx submission — one form',
             alt: 'Scrolling Summit’s provider Rx submission form on desktop',
           },
+        ],
+      },
+      {
+        type: 'media',
+        items: [
           {
             kind: 'image',
             src: summitRefill,
@@ -268,13 +283,17 @@ export const projects = [
           {
             kind: 'video',
             srcMp4: summitDermMp4,
-            mp4First: true,
             srcWebm: summitDermWebm,
             poster: summitDermPoster,
             frame: 'browser',
             caption: 'Specialty pages: dermatology to women’s health',
             alt: 'Scrolling Summit’s dermatology specialty page',
           },
+        ],
+      },
+      {
+        type: 'media',
+        items: [
           {
             kind: 'image',
             src: summitWomens,
@@ -282,6 +301,11 @@ export const projects = [
             caption: 'Women’s health specialty page',
             alt: 'Summit Pharmacy women’s health specialty page',
           },
+        ],
+      },
+      {
+        type: 'media',
+        items: [
           {
             kind: 'image',
             src: summitOphtho,
@@ -301,7 +325,7 @@ export const projects = [
             src: summitReviews,
             frame: 'browser',
             caption: 'Reviews, ethics, and the fine print — made readable',
-            alt: 'Summit Pharmacy reviews section',
+            alt: 'Summit Pharmacy patient reviews section: 4.9 stars from 1,032 Google reviews',
           },
         ],
       },
@@ -345,7 +369,7 @@ export const projects = [
     },
     monument: 'Ourco',
     slug: 'pg-02',
-    preview: ourcoPreview,
+    preview: ourcoHome,
     panels: [
       {
         // Preston's standing framing (bold on purpose, client-led) outranks
@@ -356,47 +380,102 @@ export const projects = [
       },
       {
         type: 'media',
-        // TODO(launch): update the "early August" line once the Ourco site is live.
-        body: 'Ourco supplies industrial gas and welding equipment across Houston — a catalog of 4,500-plus products. The owners wanted the site to feel like the work itself: the welder and the Texas night sky. The brand runs on that — dark ground, starry-night fields, the classic welder as the central mark. The new site launches in early August.',
+        // Launch line updated 2026-11-14 (Preston-approved wording).
+        body: 'Ourco supplies industrial gas and welding equipment across Houston — a catalog of 4,500-plus products. The owners wanted the site to feel like the work itself: the welder and the Texas night sky. The brand runs on that — dark ground, starry-night fields, the classic welder as the central mark. The new site is live at ourco.net.',
         bodyDraft: true,
-        verify: ['supplies industrial gas and welding equipment; 4,500-plus products', 'launches early August'],
+        verify: ['supplies industrial gas and welding equipment; 4,500-plus products'],
         items: [
           {
-            kind: 'image',
-            src: ourcoPreview,
+            kind: 'video',
+            srcMp4: ourcoHomeMp4,
+            mp4First: true, // mp4 < webm (measured)
+            srcWebm: ourcoHomeWebm,
+            poster: ourcoHomePoster,
             frame: 'browser',
-            caption: 'Built to weld — the homepage says so',
-            alt: 'Ourco industrial homepage hero: “Built to Weld”',
-          },
-          {
-            kind: 'image',
-            src: ourcoAbout,
-            frame: 'browser',
-            caption: 'About page: the yard, the fleet, the counter',
-            alt: 'Ourco about page with photos of the yard and fleet',
+            caption: 'Homepage — the hero in motion',
+            captionDraft: true,
+            alt: 'The Ourco homepage hero: a welder at work over Houston’s skyline and highway traffic, “Built to Weld”',
           },
         ],
       },
       {
         type: 'media',
-        body: 'The build runs brand-first: identity system, then pages. Every page that ships already knows how it should look and sound. More proofs land here as the site comes off the press.',
+        body: 'The build runs brand-first: identity system, then pages. Every page that ships already knows how it should look and sound.',
         bodyDraft: true,
         items: [
           {
-            kind: 'video',
-            srcMp4: null,
-            srcWebm: null,
-            poster: ourcoPreview,
+            kind: 'image',
+            src: ourcoHomeMobile,
+            frame: 'phone',
+            caption: 'Homepage on a phone',
+            captionDraft: true,
+            alt: 'Ourco homepage on a phone: the welder hero and “Built to Weld”',
+          },
+          {
+            kind: 'image',
+            src: ourcoHome,
             frame: 'browser',
-            caption: 'Scroll-through',
-            pendingNote: 'Full build in progress — more proofs to follow.',
-            alt: 'Ourco homepage preview still',
+            caption: 'Built to weld — the homepage says so',
+            alt: 'Ourco industrial homepage hero: “Built to Weld”',
+          },
+        ],
+      },
+      {
+        type: 'media',
+        items: [
+          {
+            kind: 'image',
+            src: ourcoAbout,
+            frame: 'browser',
+            // FROZEN caption — the new About opens on the skyline ("Built in
+            // Houston"); flagged to Preston as possibly out of date.
+            caption: 'About page: the yard, the fleet, the counter',
+            alt: 'Ourco about page: “Built in Houston” over a painted Houston skyline',
+          },
+        ],
+      },
+      {
+        type: 'media',
+        items: [
+          {
+            kind: 'image',
+            src: ourcoServices,
+            frame: 'browser',
+            caption: 'Services',
+            captionDraft: true,
+            alt: 'Ourco services page: “Services that keep you running” beside a painted welder at the bench',
+          },
+        ],
+      },
+      {
+        type: 'media',
+        items: [
+          {
+            kind: 'image',
+            src: ourcoGases,
+            frame: 'browser',
+            caption: 'Industrial gases',
+            captionDraft: true,
+            alt: 'Ourco industrial gases page: a worker wheeling orange cylinders to a delivery truck under a starry sky',
+          },
+        ],
+      },
+      {
+        type: 'media',
+        items: [
+          {
+            kind: 'image',
+            src: ourcoBrands,
+            frame: 'browser',
+            caption: 'Our brands',
+            captionDraft: true,
+            alt: 'Ourco brands page: neon “Our Brands” lettering above Lincoln Electric, Miller, ESAB, DeWalt, Norton and Select Arc',
           },
         ],
       },
       {
         type: 'points',
-        points: ['Brand + web, ground up', 'In progress — launching soon'],
+        points: ['Brand + web, ground up', 'Live at ourco.net'],
       },
       { type: 'end' },
     ],
@@ -438,7 +517,7 @@ export const projects = [
     },
     monument: 'Bristol',
     slug: 'pg-03',
-    preview: bristolPreview,
+    preview: bristolHomePoster,
     panels: [
       {
         type: 'statement',
@@ -454,7 +533,6 @@ export const projects = [
           {
             kind: 'video',
             srcMp4: bristolHomeMp4,
-            mp4First: true, // mp4 < webm after 2026-07-05 re-encode
             srcWebm: bristolHomeWebm,
             poster: bristolHomePoster,
             frame: 'browser',
@@ -462,11 +540,13 @@ export const projects = [
             alt: 'Scrolling the Bristol pharmacy homepage on desktop',
           },
           {
+            // Was a desktop still of the same page as the clip beside it —
+            // now the phone view, so the pair shows two viewports.
             kind: 'image',
-            src: bristolPreview,
-            frame: 'browser',
+            src: bristolHomeMobile,
+            frame: 'phone',
             caption: 'Homepage — Oklahoma City',
-            alt: 'Bristol pharmacy homepage on desktop',
+            alt: 'Bristol pharmacy homepage on a phone',
           },
         ],
       },
@@ -478,7 +558,6 @@ export const projects = [
           {
             kind: 'video',
             srcMp4: bristolAboutMp4,
-            mp4First: true, // mp4 < webm after 2026-07-05 re-encode
             srcWebm: bristolAboutWebm,
             poster: bristolAboutPoster,
             frame: 'phone',
@@ -561,19 +640,23 @@ export const projects = [
           {
             kind: 'video',
             srcMp4: pinnacleAboutMp4,
-            mp4First: true, // mp4 < webm after 2026-07-05 re-encode
             srcWebm: pinnacleAboutWebm,
             poster: pinnacleAboutPoster,
             frame: 'browser',
             caption: 'The about page that does the selling',
             alt: 'Scrolling Pinnacle’s about page highlighting the team',
           },
+        ],
+      },
+      {
+        type: 'media',
+        items: [
           {
             kind: 'image',
             src: pinnacleHome,
             frame: 'browser',
             caption: 'Homepage — Little Rock',
-            alt: 'Pinnacle pharmacy homepage highlighting the team',
+            alt: 'Pinnacle pharmacy homepage: refill, Rx status and contact buttons over a red Arkansas landscape',
           },
         ],
       },
@@ -629,7 +712,7 @@ export const projects = [
           {
             kind: 'image',
             src: prosourceHome,
-            mobile: { srcSet: `${prosourceHomeCropSm} 480w, ${prosourceHomeCropLg} 640w` },
+            mobile: { srcSet: `${prosourceHomeMobileSm} 480w, ${prosourceHomeMobileLg} 780w` },
             frame: 'browser',
             caption: 'Homepage — ProSource red',
             alt: 'ProSource Pharmacy homepage in brand red',
@@ -642,14 +725,15 @@ export const projects = [
         bodyDraft: true,
         items: [
           {
+            // Captured from the LOCAL pharmacy-sites build — ProSource is not
+            // public and never gets a live link.
             kind: 'video',
-            srcMp4: null,
-            srcWebm: null,
-            poster: prosourceHome,
+            srcMp4: prosourceRefillMp4,
+            srcWebm: prosourceRefillWebm,
+            poster: prosourceRefillPoster,
             frame: 'browser',
             caption: 'The refill form doing the heavy lifting',
-            pendingNote: 'Screen captures coming — form flow to follow.',
-            alt: 'ProSource Pharmacy homepage preview still',
+            alt: 'Scrolling ProSource’s Rx refill request form on desktop',
           },
         ],
       },
@@ -689,13 +773,17 @@ export const projects = [
     },
     monument: 'Custom CRM',
     slug: 'pg-06',
-    preview: fieldIntelPreview,
+    preview: crmToday,
     panels: [
       {
         type: 'statement',
         statement:
           'Before this, territory prep meant Portatour that worked half the time, then Salesforce, then a Google sheet. Now I search an office or a provider and get the whole picture — volume, history, what to talk about — before I walk in. I built it for my own work at Summit, and I use it every day.',
       },
+      /* Re-shoot 2026-11-14: every Compass asset below comes from the
+         FICTIONAL pilot demo (fictional offices/prescribers/reps, synthetic
+         notes) with the DEMO · SAMPLE DATA badge in-frame. Videos stay
+         crmVerified:false until Preston signs them off. */
       {
         type: 'media',
         body: 'Nothing off the shelf understood a day spent between dermatology offices. The Today dashboard shows the whole day in one view: visits, follow-ups, and what’s moving.',
@@ -703,24 +791,25 @@ export const projects = [
         items: [
           {
             kind: 'video',
-            srcMp4: crmTodayMp4,
-            mp4First: true,
-            srcWebm: crmTodayWebm,
-            poster: crmTodayPoster,
-            frame: 'browser',
+            srcMp4: crmWeekMp4,
+            mp4First: true, // mp4 < webm (measured)
+            srcWebm: crmWeekWebm,
+            poster: crmWeekPoster,
+            frame: 'phone',
             caption: 'Today dashboard — the day at a glance',
-            alt: 'Custom CRM Today dashboard listing visits and follow-ups (demo data)',
+            alt: 'Custom CRM Home on a phone, stepping through each day’s route (demo data)',
             crmVerified: false,
+          },
+          {
+            kind: 'image',
+            src: crmToday,
+            frame: 'browser',
+            caption: 'Home on desktop — the next stop first',
+            captionDraft: true,
+            alt: 'Custom CRM Home on desktop: the next stop, the day’s three stops and follow-ups due (demo data)',
           },
         ],
       },
-      /* CRM DATA-SAFETY UNWIRE (2026-07-04): the mobile field/territory/
-         analytics-explorer captures and the desktop territory-map zoom were
-         removed — none carry a visible "DEMO · SAMPLE DATA" badge (mobile
-         layouts hide the sidebar badge; the territory-map zoom predates it),
-         so they fail the standing badge rule. On the recapture list. Panel 3
-         (mobile field narrative) is dropped whole rather than left an empty
-         slot; its copy returns when the assets are recaptured with the badge. */
       {
         type: 'media',
         body: 'Every visit becomes data: territory coverage, account activity, momentum by practice. The analytics view turns a season of windshield time into a plan for next week.',
@@ -733,15 +822,33 @@ export const projects = [
             poster: crmAnalyticsPoster,
             frame: 'browser',
             caption: 'Analytics — a season, measured',
-            alt: 'Custom CRM analytics charts of visit activity (demo data)',
+            alt: 'Scrolling the Custom CRM analytics page: fills vs last month, what changed, this week’s focus (demo data)',
             crmVerified: false,
           },
+        ],
+      },
+      {
+        type: 'media',
+        items: [
           {
             kind: 'image',
-            src: crmFieldnotesDesktop,
+            src: crmReports,
             frame: 'browser',
             caption: 'Field notes + device sync',
-            alt: 'Custom CRM field notes and device sync view on desktop (demo data)',
+            alt: 'Custom CRM visit reports with field notes and the “All saved” sync status (demo data)',
+          },
+        ],
+      },
+      {
+        type: 'media',
+        items: [
+          {
+            kind: 'image',
+            src: crmTeam,
+            frame: 'browser',
+            caption: 'Team — the week, rep by rep',
+            captionDraft: true,
+            alt: 'Custom CRM manager Team view: this week’s stops, conversations and reach by rep (demo data)',
           },
         ],
       },
