@@ -37,3 +37,21 @@ node scripts/process-media.mjs Media/reshoot/frames/<name>-desktop --width 1600
 node scripts/process-media.mjs Media/reshoot/frames/<name>-mobile
 ```
 Raw PNG masters and frames live in the gitignored `/Media/reshoot/`.
+
+## Complete-proofs pass (same day)
+Standard for a complete proof: **5–7 media panels, 3+ videos and 3+ stills**, at least one desktop scroll-through and one phone clip, at least three different pages, and stills framed on each page's most telling section (not just the top).
+
+| Proof | Videos | Stills | Media panels |
+|---|---|---|---|
+| Summit | 4 | 4 | 7 (unchanged) |
+| Ourco | 4 (hero, About scroll, Services scroll, Gases quote taps on a phone) | 5 | 7 |
+| Bristol | 3 | 3 | 5 |
+| Pinnacle | 3 | 3 | 5 |
+| ProSource | 2 | 5 | 5 |
+| Compass | 3 (all `crmVerified:false`) | 4 | 6 |
+
+- Ourco's About still is now the "The shop, the floor, the yard" gallery, which matches the frozen caption. The services and brands hero stills were replaced by a Services scroll-through and the brand directory.
+- The Ourco scroll clips cover only the strongest stretch of each page (`scrollMax`): full-page passes of the painted art came out at 8.5 and 6.3 MB as MP4.
+- The gases clip is a new `taps` capture mode: CSS animations are slowed to 1/10 through CDP and sampled against page time. Nothing is submitted.
+- New captions are drafts (`captionDraft: true`); no new body copy.
+- Also seen, not changed: on phones, the small "PROOF 0X" label in the overlay chrome keeps its colour while a different-coloured panel scrolls under it (axe color-contrast, e.g. 1.56:1 on Summit's green). It's already live and predates this pass.

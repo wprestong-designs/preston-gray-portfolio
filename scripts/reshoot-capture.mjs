@@ -56,6 +56,19 @@ export const STILLS = [
   { name: 'pinnacle-home-desktop', url: 'https://pinnacle-rx.com/', vp: 'desktop' },
   { name: 'prosource-home-desktop', url: `${PROSOURCE}/`, vp: 'desktop' },
   { name: 'prosource-home-mobile', url: `${PROSOURCE}/`, vp: 'mobile' },
+  // Complete-proofs pass (2026-11-14): stills framed on each page's most
+  // telling section, not just the top.
+  { name: 'ourco-aboutstory-desktop', url: 'https://ourco.net/about/', vp: 'desktop', section: '.about-story', sectionPad: 0 },
+  { name: 'ourco-gallery-desktop', url: 'https://ourco.net/about/', vp: 'desktop', section: '.about-gallery', sectionPad: 0 },
+  { name: 'ourco-branddirectory-desktop', url: 'https://ourco.net/our-brands/', vp: 'desktop', section: '#brand-directory', sectionPad: 0 },
+  { name: 'bristol-refill-desktop', url: 'https://rxbristolokc.com/rx-refill', vp: 'desktop', section: 'form#refill-form', sectionPad: 120 },
+  { name: 'bristol-faq-desktop', url: 'https://rxbristolokc.com/faq', vp: 'desktop' },
+  { name: 'pinnacle-womenshealth-desktop', url: 'https://pinnacle-rx.com/womens-health', vp: 'desktop' },
+  { name: 'pinnacle-refill-mobile', url: 'https://pinnacle-rx.com/rx-refill', vp: 'mobile', section: 'form#refill-form', sectionPad: 90 },
+  { name: 'prosource-about-desktop', url: `${PROSOURCE}/about`, vp: 'desktop', section: 'main section.section', sectionPad: 0 },
+  { name: 'prosource-dermatology-desktop', url: `${PROSOURCE}/dermatology`, vp: 'desktop' },
+  { name: 'prosource-faq-desktop', url: `${PROSOURCE}/faq`, vp: 'desktop' },
+  { name: 'prosource-refill-mobile', url: `${PROSOURCE}/rx-refill`, vp: 'mobile', section: 'form#refill-form', sectionPad: 150 },
 ]
 
 export const VIDEOS = [
@@ -69,6 +82,22 @@ export const VIDEOS = [
   { name: 'pinnacle-homepage-scroll-mobile', url: 'https://pinnacle-rx.com/', vp: 'mobile', seconds: 12 },
   { name: 'pinnacle-about-scroll-desktop', url: 'https://pinnacle-rx.com/about', vp: 'desktop', seconds: 9 },
   { name: 'prosource-rxrefill-scroll-desktop', url: `${PROSOURCE}/rx-refill`, vp: 'desktop', seconds: 9 },
+  // Complete-proofs pass (2026-11-14)
+  // Painted art is heavy to encode: scrollMax caps the travel so the MP4
+  // fits the 3 MiB budget (the full-page passes came out at 8.5 / 6.3 MB).
+  { name: 'ourco-about-scroll-desktop', url: 'https://ourco.net/about/', vp: 'desktop', seconds: 10, scrollMax: 1900 },
+  { name: 'ourco-services-scroll-desktop', url: 'https://ourco.net/services/', vp: 'desktop', seconds: 9, scrollMax: 1700 },
+  {
+    // Tap three gases on a phone: tiles select and the fixed quote bar
+    // slides up. Nothing is submitted.
+    name: 'ourco-gases-quote-mobile', url: 'https://ourco.net/gases/', vp: 'mobile', mode: 'taps',
+    scrollTo: '.gas-tile--acetylene', scrollPad: 150, scrollSeconds: 2.4,
+    taps: [['.gas-tile--acetylene', 1.6], ['.gas-tile--oxygen', 1.4], ['.gas-tile--argon', 1.4]],
+    endHold: 1.6,
+  },
+  { name: 'bristol-dermatology-scroll-desktop', url: 'https://rxbristolokc.com/dermatology', vp: 'desktop', seconds: 10 },
+  { name: 'pinnacle-rxsubmission-scroll-desktop', url: 'https://pinnacle-rx.com/rx-submission', vp: 'desktop', seconds: 9 },
+  { name: 'prosource-homepage-scroll-mobile', url: `${PROSOURCE}/`, vp: 'mobile', seconds: 12 },
 ]
 
 const BLOCK = /cloudflareinsights|google-analytics|googletagmanager|gtag\/js|doubleclick|facebook\.net|clarity\.ms|hotjar|recaptcha\/api2\/(?:anchor|bframe)/
@@ -133,7 +162,8 @@ async function video(browser, shot) {
   fs.rmSync(dir, { recursive: true, force: true })
   fs.mkdirSync(dir, { recursive: true })
   const frames = Math.round(shot.seconds * FPS)
-  const maxY = await page.evaluate(() => document.documentElement.scrollHeight - innerHeight)
+  const fullY = await page.evaluate(() => document.documentElement.scrollHeight - innerHeight)
+  const maxY = shot.scrollMax ? Math.min(shot.scrollMax, fullY) : fullY
   const hold = Math.round(0.8 * FPS)
   if (shot.mode === 'hero') {
     // Headless Chromium does not repaint a PAUSED video after a seek, so the
@@ -170,6 +200,12 @@ async function video(browser, shot) {
     console.log('video', shot.name, `${frames} frames from ${samples.length} samples over ${dur}s`)
     return
   }
+  if (shot.mode === 'taps') {
+    await captureTaps(page, shot, dir)
+    await ctx.close()
+    console.log('video', shot.name, 'taps')
+    return
+  }
   for (let i = 0; i < frames; i++) {
     {
       const x = Math.min(1, Math.max(0, (i - hold) / (frames - 2 * hold - 1)))
@@ -182,6 +218,63 @@ async function video(browser, shot) {
   }
   await ctx.close()
   console.log('video', shot.name, `${frames} frames, scroll ${maxY}px`)
+}
+
+/* Tap clips: an eased scroll to the target, then each tap is filmed with
+   CSS/Web Animations slowed to 1/10 through CDP, sampling screenshots
+   against PAGE time so transitions play smoothly at real speed in the
+   encoded clip. JS-timed motion (rAF) is not slowed. */
+async function captureTaps(page, shot, dir) {
+  const RATE = 0.1
+  const cdp = await page.context().newCDPSession(page)
+  await cdp.send('Animation.enable')
+  let i = 0
+  const name = () => path.join(dir, `f${String(i++).padStart(4, '0')}.jpg`)
+  const shoot = () => page.screenshot({ path: name(), type: 'jpeg', quality: 95 })
+  const hold = (sec) => {
+    const last = path.join(dir, `f${String(i - 1).padStart(4, '0')}.jpg`)
+    for (let k = 0; k < Math.round(sec * FPS); k++) fs.copyFileSync(last, name())
+  }
+  // 1) eased scroll to the target
+  const targetY = await page.evaluate(([sel, pad]) => {
+    const el = document.querySelector(sel)
+    return Math.max(0, Math.round(el.getBoundingClientRect().top + scrollY - pad))
+  }, [shot.scrollTo, shot.scrollPad ?? 0])
+  const hold0 = Math.round(0.5 * FPS)
+  const nScroll = Math.round(shot.scrollSeconds * FPS)
+  for (let k = 0; k < hold0 + nScroll; k++) {
+    const x = Math.min(1, Math.max(0, (k - hold0) / (nScroll - 1)))
+    await page.evaluate((y) => {
+      scrollTo(0, y)
+      return new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))
+    }, Math.round(ease(x) * targetY))
+    await shoot()
+  }
+  // 2) each tap, filmed in slowed page time
+  const sdir = path.join(dir, '_samples')
+  for (const [sel, seconds] of shot.taps) {
+    await cdp.send('Animation.setPlaybackRate', { playbackRate: RATE })
+    fs.rmSync(sdir, { recursive: true, force: true })
+    fs.mkdirSync(sdir)
+    const samples = []
+    const t0 = Date.now()
+    await page.tap(sel)
+    for (let n = 0; ; n++) {
+      const pageT = ((Date.now() - t0) / 1000) * RATE
+      const file = path.join(sdir, `s${n}.jpg`)
+      await page.screenshot({ path: file, type: 'jpeg', quality: 95 })
+      samples.push({ t: pageT, file })
+      if (pageT >= seconds) break
+    }
+    for (let k = 0; k < Math.round(seconds * FPS); k++) {
+      const t = k / FPS
+      const best = samples.reduce((a, b) => (Math.abs(b.t - t) < Math.abs(a.t - t) ? b : a))
+      fs.copyFileSync(best.file, name())
+    }
+    await cdp.send('Animation.setPlaybackRate', { playbackRate: 1 })
+  }
+  fs.rmSync(sdir, { recursive: true, force: true })
+  hold(shot.endHold ?? 1)
 }
 
 const mode = process.argv[2] || 'all'

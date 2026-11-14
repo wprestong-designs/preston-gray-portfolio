@@ -18,10 +18,17 @@ import summitOphtho from '../assets/shots/summit-ophthalmology-desktop.webp'
 import summitReviews from '../assets/shots/summit-reviews-desktop.webp'
 import ourcoHome from '../assets/shots/ourco-home-desktop.webp'
 import ourcoHomeMobile from '../assets/shots/ourco-home-mobile.webp'
-import ourcoAbout from '../assets/shots/ourco-about-desktop.webp'
-import ourcoServices from '../assets/shots/ourco-services-desktop.webp'
+import ourcoGallery from '../assets/shots/ourco-gallery-desktop.webp'
 import ourcoGases from '../assets/shots/ourco-gases-desktop.webp'
-import ourcoBrands from '../assets/shots/ourco-brands-desktop.webp'
+import ourcoBrandDirectory from '../assets/shots/ourco-branddirectory-desktop.webp'
+import bristolRefill from '../assets/shots/bristol-refill-desktop.webp'
+import bristolFaq from '../assets/shots/bristol-faq-desktop.webp'
+import pinnacleWomens from '../assets/shots/pinnacle-womenshealth-desktop.webp'
+import pinnacleRefillMobile from '../assets/shots/pinnacle-refill-mobile.webp'
+import prosourceAbout from '../assets/shots/prosource-about-desktop.webp'
+import prosourceDerm from '../assets/shots/prosource-dermatology-desktop.webp'
+import prosourceFaq from '../assets/shots/prosource-faq-desktop.webp'
+import prosourceRefillMobile from '../assets/shots/prosource-refill-mobile.webp'
 import bristolHomeMobile from '../assets/shots/bristol-home-mobile.webp'
 import pinnacleHome from '../assets/shots/pinnacle-home-desktop.webp'
 import prosourceHome from '../assets/shots/prosource-home-desktop.webp'
@@ -33,6 +40,7 @@ import prosourceHomeMobileLg from '../assets/shots/prosource-home-mobile.webp'
 import crmToday from '../assets/shots/crm-today-desktop.webp'
 import crmReports from '../assets/shots/crm-reports-desktop.webp'
 import crmTeam from '../assets/shots/crm-team-desktop.webp'
+import crmOffice from '../assets/shots/crm-office-desktop.webp'
 
 /* Processed clip triplets (scripts/process-media.mjs output) — frame-by-frame
    captures, H.264 CRF 21–28 / VP9 CRF 30, all ≤12s and ≤3MB */
@@ -72,6 +80,28 @@ import pinnacleAboutPoster from '../assets/media/pinnacle-about-scroll-desktop-p
 import prosourceRefillMp4 from '../assets/media/prosource-rxrefill-scroll-desktop.mp4'
 import prosourceRefillWebm from '../assets/media/prosource-rxrefill-scroll-desktop.webm'
 import prosourceRefillPoster from '../assets/media/prosource-rxrefill-scroll-desktop-poster.jpg'
+/* Complete-proofs pass (2026-11-14) */
+import ourcoAboutMp4 from '../assets/media/ourco-about-scroll-desktop.mp4'
+import ourcoAboutWebm from '../assets/media/ourco-about-scroll-desktop.webm'
+import ourcoAboutPoster from '../assets/media/ourco-about-scroll-desktop-poster.jpg'
+import ourcoServicesMp4 from '../assets/media/ourco-services-scroll-desktop.mp4'
+import ourcoServicesWebm from '../assets/media/ourco-services-scroll-desktop.webm'
+import ourcoServicesPoster from '../assets/media/ourco-services-scroll-desktop-poster.jpg'
+import ourcoQuoteMp4 from '../assets/media/ourco-gases-quote-mobile.mp4'
+import ourcoQuoteWebm from '../assets/media/ourco-gases-quote-mobile.webm'
+import ourcoQuotePoster from '../assets/media/ourco-gases-quote-mobile-poster.jpg'
+import bristolDermMp4 from '../assets/media/bristol-dermatology-scroll-desktop.mp4'
+import bristolDermWebm from '../assets/media/bristol-dermatology-scroll-desktop.webm'
+import bristolDermPoster from '../assets/media/bristol-dermatology-scroll-desktop-poster.jpg'
+import pinnacleRxSubMp4 from '../assets/media/pinnacle-rxsubmission-scroll-desktop.mp4'
+import pinnacleRxSubWebm from '../assets/media/pinnacle-rxsubmission-scroll-desktop.webm'
+import pinnacleRxSubPoster from '../assets/media/pinnacle-rxsubmission-scroll-desktop-poster.jpg'
+import prosourceHomeMobMp4 from '../assets/media/prosource-homepage-scroll-mobile.mp4'
+import prosourceHomeMobWebm from '../assets/media/prosource-homepage-scroll-mobile.webm'
+import prosourceHomeMobPoster from '../assets/media/prosource-homepage-scroll-mobile-poster.jpg'
+import crmAccountsMp4 from '../assets/media/crm-accounts-scroll-desktop.mp4'
+import crmAccountsWebm from '../assets/media/crm-accounts-scroll-desktop.webm'
+import crmAccountsPoster from '../assets/media/crm-accounts-scroll-desktop-poster.jpg'
 
 /* PANEL RULE (re-shoot 2026-11-14): at most ONE browser frame per media
    panel (a phone frame may ride beside it), so desktop stills render
@@ -424,13 +454,14 @@ export const projects = [
         type: 'media',
         items: [
           {
-            kind: 'image',
-            src: ourcoAbout,
+            kind: 'video',
+            srcMp4: ourcoAboutMp4,
+            srcWebm: ourcoAboutWebm,
+            poster: ourcoAboutPoster,
             frame: 'browser',
-            // FROZEN caption — the new About opens on the skyline ("Built in
-            // Houston"); flagged to Preston as possibly out of date.
-            caption: 'About page: the yard, the fleet, the counter',
-            alt: 'Ourco about page: “Built in Houston” over a painted Houston skyline',
+            caption: 'About — the story and what they stand on',
+            captionDraft: true,
+            alt: 'Scrolling the Ourco about page: “Built in Houston”, the story, and the values',
           },
         ],
       },
@@ -439,17 +470,26 @@ export const projects = [
         items: [
           {
             kind: 'image',
-            src: ourcoServices,
+            src: ourcoGallery,
             frame: 'browser',
-            caption: 'Services',
-            captionDraft: true,
-            alt: 'Ourco services page: “Services that keep you running” beside a painted welder at the bench',
+            caption: 'About page: the yard, the fleet, the counter',
+            alt: 'Ourco about page gallery, “The shop, the floor, the yard”: the mural, showroom and customer counter',
           },
         ],
       },
       {
         type: 'media',
         items: [
+          {
+            kind: 'video',
+            srcMp4: ourcoQuoteMp4,
+            srcWebm: ourcoQuoteWebm,
+            poster: ourcoQuotePoster,
+            frame: 'phone',
+            caption: 'Pick the gases, build the quote',
+            captionDraft: true,
+            alt: 'On a phone, tapping acetylene, oxygen and argon on the Ourco gases page; a quote bar counts the picks',
+          },
           {
             kind: 'image',
             src: ourcoGases,
@@ -464,12 +504,27 @@ export const projects = [
         type: 'media',
         items: [
           {
+            kind: 'video',
+            srcMp4: ourcoServicesMp4,
+            srcWebm: ourcoServicesWebm,
+            poster: ourcoServicesPoster,
+            frame: 'browser',
+            caption: 'Services — seven ways they earn the call',
+            captionDraft: true,
+            alt: 'Scrolling the Ourco services page from the hero into the seven services',
+          },
+        ],
+      },
+      {
+        type: 'media',
+        items: [
+          {
             kind: 'image',
-            src: ourcoBrands,
+            src: ourcoBrandDirectory,
             frame: 'browser',
             caption: 'Our brands',
             captionDraft: true,
-            alt: 'Ourco brands page: neon “Our Brands” lettering above Lincoln Electric, Miller, ESAB, DeWalt, Norton and Select Arc',
+            alt: 'Ourco brand directory: Lincoln Electric, Miller, ESAB, Hobart, DeWalt, Milwaukee and more, grouped by trade',
           },
         ],
       },
@@ -567,6 +622,47 @@ export const projects = [
         ],
       },
       {
+        type: 'media',
+        items: [
+          {
+            kind: 'video',
+            srcMp4: bristolDermMp4,
+            srcWebm: bristolDermWebm,
+            poster: bristolDermPoster,
+            frame: 'browser',
+            caption: 'Specialty pages — dermatology',
+            captionDraft: true,
+            alt: 'Scrolling Bristol’s dermatology specialty page on desktop',
+          },
+        ],
+      },
+      {
+        type: 'media',
+        items: [
+          {
+            kind: 'image',
+            src: bristolRefill,
+            frame: 'browser',
+            caption: 'The refill form',
+            captionDraft: true,
+            alt: 'Bristol pharmacy Rx refill request form on desktop',
+          },
+        ],
+      },
+      {
+        type: 'media',
+        items: [
+          {
+            kind: 'image',
+            src: bristolFaq,
+            frame: 'browser',
+            caption: 'FAQ — plain answers',
+            captionDraft: true,
+            alt: 'Bristol pharmacy FAQ page: common questions about prescriptions, delivery and costs',
+          },
+        ],
+      },
+      {
         type: 'points',
         points: ['Part of a three-pharmacy build system', 'Shared bones, its own personality'],
       },
@@ -653,10 +749,46 @@ export const projects = [
         items: [
           {
             kind: 'image',
+            src: pinnacleRefillMobile,
+            frame: 'phone',
+            caption: 'Rx refill, on a phone',
+            captionDraft: true,
+            alt: 'Pinnacle pharmacy Rx refill form on a phone',
+          },
+          {
+            kind: 'image',
             src: pinnacleHome,
             frame: 'browser',
             caption: 'Homepage — Little Rock',
             alt: 'Pinnacle pharmacy homepage: refill, Rx status and contact buttons over a red Arkansas landscape',
+          },
+        ],
+      },
+      {
+        type: 'media',
+        items: [
+          {
+            kind: 'video',
+            srcMp4: pinnacleRxSubMp4,
+            srcWebm: pinnacleRxSubWebm,
+            poster: pinnacleRxSubPoster,
+            frame: 'browser',
+            caption: 'Provider Rx submission — one page',
+            captionDraft: true,
+            alt: 'Scrolling Pinnacle’s provider Rx submission page on desktop',
+          },
+        ],
+      },
+      {
+        type: 'media',
+        items: [
+          {
+            kind: 'image',
+            src: pinnacleWomens,
+            frame: 'browser',
+            caption: 'Women’s health specialty page',
+            captionDraft: true,
+            alt: 'Pinnacle pharmacy women’s health and OBGYN specialty page',
           },
         ],
       },
@@ -717,6 +849,16 @@ export const projects = [
             caption: 'Homepage — ProSource red',
             alt: 'ProSource Pharmacy homepage in brand red',
           },
+          {
+            kind: 'video',
+            srcMp4: prosourceHomeMobMp4,
+            srcWebm: prosourceHomeMobWebm,
+            poster: prosourceHomeMobPoster,
+            frame: 'phone',
+            caption: 'Homepage on a phone',
+            captionDraft: true,
+            alt: 'Scrolling the ProSource Pharmacy homepage on a phone',
+          },
         ],
       },
       {
@@ -734,6 +876,53 @@ export const projects = [
             frame: 'browser',
             caption: 'The refill form doing the heavy lifting',
             alt: 'Scrolling ProSource’s Rx refill request form on desktop',
+          },
+          {
+            kind: 'image',
+            src: prosourceRefillMobile,
+            frame: 'phone',
+            caption: 'The same form on a phone',
+            captionDraft: true,
+            alt: 'ProSource Pharmacy Rx refill form on a phone',
+          },
+        ],
+      },
+      {
+        type: 'media',
+        items: [
+          {
+            kind: 'image',
+            src: prosourceAbout,
+            frame: 'browser',
+            caption: 'About — built for Nevada',
+            captionDraft: true,
+            alt: 'ProSource Pharmacy about page: “Built for Nevada. Here for the Long Haul.”',
+          },
+        ],
+      },
+      {
+        type: 'media',
+        items: [
+          {
+            kind: 'image',
+            src: prosourceDerm,
+            frame: 'browser',
+            caption: 'Dermatology specialty page',
+            captionDraft: true,
+            alt: 'ProSource Pharmacy dermatology prescription support page',
+          },
+        ],
+      },
+      {
+        type: 'media',
+        items: [
+          {
+            kind: 'image',
+            src: prosourceFaq,
+            frame: 'browser',
+            caption: 'FAQ',
+            captionDraft: true,
+            alt: 'ProSource Pharmacy frequently asked questions page',
           },
         ],
       },
@@ -831,6 +1020,22 @@ export const projects = [
         type: 'media',
         items: [
           {
+            kind: 'video',
+            srcMp4: crmAccountsMp4,
+            srcWebm: crmAccountsWebm,
+            poster: crmAccountsPoster,
+            frame: 'browser',
+            caption: 'Accounts — every office, one search',
+            captionDraft: true,
+            alt: 'Scrolling the Custom CRM accounts list: offices with visit status, fills and next actions (demo data)',
+            crmVerified: false,
+          },
+        ],
+      },
+      {
+        type: 'media',
+        items: [
+          {
             kind: 'image',
             src: crmReports,
             frame: 'browser',
@@ -849,6 +1054,19 @@ export const projects = [
             caption: 'Team — the week, rep by rep',
             captionDraft: true,
             alt: 'Custom CRM manager Team view: this week’s stops, conversations and reach by rep (demo data)',
+          },
+        ],
+      },
+      {
+        type: 'media',
+        items: [
+          {
+            kind: 'image',
+            src: crmOffice,
+            frame: 'browser',
+            caption: 'Office page — before you walk in',
+            captionDraft: true,
+            alt: 'Custom CRM office page: last visit, cadence, recent attempts and quick actions (demo data)',
           },
         ],
       },

@@ -38,6 +38,9 @@ const SHOTS = [
   { name: 'crm-analytics-scroll-desktop', user: 'manager', vp: 'desktop', go: 'Analytics', kind: 'scroll', seconds: 8 },
   { name: 'crm-reports-desktop', user: 'taylor', vp: 'desktop', go: 'My reports', kind: 'still' },
   { name: 'crm-team-desktop', user: 'manager', vp: 'desktop', go: 'Team', click: 'This week', kind: 'still' },
+  // Complete-proofs pass (2026-11-14)
+  { name: 'crm-accounts-scroll-desktop', user: 'taylor', vp: 'desktop', go: 'Accounts', kind: 'scroll', seconds: 10 },
+  { name: 'crm-office-desktop', user: 'taylor', vp: 'desktop', go: 'Accounts', openText: 'Open profile', openNth: 1, kind: 'still' },
 ]
 
 const BADGE_CSS = `
@@ -81,6 +84,10 @@ async function open(browser, shot) {
   }
   if (shot.day) await tryClick(page.getByText(shot.day, { exact: true }))
   if (shot.click) await tryClick(page.getByRole('button', { name: shot.click }))
+  if (shot.openText) {
+    await page.getByText(shot.openText, { exact: true }).nth(shot.openNth ?? 0).click({ timeout: 5000 })
+    await page.waitForTimeout(1500)
+  }
   await page.waitForLoadState('networkidle')
   await page.addStyleTag({ content: BADGE_CSS })
   await page.evaluate(() => {
