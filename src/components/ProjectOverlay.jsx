@@ -123,6 +123,46 @@ function clipFor(geometry, p) {
   return `polygon(${f + 7}% 0%, 100% 0%, 100% 100%, ${f - 7}% 100%)`
 }
 
+/* Which cell's surface is PAINTED at viewport point (x, y) on the
+   horizontal track — the same front geometry as clipFor, solved for the
+   left edge at height y. Later cells (and their wipes) paint over earlier
+   ones, so the answer is the last cell whose visible left edge is ≤ x.
+   The floating chrome uses this so the label and the close each take the
+   fg of the surface actually beneath them (the old "cell under viewport
+   centre" rule left the corner label dark-on-dark for half a viewport of
+   every transition). */
+function surfaceIndexAt(x, y, offsets, translate, surfaces) {
+  const bleed = (WIPE_BLEED_VW / 100) * VW
+  const width = bleed + VW
+  const seamPct = (bleed / width) * 100
+  let idx = 0
+  for (let i = 0; i < offsets.length; i++) {
+    const cellLeft = offsets[i] - translate
+    let start = cellLeft
+    const s = surfaces[i]
+    if (s && WIPE_MODE === 'clip') {
+      const p = Math.min(1, Math.max(0, (VW - cellLeft) / VW))
+      const f = seamPct * (1 - p)
+      const elemLeft = cellLeft - bleed
+      const frontX = elemLeft + (f / 100) * width
+      let edge
+      if (s.wipe === 'half-circle') {
+        // straight front outside the central notch; the chrome band sits
+        // well above it (notch spans VH/2 ± 0.28·VH)
+        edge = frontX
+      } else if (s.wipe === 'quarter-round') {
+        const r = VH * 0.45
+        edge = y < r ? frontX + r - Math.sqrt(r * r - (r - y) ** 2) : frontX
+      } else {
+        edge = elemLeft + ((f + 7 - 14 * (y / VH)) / 100) * width
+      }
+      start = Math.min(start, edge)
+    }
+    if (x >= start) idx = i
+  }
+  return idx
+}
+
 /* One wipe layer per surfaced cell (a component so the derived motion
    value hook stays out of the render loop). Reads the measured cell
    offset lazily — offsets settle after the track measurement effect. */
@@ -222,6 +262,40 @@ export default function ProjectOverlay() {
   const closeBtnRef = useRef(null)
   const stackRefs = useRef([])
   const [activePanel, setActivePanel] = useState(0)
+
+  // U2: panel surfaces (bg ramp member + matrix fg + seam geometry).
+  // Hook order: must precede the no-proof early return; declared before
+  // the scroll handlers that colour the chrome from it.
+  const surfaces = useMemo(() => (proof ? computeSurfaces(proof) : []), [proof])
+  // The surface physically UNDER each piece of the floating chrome (label,
+  // close). The active panel (45% visible / under viewport centre) is the
+  // wrong surface to colour the chrome from — it sits at the top-left and
+  // top-right edges, and mid-scroll took the previous panel's fg over the
+  // next panel's bg (measured 1.00:1 on phones, 1.57:1 on desktop).
+  const labelRef = useRef(null)
+  const chromePts = useRef(null) // cached centres; the chrome never moves
+  const [chromeIdx, setChromeIdx] = useState({ label: 0, close: 0 })
+  const setChrome = (label, close) =>
+    setChromeIdx((prev) =>
+      prev.label === label && prev.close === close ? prev : { label, close },
+    )
+  const getChromePts = () => {
+    if (!chromePts.current && labelRef.current && closeBtnRef.current) {
+      const mid = (el) => {
+        const r = el.getBoundingClientRect()
+        return { x: r.left + r.width / 2, y: r.top + r.height / 2 }
+      }
+      chromePts.current = { label: mid(labelRef.current), close: mid(closeBtnRef.current) }
+    }
+    return chromePts.current
+  }
+  useEffect(() => {
+    const reset = () => {
+      chromePts.current = null
+    }
+    window.addEventListener('resize', reset)
+    return () => window.removeEventListener('resize', reset)
+  }, [])
 
   // W1b: the morphing backdrop stays content-free — panel content mounts
   // when the layout animation ACTUALLY completes (callback below), not on
@@ -347,6 +421,15 @@ export default function ProjectOverlay() {
       if (offsets[i] <= center) idx = i
     }
     setActivePanel((prev) => (prev === idx ? prev : idx))
+    // chrome: the surface painted under each piece (wipe fronts included)
+    const pts = getChromePts()
+    if (pts) {
+      const t = v * travel
+      setChrome(
+        surfaceIndexAt(pts.label.x, pts.label.y, offsets, t, surfaces),
+        surfaceIndexAt(pts.close.x, pts.close.y, offsets, t, surfaces),
+      )
+    }
   })
 
   // Vertical stack: active panel via IntersectionObserver
@@ -366,6 +449,34 @@ export default function ProjectOverlay() {
     )
     stackRefs.current.forEach((el) => el && observer.observe(el))
     return () => observer.disconnect()
+  }, [horizontal, displayId, panelCount])
+
+  // Vertical stack: hit-test the chrome's midline against the panel rects
+  // on scroll (rAF-throttled; a handful of rects per frame). Panels are
+  // full-width, so label and close always share one surface here.
+  useEffect(() => {
+    if (horizontal) return undefined
+    const scroller = scrollerRef.current
+    if (!scroller) return undefined
+    let raf = 0
+    const update = () => {
+      raf = 0
+      const line = getChromePts()?.close.y ?? 40
+      let idx = 0
+      stackRefs.current.forEach((el, i) => {
+        if (el && el.getBoundingClientRect().top <= line) idx = i
+      })
+      setChrome(idx, idx)
+    }
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update)
+    }
+    update()
+    scroller.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      scroller.removeEventListener('scroll', onScroll)
+      if (raf) cancelAnimationFrame(raf)
+    }
   }, [horizontal, displayId, panelCount])
 
   // Lock page scroll, inert the page, focus the dialog, listen for ESC
@@ -397,15 +508,12 @@ export default function ProjectOverlay() {
   if (lastOpenId !== displayId) {
     setLastOpenId(displayId)
     setActivePanel(0)
+    setChromeIdx({ label: 0, close: 0 })
   }
 
   useEffect(() => {
     if (scrollerRef.current) scrollerRef.current.scrollTop = 0
   }, [displayId])
-
-  // U2: panel surfaces (bg ramp member + matrix fg + seam geometry).
-  // Hook order: must precede the no-proof early return.
-  const surfaces = useMemo(() => (proof ? computeSurfaces(proof) : []), [proof])
 
   if (!proof) return null
 
@@ -706,21 +814,31 @@ export default function ProjectOverlay() {
           carry their own expanded-gated fades. */}
       <div className="overlay__content">
         <motion.div
-          className="overlay__chrome"
+          className={`overlay__chrome${horizontal ? '' : ' overlay__chrome--stack'}`}
           initial={{ opacity: 0 }}
           animate={{ opacity: expanded ? 1 : 0 }}
           exit={{ opacity: 0, transition: { duration: 0.15 } }}
           transition={{ duration: 0.25 }}
-          // P6 review fix (HIGH): the chrome floats over whichever panel
-          // is active — its fg must follow that panel's surface (white
-          // colorFg on a candy-tint panel measured ~1.5:1). CSS color
-          // transitions smooth the handoff.
-          style={{ '--ov-fg': surfaces[activePanel]?.fg ?? proof.colorFg }}
+          // P6 review fix (HIGH): the chrome floats over the panels — its
+          // fg must follow the surface beneath it (white colorFg on a
+          // candy-tint panel measured ~1.5:1). Label and close are coloured
+          // separately: on the horizontal track a wipe front can sit
+          // between them. Stack mode also paints a band behind the chrome
+          // in that surface's bg: content (monument letters, video) scrolls
+          // UNDER the fixed label, so the label needs its own surface.
+          style={{ '--ov-chrome-bg': surfaces[chromeIdx.close]?.bg ?? 'var(--ov)' }}
         >
-          <span className="ov-mono">{isAbout ? 'About' : `Proof ${proof.index}`}</span>
+          <span
+            ref={labelRef}
+            className="ov-mono"
+            style={{ '--ov-fg': surfaces[chromeIdx.label]?.fg ?? proof.colorFg }}
+          >
+            {isAbout ? 'About' : `Proof ${proof.index}`}
+          </span>
           <button
             ref={closeBtnRef}
             type="button"
+            style={{ '--ov-fg': surfaces[chromeIdx.close]?.fg ?? proof.colorFg }}
             className="overlay__close"
             aria-label="Close project overlay"
             onClick={close}

@@ -1125,14 +1125,17 @@
   font-size: 24px;
   line-height: 1;
   cursor: pointer;
-  /* P6: chrome fg follows the active panel's surface — ease the swap */
-  transition:
-    color 0.3s var(--ease),
-    border-color 0.3s var(--ease);
+  /* Chrome fg follows the surface physically beneath it (tracked per
+     scroll frame, wipe fronts included) and swaps INSTANTLY as the edge
+     passes — the old 0.3s ease left the label half-faded on the new
+     surface, dipping below AA through every seam. */
 }
 
-.overlay__chrome .ov-mono {
-  transition: color 0.3s var(--ease);
+/* Vertical stack (phones, reduced motion): panel content scrolls UNDER the
+   fixed chrome, so the chrome carries a solid band in the surface beneath
+   it (--ov-chrome-bg, set per scroll by the overlay). */
+.overlay__chrome--stack {
+  background: var(--ov-chrome-bg, var(--ov));
 }
 
 .overlay__close:hover {
