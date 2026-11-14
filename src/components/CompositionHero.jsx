@@ -1,10 +1,15 @@
 /*
  * Composition Hero (spec §1 + Appendix A).
  *
- * A fixed cast of five shapes on a 1200×600 design canvas, cycling through
- * three named states (~7s each, 1.2s-feel spring morphs, 60ms ripple
- * stagger). Shapes are links; hover/focus pauses the cycle, dims siblings,
- * sets a mono label, and drives the shared flood context.
+ * The proof shapes (plus non-interactive ornaments) on a fixed design
+ * canvas per orientation, walking the named states in LAYOUTS
+ * (composition-geometry.js) by a seeded, constrained-random walk: 3s per
+ * state (CYCLE_MS), the AMBIENT spring {stiffness:50, damping:17} (MORPH,
+ * ≈1s settle), 45ms ripple stagger (STAGGER_MS), and an 8-theme palette
+ * re-ink coupled to each morph. Shapes are links; hover/focus pauses the
+ * cycle, dims siblings, sets a mono label, and drives the shared flood
+ * context. The cycle also pauses while an overlay is open or the tab is
+ * hidden.
  *
  * Geometry notes:
  * - The canvas renders at a fixed 1200×600 and is scaled to fit its wrapper
@@ -19,9 +24,9 @@
  * Fallbacks (built here, not later):
  * - prefers-reduced-motion: static Registration; hover/focus still dims
  *   siblings, labels, and floods — opacity/color only, no movement.
- * - Touch / <768px: static Registration banner, shapes are not links
- *   (the Index of Proofs below is the navigation).
- * - ?compose=1: static composer view of all three states, shape ids labeled.
+ * - Touch (R3): the cycle runs and shapes are live links; a first tap ARMS
+ *   a shape (ink-in + title), a second tap opens it.
+ * - ?compose=1: static composer view of every state, shape ids labeled.
  */
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
@@ -67,6 +72,10 @@ import {
    reference toward a literal 1s cycle. */
 const CYCLE_MS = 3000
 const HOVER_MORPH = { type: 'spring', stiffness: 300, damping: 24 } // hover radius/scale
+/* MICRO register (CLAUDE.md motion scale): the 0.25s ink-in/fade timing
+   for state-texture fades (strip hatching, crop marks) and the hover
+   label rule — they used to run off-scale at 0.4/0.5/0.3s. */
+const MICRO_FADE_S = 0.25
 /* Sibling dim (F4 A/B, resolved by Z1b): STANDING RULE — composition
    shape fills are OPAQUE in every state and colorway; overlap reads as
    layered paper, never stained glass. The 'opacity' dim variant violates
@@ -577,8 +586,18 @@ export default function CompositionHero({ poster = false }) {
   // Phase A: the cycle stays paused through the CLOSE animation too (closingId),
   // so the origin shape holds still while the panel shrinks back into it.
   const overlayOpen = openId !== null || closingId !== null
+  // Hidden tab: stop walking. Background timers kept advancing the state
+  // while rAF (and so the morph) was suspended — wasted wake-ups, and the
+  // poster resumed mid-jump on return. The cycle restarts on its normal
+  // cadence when the tab is visible again.
+  const [tabHidden, setTabHidden] = useState(() => document.hidden)
   useEffect(() => {
-    if (composer || staticLayout || paused || overlayOpen || harness) return undefined
+    const onVisibility = () => setTabHidden(document.hidden)
+    document.addEventListener('visibilitychange', onVisibility)
+    return () => document.removeEventListener('visibilitychange', onVisibility)
+  }, [])
+  useEffect(() => {
+    if (composer || staticLayout || paused || overlayOpen || harness || tabHidden) return undefined
     const t = setInterval(() => {
       // R2 constrained-random walk: the next state is a legal neighbour of the
       // current one (arrangement differs, min-motion enforced), excluding the
@@ -594,7 +613,7 @@ export default function CompositionHero({ poster = false }) {
       setPosterTheme(engine.current.themeBag.next())
     }, CYCLE_MS)
     return () => clearInterval(t)
-  }, [composer, staticLayout, paused, overlayOpen, harness])
+  }, [composer, staticLayout, paused, overlayOpen, harness, tabHidden])
 
   // Grammar check while art-directing + cycle-motion validator (dev warn if
   // any adjacent pair fails the §5 minimum-motion threshold).
@@ -941,7 +960,10 @@ export default function CompositionHero({ poster = false }) {
                 aria-hidden="true"
                 initial={false}
                 animate={{ opacity: HATCH_STATES.includes(displayState) ? 1 : 0 }}
-                transition={{ duration: reducedMotion ? 0 : 0.4 }}
+                // Rides this shape's own stagger so the stripes change WITH its
+                // silhouette (they used to land on the old shape before it
+                // moved); MICRO 0.25s per the motion scale.
+                transition={{ duration: reducedMotion ? 0 : MICRO_FADE_S, delay: staggerDelay }}
               />
               {/* T1: baked letterform, clipped by the shape's own
                   border-box (overflow:hidden survives the radius morphs —
@@ -1021,7 +1043,12 @@ export default function CompositionHero({ poster = false }) {
                   className={`comp-ornament${o.fill === 'paper' ? ' comp-ornament--paper' : ''}`}
                   aria-hidden="true"
                   style={{ zIndex: Z[oid] }}
-                  initial={{ opacity: 0 }}
+                  // Enter IN PLACE: without starting geometry an entering
+                  // ornament spawned at the stage origin (0,0, zero size) and
+                  // flew across the shapes into position. It now starts at its
+                  // target box and only fades — "fade at the edges of their
+                  // existence", as specced.
+                  initial={{ opacity: 0, x: o?.x, y: o?.y, width: o?.w, height: o?.h, borderRadius: o?.r }}
                   exit={{ opacity: 0, transition: { duration: 0.2 } }}
                   animate={{
                     opacity: 1,
@@ -1034,7 +1061,10 @@ export default function CompositionHero({ poster = false }) {
                   transition={{
                     ...MORPH,
                     delay: staggerDelay,
-                    opacity: { duration: 0.2, delay: 0 },
+                    // Fade in on its own ripple slot (ornaments are last in
+                    // STAGGER_ORDER), so it arrives with the shapes around it
+                    // instead of standing alone over a still-moving composition.
+                    opacity: { duration: 0.2, delay: staggerDelay },
                   }}
                 >
                   {/* Ornaments carry the columns hatching too */}
@@ -1043,7 +1073,7 @@ export default function CompositionHero({ poster = false }) {
                     aria-hidden="true"
                     initial={false}
                     animate={{ opacity: HATCH_STATES.includes(displayState) ? 1 : 0 }}
-                    transition={{ duration: reducedMotion ? 0 : 0.4 }}
+                    transition={{ duration: reducedMotion ? 0 : MICRO_FADE_S, delay: staggerDelay }}
                   />
                 </motion.div>
               )}
@@ -1058,7 +1088,7 @@ export default function CompositionHero({ poster = false }) {
           aria-hidden="true"
           initial={false}
           animate={{ opacity: displayState === 'registration' ? 1 : 0 }}
-          transition={{ duration: reducedMotion ? 0 : 0.5 }}
+          transition={{ duration: reducedMotion ? 0 : MICRO_FADE_S }}
         >
           {CROP_MARKS[orientation].map(([cx, cy]) => (
             <g key={`${cx}-${cy}`}>
@@ -1098,7 +1128,7 @@ export default function CompositionHero({ poster = false }) {
                   className="comp-label__rule"
                   initial={{ scaleX: 0 }}
                   animate={{ scaleX: 1 }}
-                  transition={{ duration: reducedMotion ? 0 : 0.3, ease: 'easeOut' }}
+                  transition={{ duration: reducedMotion ? 0 : MICRO_FADE_S, ease: 'easeOut' }}
                 />
               </motion.div>
             )}
